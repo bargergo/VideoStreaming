@@ -1,0 +1,7 @@
+version: '3.4'
+
+services:
+  cdn-server:
+    image: nginx:1.18.0-alpine
+    ports: 
+      - "80:80"
