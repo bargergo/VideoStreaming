@@ -14,8 +14,8 @@ type PropType = {
 };
 
 const App = ({ source }: PropType) => {
-  const videoRef = useRef();
-  const [player, setPlayer] = useState(undefined);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [player, setPlayer] = useState<videojs.Player | null>(null);
 
   useEffect(() => {
     if (player) {
@@ -25,14 +25,14 @@ const App = ({ source }: PropType) => {
 
   useEffect(() => {
     if (player) {
-      player.src([source]);
+      player.src(source);
     }
   },[player,source]);
 
   useEffect(() => {
-    const videoJsOptions = {
+    const videoJsOptions: videojs.PlayerOptions = {
       preload: "auto",
-      autoplay: "any",
+      autoplay: false,
       controls: true,
       fluid: true,
       responsive: true,
