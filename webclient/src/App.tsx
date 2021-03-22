@@ -2,9 +2,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
-// those imports are important
-import qualitySelector from "videojs-hls-quality-selector";
-import qualityLevels from "videojs-contrib-quality-levels";
+
+import "videojs-contrib-quality-levels";
+import "@videojs/http-streaming";
+import "videojs-http-source-selector";
 
 //const source = "http://localhost:8080/bourne/playlist.m3u8";
 // const source = "bourne/playlist.m3u8";
@@ -19,7 +20,7 @@ const App = ({ source }: PropType) => {
 
   useEffect(() => {
     if (player) {
-      player.hlsQualitySelector({ displayCurrentQuality: true });
+      player.httpSourceSelector();
     }
   }, [player]);
 
@@ -42,9 +43,6 @@ const App = ({ source }: PropType) => {
         },
       ],
     };
-    console.log("useEffect");
-    videojs.registerPlugin("qualityLevels", qualityLevels);
-    videojs.registerPlugin("hlsQualitySelector", qualitySelector);
     const p = videojs(
       videoRef.current,
       videoJsOptions,
