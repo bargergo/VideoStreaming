@@ -54,7 +54,7 @@ const App = ({ source }: PropType) => {
     return () => {
       if (player) player.dispose();
     };
-  }, []);
+  }, [source, player]);
 
   return (
     <div data-vjs-player>
