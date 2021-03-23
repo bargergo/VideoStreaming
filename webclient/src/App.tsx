@@ -2,6 +2,7 @@ import Hls from "hls.js";
 import Plyr from "plyr";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import './App.css';
+import 'plyr/dist/plyr.css';
 
 //const source = "http://localhost:8080/bourne/playlist.m3u8";
 // const source = "bourne/playlist.m3u8";
