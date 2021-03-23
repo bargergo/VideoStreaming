@@ -5,8 +5,8 @@ import './App.css';
 import 'plyr/dist/plyr.css';
 
 //const source = "http://localhost:8080/bourne/playlist.m3u8";
-// const source = "bourne/playlist.m3u8";
-const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+const source = "bourne/playlist.m3u8";
+//const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
 
 const App = () => {
 
@@ -15,12 +15,16 @@ const App = () => {
 
   const updateQuality = useCallback(
     (newQuality: number) => {
-      _hls!!.levels.forEach((level, levelIndex) => {
-        if (level.height === newQuality) {
-          console.log("Found quality match with " + newQuality);
-          _hls!!.currentLevel = levelIndex;
-        }
-      })
+      if (_hls) {
+        _hls!!.levels.forEach((level, levelIndex) => {
+          if (level.height === newQuality) {
+            console.log("Found quality match with " + newQuality);
+            _hls!!.currentLevel = levelIndex;
+          }
+        });
+      } else {
+        console.log('_hls', _hls);
+      }
     }, [_hls]
   );
 
@@ -32,13 +36,12 @@ const App = () => {
   
     if (video.current) {
 
-      const player = new Plyr(video.current);
-
       if (!Hls.isSupported()) {
         video.current.src = source;
       } else {
         // For more Hls.js options, see https://github.com/dailymotion/hls.js
         const hls = new Hls();
+        setHls(hls);
         hls.loadSource(source);
     
         // From the m3u8 playlist, hls parses the manifest and returns
@@ -57,12 +60,12 @@ const App = () => {
             forced: true,        
             onChange: (e) => updateQuality(e),
           }
-          
+          const player = new Plyr(video.current!!, defaultOptions);
         });
-        hls.attachMedia(video.current);
-        setHls(hls);
-      }
         
+        hls.attachMedia(video.current);
+
+      }
     }
     return () => {
     };
