@@ -10,23 +10,17 @@ const source = "bourne/playlist.m3u8";
 
 const App = () => {
 
-  const [_hls, setHls] = useState<Hls | null>(null);
+  const [hls, setHls] = useState<Hls>(new Hls());
   const video = useRef<HTMLVideoElement>(null);
 
-  const updateQuality = useCallback(
-    (newQuality: number) => {
-      if (_hls) {
-        _hls!!.levels.forEach((level, levelIndex) => {
-          if (level.height === newQuality) {
-            console.log("Found quality match with " + newQuality);
-            _hls!!.currentLevel = levelIndex;
-          }
-        });
-      } else {
-        console.log('_hls', _hls);
-      }
-    }, [_hls]
-  );
+  const updateQuality = (newQuality: number) => {
+      hls.levels.forEach((level, levelIndex) => {
+        if (level.height === newQuality) {
+          console.log("Found quality match with " + newQuality);
+          hls.currentLevel = levelIndex;
+        }
+      });
+  };
 
   useEffect(() => {
     
@@ -40,8 +34,6 @@ const App = () => {
         video.current.src = source;
       } else {
         // For more Hls.js options, see https://github.com/dailymotion/hls.js
-        const hls = new Hls();
-        setHls(hls);
         hls.loadSource(source);
     
         // From the m3u8 playlist, hls parses the manifest and returns
@@ -61,10 +53,9 @@ const App = () => {
             onChange: (e) => updateQuality(e),
           }
           const player = new Plyr(video.current!!, defaultOptions);
+          hls.attachMedia(video.current!!);
         });
         
-        hls.attachMedia(video.current);
-
       }
     }
     return () => {
