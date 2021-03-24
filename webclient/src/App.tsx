@@ -42,7 +42,7 @@ const App = () => {
         hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
     
           // Transform available levels into an array of integers (height values).
-          const availableQualities = hls.levels.map((l) => l.height)
+          const availableQualities = [-1, ...hls.levels.map((l) => l.height)];
     
           // Add new qualities to option
           defaultOptions.quality = {
@@ -55,6 +55,15 @@ const App = () => {
           const player = new Plyr(video.current!!, defaultOptions);
           hls.attachMedia(video.current!!);
         });
+
+        hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
+          const span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='-1'] span")
+          if (hls.autoLevelEnabled) {
+            span!!.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
+          } else {
+            span!!.innerHTML = `AUTO`
+          }
+        })
         
       }
     }
