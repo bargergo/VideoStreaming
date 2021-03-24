@@ -9,12 +9,9 @@ import "videojs-http-source-selector";
 
 //const source = "http://localhost:8080/bourne/playlist.m3u8";
 // const source = "bourne/playlist.m3u8";
+const source = "bourne/playlist.m3u8"
 
-type PropType = {
-  source: string;
-};
-
-const App = ({ source }: PropType) => {
+const App = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [player, setPlayer] = useState<videojs.Player | null>(null);
 
@@ -28,7 +25,7 @@ const App = ({ source }: PropType) => {
     if (player) {
       player.src(source);
     }
-  },[player,source]);
+  },[player]);
 
   useEffect(() => {
     const videoJsOptions: videojs.PlayerOptions = {
@@ -54,7 +51,7 @@ const App = ({ source }: PropType) => {
     return () => {
       if (player) player.dispose();
     };
-  }, [source, player]);
+  }, [player]);
 
   return (
     <div data-vjs-player>
