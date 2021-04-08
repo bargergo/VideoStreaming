@@ -1,13 +1,14 @@
-// @ts-nocheck
 import React, { useRef, useState, useEffect } from "react";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
+import "videojs-http-source-selector";
 import "videojs-contrib-quality-levels";
 import "@videojs/http-streaming";
-import "videojs-http-source-selector";
 
-//const source = "http://localhost:8080/bourne/playlist.m3u8";
+import './extensions'
+
+// const source = "http://localhost:8080/bourne/playlist.m3u8";
 // const source = "bourne/playlist.m3u8";
 const source = "bourne/playlist.m3u8"
 
@@ -33,7 +34,6 @@ const App = () => {
       autoplay: false,
       controls: true,
       fluid: true,
-      responsive: true,
       sources: [
         {
           src: source,
