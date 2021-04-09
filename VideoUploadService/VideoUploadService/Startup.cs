@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using tusdotnet;
 using tusdotnet.Interfaces;
@@ -29,7 +31,7 @@ namespace VideoUploadService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
@@ -46,10 +48,30 @@ namespace VideoUploadService
                 UrlPath = "/files",
                 Events = new Events
                 {
+                    OnBeforeCreateAsync = async ctx =>
+                    {
+                        if (!ctx.Metadata.ContainsKey("filename"))
+                        {
+                            ctx.FailRequest("filename metadata must be specified. ");
+                        }
+
+                        if (!ctx.Metadata.ContainsKey("filetype"))
+                        {
+                            ctx.FailRequest("filetype metadata must be specified. ");
+                        }
+                        await Task.CompletedTask;
+                    },
+
                     OnFileCompleteAsync = async eventContext =>
                     {
                         ITusFile file = await eventContext.GetFileAsync();
-                        await DoSomeProcessing(file);
+                        logger.LogInformation($"Fileupload completed: ${file.Id}");
+                        var metadata = await file.GetMetadataAsync(eventContext.CancellationToken);
+                        foreach (var item in metadata)
+                        {
+                            logger.LogInformation($"Fileupload completed: {item.Key} = {item.Value.GetString(Encoding.UTF8)}");
+                        }
+                        await Task.CompletedTask;
                     }
                 }
             });
@@ -61,11 +83,6 @@ namespace VideoUploadService
                     await context.Response.WriteAsync("Hello World!");
                 });
             });
-        }
-
-        private Task DoSomeProcessing(ITusFile file)
-        {
-            return Task.CompletedTask;
         }
     }
 }
