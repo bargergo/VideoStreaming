@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as tus from "tus-js-client";
 
 const UploadPage = () => {
   const videoInput = useRef<HTMLInputElement>(null);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!!videoInput.current) {
@@ -20,15 +22,17 @@ const UploadPage = () => {
               filetype: file.type,
             },
             onError: function (error) {
-              console.log("Failed because: " + error);
+              setMessage("Failed because: " + error);
             },
             onProgress: function (bytesUploaded, bytesTotal) {
-              var percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2);
-              console.log(bytesUploaded, bytesTotal, percentage + "%");
+              setProgress((bytesUploaded / bytesTotal) * 100);
             },
             onSuccess: function () {
-              console.log("Download %s from %s", (upload.file as File).name, upload.url);
+              setMessage(`Download ${(upload.file as File).name} from ${upload.url}`);
             },
+            onBeforeRequest: function () {
+              setMessage(null);
+            }
           });
 
           // Check if there are any previous uploads to continue.
@@ -56,6 +60,8 @@ const UploadPage = () => {
         name="video-file-input"
         accept="video/mp4"
       />
+      { progress !== null ? <p>{progress.toFixed(2)}%</p> : undefined}
+      { message !== null ? <p>{message}%</p> : undefined}
     </div>
   );
 };
