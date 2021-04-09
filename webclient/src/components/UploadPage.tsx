@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import * as tus from "tus-js-client";
 
 const UploadPage = () => {
   const videoInput = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!!videoInput.current) {
@@ -28,7 +30,8 @@ const UploadPage = () => {
               setProgress((bytesUploaded / bytesTotal) * 100);
             },
             onSuccess: function () {
-              setMessage(`Download ${(upload.file as File).name} from ${upload.url}`);
+              setMessage(`Download ${(upload.file as File).name}`);
+              setDownloadUrl(upload.url);
             },
             onBeforeRequest: function () {
               setMessage(null);
@@ -61,7 +64,10 @@ const UploadPage = () => {
         accept="video/mp4"
       />
       { progress !== null ? <p>{progress.toFixed(2)}%</p> : undefined}
-      { message !== null ? <p>{message}%</p> : undefined}
+      { message !== null
+        ? downloadUrl !== null
+          ? <p><Link to={downloadUrl}>{message}</Link></p> : <p>{message}</p>
+        : undefined}
     </div>
   );
 };
