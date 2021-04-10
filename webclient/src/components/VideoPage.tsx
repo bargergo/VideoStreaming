@@ -1,16 +1,16 @@
 import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import './VideoPage.css';
 
 //const source = "http://localhost:8080/bourne/playlist.m3u8";
 const source = "bourne/playlist.m3u8";
 //const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
+const hls = new Hls();
 
 const VideoPage = () => {
 
-  const [hls, setHls] = useState<Hls>(new Hls());
   const video = useRef<HTMLVideoElement>(null);
 
   const updateQuality = (newQuality: number) => {
@@ -52,7 +52,7 @@ const VideoPage = () => {
             forced: true,        
             onChange: (e) => updateQuality(e),
           }
-          const player = new Plyr(video.current!!, defaultOptions);
+          new Plyr(video.current!!, defaultOptions);
           hls.attachMedia(video.current!!);
         });
 
