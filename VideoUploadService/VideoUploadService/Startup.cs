@@ -43,7 +43,7 @@ namespace VideoUploadService
             app.UseTus(httpContext => new DefaultTusConfiguration
             {
                 // c:\tusfiles is where to store files
-                Store = new TusDiskStore(@"C:\tusfiles\"),
+                Store = new TusDiskStore(@"F:\tusfiles\"),
                 // On what url should we listen for uploads?
                 UrlPath = "/files",
                 Events = new Events
@@ -85,7 +85,7 @@ namespace VideoUploadService
                     string fileId = remaining.Value.TrimStart('/');
                     if (!string.IsNullOrEmpty(fileId))
                     {
-                        var store = new TusDiskStore(@"C:\tusfiles\");
+                        var store = new TusDiskStore(@"F:\tusfiles\");
                         var file = await store.GetFileAsync(fileId, context.RequestAborted);
 
                         if (file == null)
