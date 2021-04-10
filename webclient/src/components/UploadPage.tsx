@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import * as tus from "tus-js-client";
+import ProgressBar from 'react-bootstrap/ProgressBar'
+import './UploadPage.css';
 
 const UploadPage = () => {
   const videoInput = useRef<HTMLInputElement>(null);
@@ -11,6 +13,10 @@ const UploadPage = () => {
   useEffect(() => {
     if (!!videoInput.current) {
       videoInput.current.onchange = function (e: Event) {
+        setDownloadUrl(null);
+        setProgress(null);
+        setMessage(null);
+
         // Get the selected file from the input element
         if (!!e) {
           const file = (e.target as HTMLInputElement)?.files![0];
@@ -27,7 +33,11 @@ const UploadPage = () => {
               setMessage("Failed because: " + error);
             },
             onProgress: function (bytesUploaded, bytesTotal) {
-              setProgress((bytesUploaded / bytesTotal) * 100);
+              const percent = (bytesUploaded / bytesTotal) * 100;
+              setProgress(percent);
+              const megabytesUploaded = bytesUploaded / 1024 / 1024;
+              const megabytesTotal = bytesTotal / 1024 / 1024;
+              setMessage(`Uploaded ${megabytesUploaded.toFixed(1)} MB of ${megabytesTotal.toFixed(1)} MB (${percent.toFixed(2)}%)`);
             },
             onSuccess: function () {
               setMessage(`Download ${(upload.file as File).name}`);
@@ -53,6 +63,8 @@ const UploadPage = () => {
     }
   });
 
+  const isAnimated = progress !== null && progress !== 100;
+
   return (
     <div>
       <label htmlFor="video-file-input">Choose a video file:</label>
@@ -63,7 +75,7 @@ const UploadPage = () => {
         name="video-file-input"
         accept="video/mp4"
       />
-      { progress !== null ? <p>{progress.toFixed(2)}%</p> : undefined}
+      { progress !== null ? <ProgressBar animated={isAnimated} now={progress} /> : undefined}
       { message !== null
         ? downloadUrl !== null
           ? <p><Link to={downloadUrl}>{message}</Link></p> : <p>{message}</p>
