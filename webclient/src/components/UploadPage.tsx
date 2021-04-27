@@ -65,6 +65,8 @@ const UploadPage = () => {
 
   const isAnimated = progress !== null && progress !== 100;
 
+  console.log('message', message);
+
   return (
     <div>
       <label htmlFor="video-file-input">Choose a video file:</label>
