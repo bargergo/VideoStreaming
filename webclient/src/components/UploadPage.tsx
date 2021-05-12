@@ -23,7 +23,7 @@ const UploadPage = () => {
 
           // Create a new tus upload
           var upload = new tus.Upload(file, {
-            endpoint: "/files",
+            endpoint: "/api/files",
             retryDelays: [0, 3000, 5000, 10000, 20000],
             metadata: {
               filename: file.name,

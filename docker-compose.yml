@@ -1,6 +1,20 @@
 version: '3.4'
 
 services:
+  apigateway:
+    image: traefik:v2.2
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
   upload-service:
     build:
       context: VideoUploadService
@@ -8,9 +22,13 @@ services:
     environment:
       FileStorageSettings__DiskStorePath: /data
     ports: 
-      - "8080:80"
+      - "5001:80"
     volumes:
       - /f/tusfiles:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.upload-service.rule=PathPrefix(`/api/files`)"
+      - "traefik.http.routers.upload-service.entrypoints=web"
       
   webclient:
     build:
@@ -18,4 +36,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webclient.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.webclient.entrypoints=web"
     
