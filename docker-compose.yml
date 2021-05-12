@@ -1,9 +1,21 @@
 version: '3.4'
 
 services:
-  cdn-server:
-    image: nginx:1.18.0-alpine
+  upload-service:
+    build:
+      context: VideoUploadService
+      dockerfile: VideoUploadService/Dockerfile
+    environment:
+      FileStorageSettings__DiskStorePath: /data
     ports: 
       - "8080:80"
     volumes:
-      - "./video:/usr/share/nginx/html/"
+      - /f/tusfiles:/data
+      
+  webclient:
+    build:
+      context: webclient
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    
