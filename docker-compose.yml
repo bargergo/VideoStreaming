@@ -27,7 +27,7 @@ services:
       - /f/tusfiles:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.upload-service.rule=PathPrefix(`/api/files`)"
+      - "traefik.http.routers.upload-service.rule=PathPrefix(`/api`)"
       - "traefik.http.routers.upload-service.entrypoints=web"
       
   webclient:

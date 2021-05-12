@@ -71,7 +71,7 @@ namespace VideoUploadService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapGet("/api/files", async context =>
+                endpoints.MapGet("/api/hello", async context =>
                 {
                     await context.Response.WriteAsync("Hello World!");
                 });

@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using tusdotnet.Stores;
+using VideoUploadService.DTOs;
 using VideoUploadService.Models;
 
 namespace VideoUploadService.Controllers
@@ -15,10 +17,12 @@ namespace VideoUploadService.Controllers
     public class FileController : ControllerBase
     {
         private readonly IFileStorageSettings _fileStorageSettings;
+        private readonly ILogger<FileController> _logger;
 
-        public FileController(IFileStorageSettings fileStorageSettings)
+        public FileController(IFileStorageSettings fileStorageSettings, ILogger<FileController> logger)
         {
             _fileStorageSettings = fileStorageSettings;
+            _logger = logger;
         }
 
         [HttpGet("{fileId}")]
@@ -46,7 +50,7 @@ namespace VideoUploadService.Controllers
         }
 
         [HttpGet("{fileId}/{fileName}")]
-        public IActionResult GetHlsFiles(string fileId, string fileName, CancellationToken cancellationToken)
+        public IActionResult GetHlsFiles(string fileId, string fileName)
         {
             var pathToFile = Path.Combine(_fileStorageSettings.DiskStorePath, "hls", fileId, fileName);
 
@@ -70,6 +74,33 @@ namespace VideoUploadService.Controllers
 
             var file = System.IO.File.OpenRead(pathToFile);
             return File(file, contentType, fileName);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<VideoInfo>>> ListFiles(CancellationToken cancellationToken)
+        {
+            var pathToDirectories = Path.Combine(_fileStorageSettings.DiskStorePath, "hls");
+            var directories = Directory.GetDirectories(pathToDirectories);
+
+            var results = new List<VideoInfo>();
+
+            foreach (var directory in directories)
+            {
+                var directoryName = Path.GetFileName(directory);
+                _logger.LogInformation(directoryName);
+                var store = new TusDiskStore(_fileStorageSettings.DiskStorePath);
+                var file = await store.GetFileAsync(directoryName, cancellationToken);
+                var metadata = await file.GetMetadataAsync(cancellationToken);
+                var filename = metadata.ContainsKey("filename")
+                    ? metadata["filename"].GetString(Encoding.UTF8)
+                    : directoryName;
+                results.Add(new VideoInfo
+                {
+                    Id = directoryName,
+                    Title = filename
+                });
+            }
+            return Ok(results);
         }
     }
 }
