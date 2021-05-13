@@ -66,9 +66,9 @@ const VideoPage = () => {
         hls.on(Hls.Events.LEVEL_SWITCHED, function (event, data) {
           const span = document.querySelector(".plyr__menu__container [data-plyr='quality'][value='-1'] span")
           if (hls.autoLevelEnabled) {
-            span!!.innerHTML = `AUTO (${hls.levels[data.level].height}p)`
+            span!!.innerHTML = `AUTO (${hls.levels[data.level].height}p)`;
           } else {
-            span!!.innerHTML = `AUTO`
+            span!!.innerHTML = `AUTO`;
           }
         })
         
@@ -76,7 +76,7 @@ const VideoPage = () => {
     }
     return () => {
     };
-  }, [video]);
+  }, [video, source]);
 
   return (
     <div className="container">
