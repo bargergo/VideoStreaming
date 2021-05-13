@@ -4,6 +4,7 @@ import Home from "./components/Home";
 import Navs from "./components/Navs";
 import UploadPage from "./components/UploadPage";
 import VideoPage from "./components/VideoPage";
+import VideosPage from "./components/VideosPage";
 
 const App = () => {
 
@@ -16,8 +17,12 @@ const App = () => {
           <Home />
         </Route>
 
-        <Route exact path="/video">
+        <Route exact path="/video/:id">
           <VideoPage />
+        </Route>
+
+        <Route exact path="/video">
+          <VideosPage />
         </Route>
 
         <Route exact path="/upload">

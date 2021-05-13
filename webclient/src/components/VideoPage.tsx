@@ -2,16 +2,23 @@ import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
 import React, { useEffect, useRef } from "react";
+import { useParams } from "react-router";
 import './VideoPage.css';
 
+type VideoParams = {
+  id: string;
+};
+
 //const source = "http://localhost:8080/bourne/playlist.m3u8";
-const source = "bourne/playlist.m3u8";
+//const source = "bourne/playlist.m3u8";
 //const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
 const hls = new Hls();
 
 const VideoPage = () => {
 
   const video = useRef<HTMLVideoElement>(null);
+  const { id } = useParams<VideoParams>();
+  const source = `/api/files/${id}/playlist.m3u8`;
 
   const updateQuality = (newQuality: number) => {
       hls.levels.forEach((level, levelIndex) => {
