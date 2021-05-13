@@ -29,6 +29,12 @@ const App = () => {
           <UploadPage />
         </Route>
 
+        {/* redirect to make file download from backend work */}
+        <Route exact path="/api/files/:id" component={() => { 
+          window.location.href = window.location.href + "#"; 
+          return null;
+        }}/>
+
         <Route>
           <div>
             Not found
