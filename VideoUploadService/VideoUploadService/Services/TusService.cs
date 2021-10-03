@@ -57,8 +57,8 @@ namespace VideoUploadService.Services
             await _messageQueue.Publish<IVideoUploadedEvent>(new VideoUploadedEvent
             {
                 FileId = file.Id,
-                Name = metadata.GetValueOrDefault("name", null)?.GetString(Encoding.UTF8) ?? "null",
-                Type = metadata.GetValueOrDefault("type", null)?.GetString(Encoding.UTF8) ?? "null"
+                Name = metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8),
+                Type = metadata.GetValueOrDefault("filetype", null)?.GetString(Encoding.UTF8)
             });
         }
     }
