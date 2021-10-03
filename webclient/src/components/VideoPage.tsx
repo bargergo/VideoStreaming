@@ -8,6 +8,7 @@ import "@videojs/http-streaming";
 import '../extensions'
 import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
+import './VideoPage.css';
 
 type VideoParams = {
   id: string;
@@ -48,7 +49,7 @@ const VideoPage = () => {
   }, [player, source]);
 
   return (
-    <div data-vjs-player>
+    <div className="container" data-vjs-player>
       <video
         ref={video}
         className="video-js vjs-default-skin vjs-big-play-centered"
