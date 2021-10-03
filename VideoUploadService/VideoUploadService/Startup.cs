@@ -39,6 +39,30 @@ namespace VideoUploadService
             {
                 options.Limits.MaxRequestBodySize = int.MaxValue; // if not set default value is: 30 MB
             });
+
+            services.AddMassTransit(x =>
+            {
+                var config = Configuration.GetSection(nameof(MessageQueueSettings)).Get<MessageQueueSettings>();
+                x.AddConsumer<VideoUploadedEventHandler>();
+                x.AddBus(context =>
+                    Bus.Factory.CreateUsingRabbitMq(cfg =>
+                    {
+                        cfg.Host(new Uri($"rabbitmq://{config.Hostname}:/"),
+                            hostConfig =>
+                            {
+                                hostConfig.Username(config.Username);
+                                hostConfig.Password(config.Password);
+                            });
+                        cfg.ReceiveEndpoint("VideoUploaded", ep =>
+                        {
+                            ep.ConfigureConsumer<VideoUploadedEventHandler>(context);
+                        });
+                    })
+                );
+                EndpointConvention.Map<IVideoConvertedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoConverted"));
+                EndpointConvention.Map<IVideoUploadedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoUploaded"));
+            });
+
             services.AddTransient<ITusService, TusService>();
             services.AddControllers();
         }
