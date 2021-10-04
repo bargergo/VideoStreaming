@@ -1,4 +1,4 @@
-﻿namespace VideoUploadService.MessageQueue
+﻿namespace MessageQueueDTOs
 {
     public interface IVideoUploadedEvent
     {

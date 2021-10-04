@@ -11,4 +11,8 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MessageQueueDTOs\MessageQueueDTOs.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,3 +1,5 @@
+using MassTransit;
+using MessageQueueDTOs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -13,6 +15,8 @@ using tusdotnet;
 using tusdotnet.Models;
 using tusdotnet.Models.Configuration;
 using tusdotnet.Stores;
+using VideoUploadService.MessageQueue;
+using VideoUploadService.Middlewares;
 using VideoUploadService.Models;
 using VideoUploadService.Services;
 
@@ -43,7 +47,6 @@ namespace VideoUploadService
             services.AddMassTransit(x =>
             {
                 var config = Configuration.GetSection(nameof(MessageQueueSettings)).Get<MessageQueueSettings>();
-                x.AddConsumer<VideoUploadedEventHandler>();
                 x.AddBus(context =>
                     Bus.Factory.CreateUsingRabbitMq(cfg =>
                     {
@@ -53,13 +56,8 @@ namespace VideoUploadService
                                 hostConfig.Username(config.Username);
                                 hostConfig.Password(config.Password);
                             });
-                        cfg.ReceiveEndpoint("VideoUploaded", ep =>
-                        {
-                            ep.ConfigureConsumer<VideoUploadedEventHandler>(context);
-                        });
                     })
                 );
-                EndpointConvention.Map<IVideoConvertedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoConverted"));
                 EndpointConvention.Map<IVideoUploadedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoUploaded"));
             });
 
@@ -75,6 +73,7 @@ namespace VideoUploadService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRequestResponseLogging();
             app.UseRouting();
 
             var tusService = app.ApplicationServices.GetRequiredService<ITusService>();

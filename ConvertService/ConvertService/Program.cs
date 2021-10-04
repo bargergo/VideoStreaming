@@ -1,11 +1,8 @@
+using MassTransit;
+using MassTransit.Util;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ConvertService
 {
@@ -13,7 +10,15 @@ namespace ConvertService
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var webHost = CreateHostBuilder(args).Build();
+            using (var scope = webHost.Services.CreateScope())
+            {
+                var bus = scope.ServiceProvider.GetRequiredService<IBusControl>();
+                var lifetime = scope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
+                var busHandle = TaskUtil.Await(() => bus.StartAsync());
+                lifetime.ApplicationStopping.Register(() => busHandle.Stop());
+            }
+            webHost.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

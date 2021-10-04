@@ -1,4 +1,4 @@
-﻿namespace ConvertService.MessageQueue
+﻿namespace MessageQueueDTOs
 {
     public class IVideoConvertedEvent
     {

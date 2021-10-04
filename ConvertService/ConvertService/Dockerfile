@@ -10,6 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["ConvertService/ConvertService.csproj", "ConvertService/"]
 RUN dotnet restore "ConvertService/ConvertService.csproj"
+COPY ["MessageQueueDTOs/MessageQueueDTOs.csproj", "MessageQueueDTOs/"]
+RUN dotnet restore "MessageQueueDTOs/MessageQueueDTOs.csproj"
 COPY . .
 WORKDIR "/src/ConvertService"
 RUN dotnet build "ConvertService.csproj" -c Release -o /app/build

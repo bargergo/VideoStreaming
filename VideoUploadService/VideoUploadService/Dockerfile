@@ -8,6 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:5.0-buster-slim AS build
 WORKDIR /src
 COPY ["VideoUploadService/VideoUploadService.csproj", "VideoUploadService/"]
 RUN dotnet restore "VideoUploadService/VideoUploadService.csproj"
+COPY ["MessageQueueDTOs/MessageQueueDTOs.csproj", "MessageQueueDTOs/"]
+RUN dotnet restore "MessageQueueDTOs/MessageQueueDTOs.csproj"
 COPY . .
 WORKDIR "/src/VideoUploadService"
 RUN dotnet build "VideoUploadService.csproj" -c Release -o /app/build

@@ -1,6 +1,7 @@
 using ConvertService.MessageQueue;
 using ConvertService.Services;
 using MassTransit;
+using MessageQueueDTOs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -56,7 +57,7 @@ namespace ConvertService
                 EndpointConvention.Map<IVideoUploadedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoUploaded"));
             });
 
-
+            services.AddTransient<IHlsConverterService, HlsConverterService>();
             services.AddControllers();
         }
 

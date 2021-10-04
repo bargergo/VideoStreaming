@@ -14,6 +14,15 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      
+  videostreaming-messagequeue:
+    image: rabbitmq:3.8.3-management
+    container_name: "videostreaming-messagequeue"
+    ports:
+    # The standard AMQP protocol port
+    - '5672:5672'
+    # HTTP management UI
+    - '15672:15672' 
 
   upload-service:
     build:
@@ -21,14 +30,55 @@ services:
       dockerfile: VideoUploadService/Dockerfile
     environment:
       FileStorageSettings__DiskStorePath: /data
+      MessageQueueSettings__Hostname: videostreaming-messagequeue
+      MessageQueueSettings__Username: guest
+      MessageQueueSettings__Password: guest
     ports: 
       - "5001:80"
     volumes:
-      - /f/tusfiles:/data
+      - tusfiles:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.upload-service.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.upload-service.rule=PathPrefix(`/api/files`)"
       - "traefik.http.routers.upload-service.entrypoints=web"
+    depends_on:
+      - videostreaming-messagequeue
+      
+  convert-service:
+    build:
+      context: ConvertService
+      dockerfile: ConvertService/Dockerfile
+    environment:
+      FileStorageSettings__Path: /data
+      MessageQueueSettings__Hostname: videostreaming-messagequeue
+      MessageQueueSettings__Username: guest
+      MessageQueueSettings__Password: guest
+    ports: 
+      - "5002:80"
+    volumes:
+      - tusfiles:/data
+    depends_on:
+      - videostreaming-messagequeue
+      
+  catalogs-service:
+    build:
+      context: CatalogsService
+      dockerfile: CatalogsService/Dockerfile
+    environment:
+      FileStorageSettings__Path: /data
+      MessageQueueSettings__Hostname: videostreaming-messagequeue
+      MessageQueueSettings__Username: guest
+      MessageQueueSettings__Password: guest
+    ports: 
+      - "5003:80"
+    volumes:
+      - tusfiles:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.catalogs-service.rule=PathPrefix(`/api/catalog`)"
+      - "traefik.http.routers.catalogs-service.entrypoints=web"
+    depends_on:
+      - videostreaming-messagequeue
       
   webclient:
     build:
@@ -41,3 +91,10 @@ services:
       - "traefik.http.routers.webclient.rule=PathPrefix(`/`)"
       - "traefik.http.routers.webclient.entrypoints=web"
     
+volumes:
+  tusfiles:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: addr=host.docker.internal,rw,nolock
+      device: ":/F/tusfiles"
