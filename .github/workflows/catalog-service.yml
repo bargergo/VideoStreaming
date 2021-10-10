@@ -25,6 +25,8 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
+    - name: Change directory
+      run: cd VideoStreaming
     - uses: actions/cache@v2
       with:
         path: |
@@ -34,8 +36,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore CatalogService
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build CatalogService --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
