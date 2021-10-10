@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useRouteMatch } from 'react-router-dom';
-
-interface VideoInfo {
-  id: number;
-  fileId: string;
-  name: string;
-  description: string;
-  status: string;
-}
+import { VideoInfo } from '../models/VideoInfo';
 
 async function getVideoInfos(): Promise<VideoInfo[]> {
   const response = await fetch("/api/catalog")
@@ -29,7 +22,7 @@ const VideosPage = () => {
         console.log(err);
       });
     return;
-  }, [])
+  }, []);
 
   return (
     <div>

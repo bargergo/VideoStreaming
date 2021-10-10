@@ -1,8 +1,9 @@
 import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
+import { VideoInfo } from "../models/VideoInfo";
 import './VideoPage.css';
 
 type VideoParams = {
@@ -12,13 +13,31 @@ type VideoParams = {
 //const source = "http://localhost:8080/bourne/playlist.m3u8";
 //const source = "bourne/playlist.m3u8";
 //const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
-const hls = new Hls();
+
+async function getVideoInfo(id: string): Promise<VideoInfo> {
+  const response = await fetch("/api/catalog/" + id)
+    .then(r => r.json());
+  return response;
+}
 
 const VideoPage = () => {
 
+  const [hls] = useState<Hls>(new Hls());
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/${id}/playlist.m3u8`;
+  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+
+  useEffect(() => {
+    getVideoInfo(id)
+      .then(result => {
+        setVideoInfo(result);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+    return;
+  }, [id]);
 
   const updateQuality = (newQuality: number) => {
     if (newQuality === 0) {
@@ -83,10 +102,15 @@ const VideoPage = () => {
     }
     return () => {
     };
-  }, [video, source]);
+  }, [video, source, hls, updateQuality]);
 
   return (
     <div className="container">
+      <div>
+        <h1>{videoInfo?.name}</h1>
+        <p>Status: {videoInfo?.status}</p>
+        <div>Description: {videoInfo?.description}</div>
+      </div>
       Try adjust different video quality to see it yourself
       <video className="plyr" ref={video} controls crossOrigin="true" playsInline >
       </video>

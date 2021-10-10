@@ -22,6 +22,11 @@ namespace CatalogService.Services
             return param;
         }
 
+        public async Task<Video> GetVideo(string id)
+        {
+            return await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
+        }
+
         public async Task<List<Video>> GetVideos()
         {
             var videos = await _catalogDb.Videos.ToListAsync();
