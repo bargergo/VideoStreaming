@@ -1,4 +1,5 @@
 using CatalogService.Database;
+using CatalogService.Middlewares;
 using CatalogService.Models;
 using CatalogService.Services;
 using Microsoft.AspNetCore.Builder;
@@ -50,6 +51,7 @@ namespace CatalogService
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CatalogService v1"));
             }
 
+            app.UseRequestResponseLogging();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

@@ -85,7 +85,7 @@ const UploadPage = () => {
     }
   });
 
-  const isAnimated = progress !== null && progress !== 100;
+  const isAnimated = progress != null && progress !== 100;
 
   const successMessage = downloadUrl != null && message != null ? (
     <Alert variant={message.severity}>
@@ -108,7 +108,7 @@ const UploadPage = () => {
         name="video-file-input"
         accept="video/mp4"
       />
-      { progress !== null ? <ProgressBar animated={isAnimated} now={progress} /> : undefined}
+      { progress != null ? <ProgressBar animated={isAnimated} now={progress} /> : undefined}
     </div>
   );
 };
