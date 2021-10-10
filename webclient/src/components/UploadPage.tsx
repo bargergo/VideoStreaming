@@ -21,12 +21,12 @@ const UploadPage = () => {
   const videoInput = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [message, setMessage] = useState<Message | null>(null);
-  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [fileId, setFileId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!!videoInput.current) {
       videoInput.current.onchange = function (e: Event) {
-        setDownloadUrl(null);
+        setFileId(null);
         setProgress(null);
         setMessage(null);
 
@@ -61,9 +61,11 @@ const UploadPage = () => {
             onSuccess: function () {
               setMessage({
                 severity: Severity.SUCCESS,
-                text: `Download ${(upload.file as File).name}`
+                text: `Go to video '${(upload.file as File).name}'`
               });
-              setDownloadUrl(upload.url);
+              if (upload.url != null) {
+                setFileId(upload.url.substring(upload.url.lastIndexOf("/") + 1));
+              }
             },
             onBeforeRequest: function () {
               setMessage(null);
@@ -87,9 +89,9 @@ const UploadPage = () => {
 
   const isAnimated = progress != null && progress !== 100;
 
-  const successMessage = downloadUrl != null && message != null ? (
+  const successMessage = fileId != null && message != null ? (
     <Alert variant={message.severity}>
-      <Link to={downloadUrl}>{message.text}</Link>
+      <Link to={`/videos/${fileId}`}>{message.text}</Link>
     </Alert>) : null;
 
   const errorMessage = message != null ? (

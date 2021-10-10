@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useRouteMatch } from 'react-router-dom';
 
-interface VideInfo {
+interface VideoInfo {
   id: number;
   fileId: string;
   name: string;
@@ -9,7 +9,7 @@ interface VideInfo {
   status: string;
 }
 
-async function getVideoInfos(): Promise<VideInfo[]> {
+async function getVideoInfos(): Promise<VideoInfo[]> {
   const response = await fetch("/api/catalog")
     .then(r => r.json());
   return response;
@@ -17,7 +17,8 @@ async function getVideoInfos(): Promise<VideInfo[]> {
 
 const VideosPage = () => {
 
-  const [videos, setVideos] = useState<VideInfo[]>([]);
+  const [videos, setVideos] = useState<VideoInfo[]>([]);
+  const match = useRouteMatch();
 
   useEffect(() => {
     getVideoInfos()
@@ -34,7 +35,7 @@ const VideosPage = () => {
     <div>
       This is Videos Page!
       <ul>
-        {videos.map(video => <li key={video.id}><Link to={`video/${video.id}`}>{video.name}</Link></li>)}
+        {videos.map(video => <li key={video.id}><Link to={`${match.url}/${video.fileId}`}>{video.name}</Link></li>)}
       </ul>
     </div>
   )
