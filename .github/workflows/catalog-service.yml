@@ -1,4 +1,4 @@
-name: .NET
+name: CatalogService
 
 on:
   push:
