@@ -3,11 +3,24 @@ import { Link } from "react-router-dom";
 import * as tus from "tus-js-client";
 import ProgressBar from 'react-bootstrap/ProgressBar'
 import './UploadPage.css';
+import { Alert } from "react-bootstrap";
+
+enum Severity {
+  ERROR = "danger",
+  WARNING = "warning",
+  INFO = "info",
+  SUCCESS = "success"
+}
+
+interface Message {
+  severity: Severity;
+  text: string;
+}
 
 const UploadPage = () => {
   const videoInput = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<Message | null>(null);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,17 +43,26 @@ const UploadPage = () => {
               filetype: file.type,
             },
             onError: function (error) {
-              setMessage("Failed because: " + error);
+              setMessage({
+                severity: Severity.ERROR,
+                text: "Failed because: " + error
+              });
             },
             onProgress: function (bytesUploaded, bytesTotal) {
               const percent = (bytesUploaded / bytesTotal) * 100;
               setProgress(percent);
               const megabytesUploaded = bytesUploaded / 1024 / 1024;
               const megabytesTotal = bytesTotal / 1024 / 1024;
-              setMessage(`Uploaded ${megabytesUploaded.toFixed(1)} MB of ${megabytesTotal.toFixed(1)} MB (${percent.toFixed(2)}%)`);
+              setMessage({
+                severity: Severity.INFO,
+                text: `Uploaded ${megabytesUploaded.toFixed(1)} MB of ${megabytesTotal.toFixed(1)} MB (${percent.toFixed(2)}%)`
+              });
             },
             onSuccess: function () {
-              setMessage(`Download ${(upload.file as File).name}`);
+              setMessage({
+                severity: Severity.SUCCESS,
+                text: `Download ${(upload.file as File).name}`
+              });
               setDownloadUrl(upload.url);
             },
             onBeforeRequest: function () {
@@ -65,10 +87,19 @@ const UploadPage = () => {
 
   const isAnimated = progress !== null && progress !== 100;
 
-  console.log('message', message);
+  const successMessage = downloadUrl != null && message != null ? (
+    <Alert variant={message.severity}>
+      <Link to={downloadUrl}>{message.text}</Link>
+    </Alert>) : null;
+
+  const errorMessage = message != null ? (
+    <Alert variant={message.severity}>
+      {message.text}
+    </Alert>) : null;
 
   return (
     <div>
+      { successMessage || errorMessage }
       <label htmlFor="video-file-input">Choose a video file:</label>
       <input
         ref={videoInput}
@@ -78,10 +109,6 @@ const UploadPage = () => {
         accept="video/mp4"
       />
       { progress !== null ? <ProgressBar animated={isAnimated} now={progress} /> : undefined}
-      { message !== null
-        ? downloadUrl !== null
-          ? <p><Link to={downloadUrl}>{message}</Link></p> : <p>{message}</p>
-        : undefined}
     </div>
   );
 };

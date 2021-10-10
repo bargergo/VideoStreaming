@@ -1,4 +1,5 @@
 import React from "react";
+import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router";
 import Home from "./components/Home";
 import Navs from "./components/Navs";
@@ -12,16 +13,17 @@ const App = () => {
     <div>
       <Navs />
 
+      <Container>
       <Switch>
         <Route exact path="/">
           <Home />
         </Route>
 
-        <Route exact path="/video/:id">
+        <Route exact path="/videos/:id">
           <VideoPage />
         </Route>
 
-        <Route exact path="/video">
+        <Route exact path="/videos">
           <VideosPage />
         </Route>
 
@@ -41,6 +43,8 @@ const App = () => {
           </div>
         </Route>
       </Switch>
+      </Container>
+
     </div>
   );
 };
