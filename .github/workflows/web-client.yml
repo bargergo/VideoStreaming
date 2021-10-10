@@ -30,4 +30,4 @@ jobs:
       - name: Build
         run: cd webclient && npm build
       - name: Test
-        run: cd webclient && npm test
+        run: cd webclient && npm test --passWithNoTests
