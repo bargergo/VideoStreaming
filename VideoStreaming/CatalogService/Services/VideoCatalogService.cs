@@ -1,7 +1,9 @@
 ﻿using CatalogService.Database;
 using CatalogService.Database.Entities;
+using CatalogService.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace CatalogService.Services
@@ -9,10 +11,12 @@ namespace CatalogService.Services
     public class VideoCatalogService : IVideoCatalogService
     {
         private readonly CatalogDbContext _catalogDb;
+        private readonly IFileStorageSettings _fileStorageSettings;
 
-        public VideoCatalogService(CatalogDbContext catalogDb)
+        public VideoCatalogService(CatalogDbContext catalogDb, IFileStorageSettings fileStorageSettings)
         {
             _catalogDb = catalogDb;
+            _fileStorageSettings = fileStorageSettings;
         }
 
         public async Task<Video> CreateVideo(Video param)
@@ -20,6 +24,24 @@ namespace CatalogService.Services
             await _catalogDb.Videos.AddAsync(param);
             await _catalogDb.SaveChangesAsync();
             return param;
+        }
+
+        public async Task DeleteVideo(string id)
+        {
+            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
+            if (video != null)
+            {
+                var dir = new DirectoryInfo(_fileStorageSettings.Path);
+
+                foreach (var file in dir.EnumerateFiles(id + ".*"))
+                {
+                    file.Delete();
+                }
+                var hlsDir = new DirectoryInfo(Path.Combine(_fileStorageSettings.Path, "hls", id));
+                hlsDir.Delete(true);
+                _catalogDb.Remove(video);
+                await _catalogDb.SaveChangesAsync();
+            }
         }
 
         public async Task<Video> GetVideo(string id)

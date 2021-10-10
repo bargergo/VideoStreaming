@@ -2,6 +2,7 @@ import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
 import React, { useEffect, useRef, useState } from "react";
+import { Button } from "react-bootstrap";
 import { useParams } from "react-router";
 import { VideoInfo } from "../models/VideoInfo";
 import './VideoPage.css';
@@ -18,6 +19,10 @@ async function getVideoInfo(id: string): Promise<VideoInfo> {
   const response = await fetch("/api/catalog/" + id)
     .then(r => r.json());
   return response;
+}
+
+async function deleteVideo(id: string): Promise<void> {
+  await fetch("/api/catalog/" + id, { method: "DELETE" });
 }
 
 const VideoPage = () => {
@@ -39,20 +44,20 @@ const VideoPage = () => {
     return;
   }, [id]);
 
-  const updateQuality = (newQuality: number) => {
-    if (newQuality === 0) {
-      hls.currentLevel = -1; //Enable AUTO quality if option.value = 0
-    } else {
-      hls.levels.forEach((level, levelIndex) => {
-        if (level.height === newQuality) {
-          console.log("Found quality match with " + newQuality);
-          hls.currentLevel = levelIndex;
-        }
-      });
-    }
-  };
-
   useEffect(() => {
+
+    const updateQuality = (newQuality: number) => {
+      if (newQuality === 0) {
+        hls.currentLevel = -1; //Enable AUTO quality if option.value = 0
+      } else {
+        hls.levels.forEach((level, levelIndex) => {
+          if (level.height === newQuality) {
+            console.log("Found quality match with " + newQuality);
+            hls.currentLevel = levelIndex;
+          }
+        });
+      }
+    };
     
     // For more options see: https://github.com/sampotts/plyr/#options
     // captions.update is required for captions to work with hls.js
@@ -102,7 +107,7 @@ const VideoPage = () => {
     }
     return () => {
     };
-  }, [video, source, hls, updateQuality]);
+  }, [video, source, hls]);
 
   return (
     <div className="container">
@@ -110,6 +115,7 @@ const VideoPage = () => {
         <h1>{videoInfo?.name}</h1>
         <p>Status: {videoInfo?.status}</p>
         <div>Description: {videoInfo?.description}</div>
+        <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
       </div>
       Try adjust different video quality to see it yourself
       <video className="plyr" ref={video} controls crossOrigin="true" playsInline >

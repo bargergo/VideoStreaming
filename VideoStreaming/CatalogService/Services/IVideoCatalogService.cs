@@ -9,5 +9,6 @@ namespace CatalogService.Services
         Task<List<Video>> GetVideos();
         Task<Video> CreateVideo(Video param);
         Task<Video> GetVideo(string id);
+        Task DeleteVideo(string id);
     }
 }

@@ -43,6 +43,13 @@ namespace CatalogService.Controllers
             return video;
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteVideo(string id)
+        {
+            await _catalogService.DeleteVideo(id);
+            return NoContent();
+        }
+
         [HttpGet("{fileId}/{fileName}")]
         public async Task<IActionResult> GetHlsFiles(string fileId, string fileName)
         {
