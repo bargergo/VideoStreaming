@@ -44,8 +44,13 @@ namespace CatalogService.Controllers
         }
 
         [HttpGet("{fileId}/{fileName}")]
-        public IActionResult GetHlsFiles(string fileId, string fileName)
+        public async Task<IActionResult> GetHlsFiles(string fileId, string fileName)
         {
+            var video = await _catalogService.GetVideo(fileId);
+            if (video == null)
+            {
+                return NotFound();
+            }
             var pathToFile = Path.Combine(_fileStorageSettings.Path, "hls", fileId, fileName);
 
             var supportedExtensions = new List<string>
