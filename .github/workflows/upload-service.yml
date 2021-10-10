@@ -1,0 +1,41 @@
+name: UploadService
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'VideoStreaming/CatalogService/**'
+      - 'VideoStreaming/ConvertService/**'
+      - 'webclient/**'
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - 'VideoStreaming/CatalogService/**'
+      - 'VideoStreaming/ConvertService/**'
+      - 'webclient/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.nuget/packages
+          !~/.nuget/packages/unwanted
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    - name: Restore dependencies
+      run: cd VideoStreaming/UploadService && dotnet restore
+    - name: Build
+      run: cd VideoStreaming/UploadService && dotnet build --configuration Release --no-restore
+    - name: Test
+      run: cd VideoStreaming/UploadService && dotnet test --no-build --verbosity normal
