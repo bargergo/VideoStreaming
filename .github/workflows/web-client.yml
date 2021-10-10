@@ -1,0 +1,33 @@
+name: Webclient
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - 'VideoStreaming/**'
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - 'VideoStreaming/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Install Dependencies
+        run: cd webclient && npm ci
+
+      - name: Build
+        run: cd webclient && npm build
+      - name: Test
+        run: cd webclient && npm test
