@@ -1,7 +1,10 @@
 using CatalogService.Database;
+using CatalogService.MessageQueue;
 using CatalogService.Middlewares;
 using CatalogService.Models;
 using CatalogService.Services;
+using MassTransit;
+using MessageQueueDTOs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using System;
 
 namespace CatalogService
 {
@@ -31,6 +35,28 @@ namespace CatalogService
                 sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
             services.AddDbContext<CatalogDbContext>(o =>
                 o.UseSqlServer(Configuration.GetConnectionString("CatalogDb"), options => options.EnableRetryOnFailure()));
+
+            services.AddMassTransit(x =>
+            {
+                var config = Configuration.GetSection(nameof(MessageQueueSettings)).Get<MessageQueueSettings>();
+                x.AddConsumer<VideoConvertedEventHandler>();
+                x.AddBus(context =>
+                    Bus.Factory.CreateUsingRabbitMq(cfg =>
+                    {
+                        cfg.Host(new Uri($"rabbitmq://{config.Hostname}:/"),
+                            hostConfig =>
+                            {
+                                hostConfig.Username(config.Username);
+                                hostConfig.Password(config.Password);
+                            });
+                        cfg.ReceiveEndpoint("VideoConverted", ep =>
+                        {
+                            ep.ConfigureConsumer<VideoConvertedEventHandler>(context);
+                        });
+                    })
+                );
+                EndpointConvention.Map<IVideoConvertedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoConverted"));
+            });
 
             services.AddTransient<IVideoCatalogService, VideoCatalogService>();
 

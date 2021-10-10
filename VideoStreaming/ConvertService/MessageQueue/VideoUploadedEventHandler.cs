@@ -23,7 +23,7 @@ namespace ConvertService.MessageQueue
         public async Task Consume(ConsumeContext<IVideoUploadedEvent> context)
         {
             _logger.LogInformation($"Consumed IVideoUploadedEvent: {JsonSerializer.Serialize(context)}");
-            await _converterService.ConvertToHls(context.Message.FileId);
+            //await _converterService.ConvertToHls(context.Message.FileId);
             await _messageQueue.Publish<IVideoConvertedEvent>(new VideoConvertedEvent
             {
                 FileId = context.Message.FileId,

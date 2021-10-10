@@ -69,6 +69,7 @@ services:
       MessageQueueSettings__Hostname: videostreaming-messagequeue
       MessageQueueSettings__Username: guest
       MessageQueueSettings__Password: guest
+      ConnectionStrings__CatalogDb: "Server=catalog-db;Database=master;User=sa;Password=Your_password123;"
     ports: 
       - "5003:80"
     volumes:
@@ -78,7 +79,19 @@ services:
       - "traefik.http.routers.catalog-service.rule=PathPrefix(`/api/catalog`)"
       - "traefik.http.routers.catalog-service.entrypoints=web"
     depends_on:
+      - catalog-db
       - videostreaming-messagequeue
+      
+  catalog-db:
+    image: "mcr.microsoft.com/mssql/server:2019-CU13-ubuntu-20.04"
+    container_name: catalog-db
+    environment:
+        SA_PASSWORD: "Your_password123"
+        ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-server-data:/var/opt/mssql
       
   webclient:
     build:
@@ -92,6 +105,7 @@ services:
       - "traefik.http.routers.webclient.entrypoints=web"
     
 volumes:
+  mssql-server-data:
   tusfiles:
     driver: local
     driver_opts:

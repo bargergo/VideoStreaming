@@ -1,6 +1,6 @@
 ﻿namespace MessageQueueDTOs
 {
-    public class IVideoConvertedEvent
+    public interface IVideoConvertedEvent
     {
         string FileId { get; }
         string Name { get; }

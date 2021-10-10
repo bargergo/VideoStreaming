@@ -32,12 +32,12 @@ namespace CatalogService.Controllers
             return videos;
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public async Task<ActionResult<Video>> CreateVideo(CreateVideoParam param)
         {
             var video = await _catalogService.CreateVideo(param);
             return video;
-        }
+        }*/
 
         [HttpGet("{fileId}/{fileName}")]
         public IActionResult GetHlsFiles(string fileId, string fileName)

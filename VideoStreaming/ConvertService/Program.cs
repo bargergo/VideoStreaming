@@ -1,9 +1,9 @@
 using MassTransit;
-using MassTransit.Util;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace ConvertService
 {
@@ -18,8 +18,16 @@ namespace ConvertService
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
                 var bus = scope.ServiceProvider.GetRequiredService<IBusControl>();
                 var lifetime = scope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
-                var busHandle = TaskUtil.Await(() => bus.StartAsync());
-                lifetime.ApplicationStopping.Register(() => busHandle.Stop());
+                try
+                {
+                    bus.Start();
+                }
+                catch (Exception e)
+                {
+                    logger.LogInformation($"Waiting for messagequeue... cause:{e.Message}");
+                    System.Threading.Thread.Sleep(1000);
+                }
+                lifetime.ApplicationStopping.Register(() => bus.Stop());
             }
             webHost.Run();
         }
