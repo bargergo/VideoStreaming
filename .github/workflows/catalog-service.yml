@@ -34,8 +34,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     - name: Restore dependencies
-      run: cd VideoStreaming/CatalogService && dotnet restore
+      run: dotnet restore
+      working-directory: ./VideoStreaming/CatalogService
     - name: Build
-      run: cd VideoStreaming/CatalogService && dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
+      working-directory: ./VideoStreaming/CatalogService
     - name: Test
-      run: cd VideoStreaming/CatalogService && dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal
+      working-directory: ./VideoStreaming/CatalogService
