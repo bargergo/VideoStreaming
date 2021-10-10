@@ -18,7 +18,7 @@ const VideoPage = () => {
 
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
-  const source = `/api/files/${id}/playlist.m3u8`;
+  const source = `/api/catalog/${id}/playlist.m3u8`;
 
   const updateQuality = (newQuality: number) => {
     if (newQuality === 0) {

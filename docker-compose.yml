@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   apigateway:
-    image: traefik:v2.2
+    image: traefik:v2.5.3
     command:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
@@ -26,8 +26,8 @@ services:
 
   upload-service:
     build:
-      context: VideoUploadService
-      dockerfile: VideoUploadService/Dockerfile
+      context: VideoStreaming
+      dockerfile: UploadService/Dockerfile
     environment:
       FileStorageSettings__DiskStorePath: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
@@ -46,7 +46,7 @@ services:
       
   convert-service:
     build:
-      context: ConvertService
+      context: VideoStreaming
       dockerfile: ConvertService/Dockerfile
     environment:
       FileStorageSettings__Path: /data
@@ -60,10 +60,10 @@ services:
     depends_on:
       - videostreaming-messagequeue
       
-  catalogs-service:
+  catalog-service:
     build:
-      context: CatalogsService
-      dockerfile: CatalogsService/Dockerfile
+      context: VideoStreaming
+      dockerfile: CatalogService/Dockerfile
     environment:
       FileStorageSettings__Path: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
@@ -75,8 +75,8 @@ services:
       - tusfiles:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.catalogs-service.rule=PathPrefix(`/api/catalog`)"
-      - "traefik.http.routers.catalogs-service.entrypoints=web"
+      - "traefik.http.routers.catalog-service.rule=PathPrefix(`/api/catalog`)"
+      - "traefik.http.routers.catalog-service.entrypoints=web"
     depends_on:
       - videostreaming-messagequeue
       
