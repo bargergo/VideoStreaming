@@ -3,7 +3,8 @@ import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
-import { useParams } from "react-router";
+import { useHistory, useParams, useRouteMatch } from "react-router-dom";
+import { deleteVideo, fetchVideoInfo } from "../misc/api-calls";
 import { VideoInfo } from "../models/VideoInfo";
 import './VideoPage.css';
 
@@ -15,16 +16,6 @@ type VideoParams = {
 //const source = "bourne/playlist.m3u8";
 //const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
 
-async function getVideoInfo(id: string): Promise<VideoInfo> {
-  const response = await fetch("/api/catalog/" + id)
-    .then(r => r.json());
-  return response;
-}
-
-async function deleteVideo(id: string): Promise<void> {
-  await fetch("/api/catalog/" + id, { method: "DELETE" });
-}
-
 const VideoPage = () => {
 
   const [hls] = useState<Hls>(new Hls());
@@ -32,9 +23,15 @@ const VideoPage = () => {
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/${id}/playlist.m3u8`;
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+  const history = useHistory();
+  const match = useRouteMatch();
+
+  const goToEdit = () => {
+    history.push(match.url + '/edit');
+  };
 
   useEffect(() => {
-    getVideoInfo(id)
+    fetchVideoInfo(id)
       .then(result => {
         setVideoInfo(result);
       })
@@ -114,8 +111,11 @@ const VideoPage = () => {
       <div>
         <h1>{videoInfo?.name}</h1>
         <p>Status: {videoInfo?.status}</p>
-        <div>Description: {videoInfo?.description}</div>
-        <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
+        <div className="mb-2">Description: {videoInfo?.description}</div>
+        <div className="mb-2">
+          <Button variant="outline-primary" onClick={() => goToEdit()} >Edit</Button>{' '}
+          <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
+        </div>
       </div>
       Try adjust different video quality to see it yourself
       <video className="plyr" ref={video} controls crossOrigin="true" playsInline >

@@ -1,4 +1,5 @@
 ﻿using CatalogService.Database.Entities;
+using CatalogService.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -10,5 +11,6 @@ namespace CatalogService.Services
         Task<Video> CreateVideo(Video param);
         Task<Video> GetVideo(string id);
         Task DeleteVideo(string id);
+        Task UpdateVideo(string id, UpdateVideoParam param);
     }
 }

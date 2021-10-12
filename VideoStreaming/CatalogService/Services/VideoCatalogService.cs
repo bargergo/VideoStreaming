@@ -1,5 +1,6 @@
 ﻿using CatalogService.Database;
 using CatalogService.Database.Entities;
+using CatalogService.DTOs;
 using CatalogService.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -53,6 +54,14 @@ namespace CatalogService.Services
         {
             var videos = await _catalogDb.Videos.ToListAsync();
             return videos;
+        }
+
+        public async Task UpdateVideo(string id, UpdateVideoParam param)
+        {
+            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
+            video.Name = param.Title;
+            video.Description = param.Description;
+            await _catalogDb.SaveChangesAsync();
         }
     }
 }

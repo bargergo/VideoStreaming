@@ -4,6 +4,7 @@ import { Route, Switch } from "react-router";
 import Home from "./components/Home";
 import Navs from "./components/Navs";
 import UploadPage from "./components/UploadPage";
+import VideoEditPage from "./components/VideoEditPage";
 import VideoPage from "./components/VideoPage";
 import VideosPage from "./components/VideosPage";
 
@@ -19,7 +20,11 @@ const App = () => {
           <Home />
         </Route>
 
-        <Route exact path="/videos/:id">
+        <Route exact path="/videos/:id/edit">
+          <VideoEditPage />
+        </Route>
+
+        <Route path="/videos/:id">
           <VideoPage />
         </Route>
 

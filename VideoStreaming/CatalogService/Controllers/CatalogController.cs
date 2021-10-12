@@ -43,6 +43,18 @@ namespace CatalogService.Controllers
             return video;
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateVideo(string id, UpdateVideoParam param)
+        {
+            var video = await _catalogService.GetVideo(id);
+            if (video == null)
+            {
+                return NotFound();
+            }
+            await _catalogService.UpdateVideo(id, param);
+            return Ok();
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(string id)
         {
