@@ -24,6 +24,21 @@ const VideoPage = () => {
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const history = useHistory();
   const match = useRouteMatch();
+  const plyr = useRef<Plyr | null>(null);
+
+  const seek = () => {
+    const plyrRef = plyr.current;
+    if (plyrRef != null) {
+      plyrRef.currentTime = 5;
+    }
+  };
+
+  const logTime = () => {
+    const plyrRef = plyr.current;
+    if (plyrRef != null) {
+      console.log(plyrRef.currentTime);
+    }
+  };
 
   const goToEdit = () => {
     history.push(match.url + '/edit');
@@ -43,7 +58,6 @@ const VideoPage = () => {
   useEffect(() => {
 
     const hls = new Hls();
-    let plyr: Plyr | null = null;
 
     const updateQuality = (newQuality: number) => {
       if (newQuality === 0) {
@@ -86,7 +100,7 @@ const VideoPage = () => {
             forced: true,        
             onChange: (e) => updateQuality(e),
           }
-          plyr = new Plyr(video.current!!, defaultOptions);
+          plyr.current = new Plyr(video.current!!, defaultOptions);
           hls.attachMedia(video.current!!);
         });
 
@@ -105,7 +119,7 @@ const VideoPage = () => {
       }
     }
     return () => {
-      plyr.destroy();
+      plyr.current.destroy();
       hls.destroy();
     };
   }, [video, source]);
@@ -119,7 +133,9 @@ const VideoPage = () => {
         <div className="mb-2">Description: {videoInfo?.description}</div>
         <div className="mb-2">
           <Button variant="outline-primary" onClick={() => goToEdit()} >Edit</Button>{' '}
-          <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
+          <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>{' '}
+          <Button variant="primary" onClick={() => seek()}>Seek</Button>{' '}
+          <Button variant="primary" onClick={() => logTime()}>Log time</Button>
         </div>
       </div>
     </div>
