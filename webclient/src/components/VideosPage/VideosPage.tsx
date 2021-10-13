@@ -39,9 +39,8 @@ const VideosPage = () => {
         {videos.length === 0
           ? (<p>No videos found</p>)
           : videos.map(video => 
-            <div className="col-4 mb-4">
+            <div className="col-4 mb-4" key={video.id}>
               <VideoListElement
-                key={video.id}
                 title={video.name}
                 description={video.description} 
                 url={`${match.url}/${video.fileId}`} />
