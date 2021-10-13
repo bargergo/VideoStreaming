@@ -108,8 +108,9 @@ const VideoPage = () => {
 
   return (
     <div className="container">
-      <div>
-        <h1>{videoInfo?.name}</h1>
+      <h1 className="mb-4">{videoInfo?.name}</h1>
+      <video className="plyr" ref={video} controls crossOrigin="true" playsInline />
+      <div className="mt-4">
         <p>Status: {videoInfo?.status}</p>
         <div className="mb-2">Description: {videoInfo?.description}</div>
         <div className="mb-2">
@@ -117,9 +118,6 @@ const VideoPage = () => {
           <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
         </div>
       </div>
-      Try adjust different video quality to see it yourself
-      <video className="plyr" ref={video} controls crossOrigin="true" playsInline >
-      </video>
     </div>
   );
 };
