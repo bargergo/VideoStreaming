@@ -18,7 +18,6 @@ type VideoParams = {
 
 const VideoPage = () => {
 
-  const [hls] = useState<Hls>(new Hls());
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/${id}/playlist.m3u8`;
@@ -42,6 +41,9 @@ const VideoPage = () => {
   }, [id]);
 
   useEffect(() => {
+
+    const hls = new Hls();
+    let plyr: Plyr | null = null;
 
     const updateQuality = (newQuality: number) => {
       if (newQuality === 0) {
@@ -84,7 +86,7 @@ const VideoPage = () => {
             forced: true,        
             onChange: (e) => updateQuality(e),
           }
-          new Plyr(video.current!!, defaultOptions);
+          plyr = new Plyr(video.current!!, defaultOptions);
           hls.attachMedia(video.current!!);
         });
 
@@ -103,8 +105,10 @@ const VideoPage = () => {
       }
     }
     return () => {
+      plyr.destroy();
+      hls.destroy();
     };
-  }, [video, source, hls]);
+  }, [video, source]);
 
   return (
     <div className="container">
