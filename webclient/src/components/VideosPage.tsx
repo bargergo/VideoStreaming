@@ -1,37 +1,56 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useRouteMatch } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useRouteMatch } from 'react-router-dom';
+import { getVideoInfos, searchVideos } from '../misc/api-calls';
 import { VideoInfo } from '../models/VideoInfo';
-
-async function getVideoInfos(): Promise<VideoInfo[]> {
-  const response = await fetch("/api/catalog")
-    .then(r => r.json());
-  return response;
-}
+import SearchForm from './SearchForm';
+import VideoListElement from './VideoListElement';
 
 const VideosPage = () => {
 
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const match = useRouteMatch();
 
-  useEffect(() => {
+  const search = async (searchText: string) => {
+    const result = await searchVideos({searchText: searchText});
+    setVideos(result);
+  };
+
+  const showAll = () => {
     getVideoInfos()
-      .then(results => {
-        setVideos(results);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    .then(results => {
+      setVideos(results);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  };
+
+  useEffect(() => {
+    showAll();
     return;
   }, []);
 
   return (
-    <div>
-      This is Videos Page!
-      <ul>
-        {videos.map(video => <li key={video.id}><Link to={`${match.url}/${video.fileId}`}>{video.name}</Link></li>)}
-      </ul>
+    <div className="container">
+      <div>
+        <SearchForm onSearch={(text) => search(text)} onShowAll={showAll}/>
+      </div>
+      <div className="row">
+        {videos.length === 0
+          ? (<p>No videos found</p>)
+          : videos.map(video => 
+            <div className="col-4 mb-4">
+              <VideoListElement
+                key={video.id}
+                title={video.name}
+                description={video.description} 
+                url={`${match.url}/${video.fileId}`} />
+            </div>
+          )}
+      </div>
     </div>
   )
 }
 
-export default VideosPage
+export default VideosPage;
+

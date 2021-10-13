@@ -55,6 +55,12 @@ namespace CatalogService.Controllers
             return Ok();
         }
 
+        [HttpPost("search")]
+        public async Task<ActionResult<List<Video>>> SearchVideos(SearchVideoParam param)
+        {
+            return await _catalogService.Search(param);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(string id)
         {

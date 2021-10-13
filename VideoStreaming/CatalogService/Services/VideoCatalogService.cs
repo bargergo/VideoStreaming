@@ -5,6 +5,7 @@ using CatalogService.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CatalogService.Services
@@ -56,6 +57,12 @@ namespace CatalogService.Services
         public async Task<List<Video>> GetVideos()
         {
             var videos = await _catalogDb.Videos.ToListAsync();
+            return videos;
+        }
+
+        public async Task<List<Video>> Search(SearchVideoParam param)
+        {
+            var videos = await _catalogDb.Videos.Where(v => v.Name.Contains(param.SearchText)).ToListAsync();
             return videos;
         }
 
