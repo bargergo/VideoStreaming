@@ -16,11 +16,12 @@ const App = () => {
 
       <Container>
       <Switch>
+
         <Route exact path="/">
           <Home />
         </Route>
 
-        <Route exact path="/videos/:id/edit">
+        <Route path="/videos/:id/edit">
           <VideoEditPage />
         </Route>
 
@@ -28,19 +29,13 @@ const App = () => {
           <VideoPage />
         </Route>
 
-        <Route exact path="/videos">
+        <Route path="/videos">
           <VideosPage />
         </Route>
 
-        <Route exact path="/upload">
+        <Route path="/upload">
           <UploadPage />
         </Route>
-
-        {/* redirect to make file download from backend work */}
-        <Route exact path="/api/files/:id" component={() => { 
-          window.location.href = window.location.href + "#"; 
-          return null;
-        }}/>
 
         <Route>
           <div>

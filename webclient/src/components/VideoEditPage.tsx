@@ -16,13 +16,14 @@ const VideoEditPage = () => {
   const [enteredTitle, setEnteredTitle] = useState('');
   const [enteredDescription, setEnteredDescription] = useState('');
 
-  const goToBack = () => {
-    history.push('.');
+  const goBack = () => {
+    history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')));
   };
 
   const submit = async (event: any) => {
     event.preventDefault();
     await updateVideo(id, {title: enteredTitle, description: enteredDescription});
+    goBack();
   };
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const VideoEditPage = () => {
   }, [id]);
 
   return (<div>
-    <Form>
+    <Form onSubmit={submit}>
       <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
         <Form.Label>Title</Form.Label>
         <Form.Control type="text" onChange={(event) => setEnteredTitle(event.target.value)} value={enteredTitle} />
@@ -47,8 +48,8 @@ const VideoEditPage = () => {
         <Form.Label>Description</Form.Label>
         <Form.Control as="textarea" rows={3} onChange={(event) => setEnteredDescription(event.target.value)} value={enteredDescription} />
       </Form.Group>
-      <Button variant="outline-primary" onClick={() => goToBack()} >Cancel</Button>{' '}
-      <Button type="submit" variant="primary" onClick={submit}>Submit</Button>
+      <Button type="button" variant="outline-primary" onClick={goBack} >Cancel</Button>{' '}
+      <Button type="submit" variant="primary">Submit</Button>
     </Form>
     </div>);
 }
