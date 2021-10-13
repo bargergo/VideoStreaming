@@ -4,8 +4,8 @@ import 'plyr/dist/plyr.css';
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
-import { deleteVideo, fetchVideoInfo } from "../misc/api-calls";
-import { VideoInfo } from "../models/VideoInfo";
+import { deleteVideo, fetchVideoInfo } from "../../misc/api-calls";
+import { VideoInfo } from "../../models/VideoInfo";
 import './VideoPage.css';
 
 type VideoParams = {

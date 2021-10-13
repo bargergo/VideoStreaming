@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { getVideoInfos, searchVideos } from '../misc/api-calls';
-import { VideoInfo } from '../models/VideoInfo';
+import { getVideoInfos, searchVideos } from '../../misc/api-calls';
+import { VideoInfo } from '../../models/VideoInfo';
 import SearchForm from './SearchForm';
 import VideoListElement from './VideoListElement';
 

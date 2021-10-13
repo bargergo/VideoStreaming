@@ -1,12 +1,12 @@
 import React from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router";
-import Home from "./components/Home";
-import Navs from "./components/Navs";
-import UploadPage from "./components/UploadPage";
-import VideoEditPage from "./components/VideoEditPage";
-import VideoPage from "./components/VideoPage";
-import VideosPage from "./components/VideosPage";
+import Home from "./components/Home/Home";
+import Navs from "./components/Navigation/Navs";
+import UploadPage from "./components/UploadPage/UploadPage";
+import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
+import VideoPage from "./components/VideoPage/VideoPage";
+import VideosPage from "./components/VideosPage/VideosPage";
 
 const App = () => {
 
