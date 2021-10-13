@@ -39,7 +39,10 @@ namespace CatalogService.Services
                     file.Delete();
                 }
                 var hlsDir = new DirectoryInfo(Path.Combine(_fileStorageSettings.Path, "hls", id));
-                hlsDir.Delete(true);
+                if (hlsDir.Exists)
+                {
+                    hlsDir.Delete(true);
+                }
                 _catalogDb.Remove(video);
                 await _catalogDb.SaveChangesAsync();
             }
