@@ -4,4 +4,5 @@ export interface VideoInfo {
   name: string;
   description: string;
   status: string;
+  imageFileName: string;
 };

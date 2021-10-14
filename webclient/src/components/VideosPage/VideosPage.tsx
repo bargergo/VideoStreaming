@@ -43,7 +43,8 @@ const VideosPage = () => {
               <VideoListElement
                 title={video.name}
                 description={video.description} 
-                url={`${match.url}/${video.fileId}`} />
+                url={`${match.url}/${video.fileId}`}
+                imageUrl={video.imageFileName ? `api/catalog/${video.fileId}/image` : null} />
             </div>
           )}
       </div>

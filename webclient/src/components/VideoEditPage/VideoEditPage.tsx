@@ -13,8 +13,9 @@ const VideoEditPage = () => {
 
   const { id } = useParams<VideoParams>();
   const history = useHistory();
-  const [enteredTitle, setEnteredTitle] = useState('');
-  const [enteredDescription, setEnteredDescription] = useState('');
+  const [enteredTitle, setEnteredTitle] = useState<string>('');
+  const [enteredDescription, setEnteredDescription] = useState<string>('');
+  const [file, setFile] = useState<File>(null);
 
   const goBack = () => {
     history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')));
@@ -22,8 +23,8 @@ const VideoEditPage = () => {
 
   const submit = async (event: any) => {
     event.preventDefault();
-    await updateVideo(id, {title: enteredTitle, description: enteredDescription});
-    goBack();
+    await updateVideo(id, {title: enteredTitle, description: enteredDescription}, file);
+    //goBack();
   };
 
   useEffect(() => {
@@ -47,6 +48,10 @@ const VideoEditPage = () => {
       <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
         <Form.Label>Description</Form.Label>
         <Form.Control as="textarea" rows={3} onChange={(event) => setEnteredDescription(event.target.value)} value={enteredDescription} />
+      </Form.Group>
+      <Form.Group controlId="formFile" className="mb-3">
+        <Form.Label>Default file input example</Form.Label>
+        <Form.Control type="file" onChange={(event) => setFile((event.target as HTMLInputElement).files[0])}/>
       </Form.Group>
       <Button type="button" variant="outline-primary" onClick={goBack} >Cancel</Button>{' '}
       <Button type="submit" variant="primary">Submit</Button>

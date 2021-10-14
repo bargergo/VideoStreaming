@@ -2,8 +2,10 @@
 using CatalogService.DTOs;
 using CatalogService.Models;
 using CatalogService.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -43,15 +45,23 @@ namespace CatalogService.Controllers
             return video;
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateVideo(string id, UpdateVideoParam param)
+        [HttpGet("{id}/image")]
+        public async Task<FileStreamResult> GetImage(string id)
         {
+            var imageHolder = await _catalogService.GetImage(id);
+            return File(imageHolder?.Data, "image/jpeg", imageHolder?.Filename);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateVideo(string id, [FromForm] IFormFile file, [FromForm] string jsonString)
+        {
+            UpdateVideoParam param = JsonConvert.DeserializeObject<UpdateVideoParam>(jsonString);
             var video = await _catalogService.GetVideo(id);
             if (video == null)
             {
                 return NotFound();
             }
-            await _catalogService.UpdateVideo(id, param);
+            await _catalogService.UpdateVideo(id, param, file);
             return Ok();
         }
 

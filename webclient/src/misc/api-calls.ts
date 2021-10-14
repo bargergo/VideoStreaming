@@ -16,14 +16,17 @@ export async function deleteVideo(id: string): Promise<void> {
   await fetch("/api/catalog/" + id, { method: "DELETE" });
 }
 
-export async function updateVideo(id: string, data: {title?: string, description?: string}): Promise<void> {
+export async function updateVideo(id: string, data: {title?: string, description?: string}, file: File): Promise<void> {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('jsonString', JSON.stringify(data));
   await fetch("/api/catalog/" + id, 
   {
     method: "PUT",
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(data) 
+    /*headers: {
+      'Content-Type': 'multipart/form-data; boundary=something'
+    },*/
+    body: formData/*JSON.stringify(data) */
   });
 }
 

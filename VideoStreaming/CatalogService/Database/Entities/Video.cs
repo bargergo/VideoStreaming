@@ -11,5 +11,7 @@ namespace CatalogService.Database.Entities
 
         [Column(TypeName = "nvarchar(24)")]
         public Status Status { get; set; }
+
+        public string ImageFileName { get; set; }
     }
 }
