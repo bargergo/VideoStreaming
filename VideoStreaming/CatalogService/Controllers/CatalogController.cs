@@ -49,12 +49,22 @@ namespace CatalogService.Controllers
         public async Task<FileStreamResult> GetImage(string id)
         {
             var imageHolder = await _catalogService.GetImage(id);
-            return File(imageHolder?.Data, "image/jpeg", imageHolder?.Filename);
+            return File(imageHolder?.Data, "image/jpeg", "image.jpg");
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVideo(string id, [FromForm] IFormFile file, [FromForm] string jsonString)
         {
+            var allowedContentTypes = new List<string> { "image/jpeg" };
+            var allowedExtensions = new List<string> { "jpg" };
+            if (file != null)
+            {
+                var splittedFilename = file.FileName.Split(".");
+                if (!allowedContentTypes.Contains(file.ContentType) || !allowedExtensions.Contains(splittedFilename[splittedFilename.Length - 1]))
+                {
+                    return BadRequest();
+                }
+            }
             UpdateVideoParam param = JsonConvert.DeserializeObject<UpdateVideoParam>(jsonString);
             var video = await _catalogService.GetVideo(id);
             if (video == null)
