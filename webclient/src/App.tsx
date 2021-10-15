@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router";
 import Home from "./components/Home/Home";
+import MyListPage from "./components/MyListPage/MyListPage";
 import Navs from "./components/Navigation/Navs";
 import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
@@ -35,6 +36,10 @@ const App = () => {
 
         <Route path="/upload">
           <UploadPage />
+        </Route>
+
+        <Route path="/my-list">
+          <MyListPage />
         </Route>
 
         <Route>

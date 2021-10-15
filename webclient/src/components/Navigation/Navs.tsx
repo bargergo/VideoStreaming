@@ -5,7 +5,8 @@ import { Link, NavLink } from 'react-router-dom';
 const LINKS = [
   {to: '/', text: 'Home'},
   {to: '/videos', text: 'Videos'},
-  {to: '/upload', text: 'Upload'}
+  {to: '/upload', text: 'Upload'},
+  {to: '/my-list', text: 'My List'}
 ];
 
 const Navs = () => {

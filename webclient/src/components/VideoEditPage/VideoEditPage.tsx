@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { useHistory, useParams } from "react-router-dom";
 import { fetchVideoInfo, updateVideo } from "../../misc/api-calls";
 import { VideoInfo } from "../../models/VideoInfo";

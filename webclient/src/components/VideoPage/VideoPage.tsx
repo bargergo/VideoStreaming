@@ -44,6 +44,10 @@ const VideoPage = () => {
     history.push(match.url + '/edit');
   };
 
+  const addToList = () => {
+    console.log('addToList');
+  }
+
   useEffect(() => {
     fetchVideoInfo(id)
       .then(result => {
@@ -119,8 +123,12 @@ const VideoPage = () => {
       }
     }
     return () => {
-      plyr.current.destroy();
-      hls.destroy();
+      if (plyr.current != null) {
+        plyr.current.destroy();
+      }
+      if (hls != null) {
+        hls.destroy();
+      }
     };
   }, [video, source]);
 
@@ -135,7 +143,8 @@ const VideoPage = () => {
           <Button variant="outline-primary" onClick={() => goToEdit()} >Edit</Button>{' '}
           <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>{' '}
           <Button variant="primary" onClick={() => seek()}>Seek</Button>{' '}
-          <Button variant="primary" onClick={() => logTime()}>Log time</Button>
+          <Button variant="primary" onClick={() => logTime()}>Log time</Button>{' '}
+          <Button variant="outline-primary" onClick={addToList}>Add to list</Button>
         </div>
       </div>
     </div>
