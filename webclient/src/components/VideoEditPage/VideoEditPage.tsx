@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useHistory, useParams } from "react-router-dom";
 import { fetchVideoInfo, updateVideo } from "../../misc/api-calls";
-import { VideoInfo } from "../../models/VideoInfo";
+import { GetVideoResult } from "../../models/GetVideoResult";
 import './VideoEditPage.css';
 
 type VideoParams = {
@@ -39,7 +39,7 @@ const VideoEditPage = () => {
 
   useEffect(() => {
     fetchVideoInfo(id)
-      .then((result: VideoInfo) => {
+      .then((result: GetVideoResult) => {
         setEnteredTitle(result.name);
         setEnteredDescription(result.description || '');
         setImageUrl(result.imageFileName != null ? `/api/catalog/${result.fileId}/image` : null);

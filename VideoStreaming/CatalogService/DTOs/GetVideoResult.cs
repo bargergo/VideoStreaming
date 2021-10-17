@@ -1,20 +1,20 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using CatalogService.Database.Entities;
+using System;
 
-namespace CatalogService.Database.Entities
+namespace CatalogService.DTOs
 {
-    public class Video
+    public class GetVideoResult
     {
         public int Id { get; set; }
         public string FileId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
-        [Column(TypeName = "nvarchar(24)")]
         public Status Status { get; set; }
 
         public string ImageFileName { get; set; }
 
         public DateTime UploadedAt { get; set; }
+        public float? Progress { get; set; }
     }
 }

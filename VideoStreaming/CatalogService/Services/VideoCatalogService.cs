@@ -4,6 +4,7 @@ using CatalogService.DTOs;
 using CatalogService.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +25,13 @@ namespace CatalogService.Services
 
         public async Task<Video> CreateVideo(Video param)
         {
-            await _catalogDb.Videos.AddAsync(param);
+            await _catalogDb.Videos.AddAsync(new Video
+            {
+                FileId = param.FileId,
+                Name = param.Name,
+                Status = param.Status,
+                UploadedAt = DateTime.Now
+            });
             await _catalogDb.SaveChangesAsync();
             return param;
         }
@@ -85,13 +92,59 @@ namespace CatalogService.Services
 
         public async Task<Video> GetVideo(string id)
         {
-            return await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
+            return await _catalogDb.Videos
+                .FirstOrDefaultAsync(v => v.FileId == id);
+        }
+
+        public async Task<GetVideoResult> GetVideoWithProgress(string id, HeaderParams headerParams)
+        {
+            var videoWithProgress = await _catalogDb.UserVideoProgresses
+                .Where(uvp => uvp.UserId == headerParams.UserId && uvp.Video.FileId == id)
+                .Select(uvp => new GetVideoResult
+                {
+                    Id = uvp.Video.Id,
+                    FileId = uvp.Video.FileId,
+                    Name = uvp.Video.Name,
+                    Description = uvp.Video.Description,
+                    Status = uvp.Video.Status,
+                    ImageFileName = uvp.Video.ImageFileName,
+                    UploadedAt = uvp.Video.UploadedAt,
+                    Progress = uvp.Progress
+                })
+                .FirstOrDefaultAsync();
+            if (videoWithProgress != null)
+            {
+                return videoWithProgress;
+            }
+            var video = await _catalogDb.Videos
+                .FirstOrDefaultAsync(v => v.FileId == id);
+            return new GetVideoResult
+            {
+                Id = video.Id,
+                FileId = video.FileId,
+                Name = video.Name,
+                Description = video.Description,
+                Status = video.Status,
+                ImageFileName = video.ImageFileName,
+                UploadedAt = video.UploadedAt,
+                Progress = null
+            };
         }
 
         public async Task<List<Video>> GetVideos()
         {
             var videos = await _catalogDb.Videos.ToListAsync();
             return videos;
+        }
+
+        public async Task<List<Video>> GetVideosForUser(HeaderParams headerParams)
+        {
+            var videos = await _catalogDb.UserVideoLists
+                .Where(uvl => uvl.UserId == headerParams.UserId)
+                .Select(uvl => uvl.Video)
+                .ToListAsync();
+            return videos;
+
         }
 
         public async Task<List<Video>> Search(SearchVideoParam param)
@@ -126,6 +179,34 @@ namespace CatalogService.Services
             }
             video.Name = param.Title;
             video.Description = param.Description;
+            await _catalogDb.SaveChangesAsync();
+        }
+
+        public async Task UpdateProgress(string id, UpdateProgressParam param, HeaderParams headerParams)
+        {
+            var progress = await _catalogDb.UserVideoProgresses
+                .FirstOrDefaultAsync(uvp => uvp.UserId == headerParams.UserId && uvp.Video.FileId == id);
+            if (param.Finished)
+            {
+                if (progress != null)
+                {
+                    _catalogDb.Remove(progress);
+                }
+            } else
+            {
+                if (progress == null)
+                {
+                    var video = await _catalogDb.Videos
+                        .FirstOrDefaultAsync(v => v.FileId == id);
+                    progress = new UserVideoProgress
+                    {
+                        Video = video,
+                        UserId = headerParams.UserId
+                    };
+                    await _catalogDb.AddAsync(progress);
+                }
+                progress.Progress = param.Progress;
+            }
             await _catalogDb.SaveChangesAsync();
         }
     }

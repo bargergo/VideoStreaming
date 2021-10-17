@@ -1,11 +1,11 @@
 import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
-import { deleteVideo, fetchVideoInfo } from "../../misc/api-calls";
-import { VideoInfo } from "../../models/VideoInfo";
+import { deleteVideo, fetchVideoInfo, updateProgress } from "../../misc/api-calls";
+import { GetVideoResult } from "../../models/GetVideoResult";
 import './VideoPage.css';
 
 type VideoParams = {
@@ -16,29 +16,37 @@ type VideoParams = {
 //const source = "bourne/playlist.m3u8";
 //const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
 
+
+
 const VideoPage = () => {
 
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/${id}/playlist.m3u8`;
-  const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
+  const [videoInfo, setVideoInfo] = useState<GetVideoResult | null>(null);
   const history = useHistory();
   const match = useRouteMatch();
   const plyr = useRef<Plyr | null>(null);
+  const updateInterval = useRef<NodeJS.Timeout | null>(null);
+  const [progress, setProgress] = useState<number | null>(null);
 
-  const seek = () => {
+  const seek = (time: number) => {
     const plyrRef = plyr.current;
     if (plyrRef != null) {
-      plyrRef.currentTime = 5;
+      plyrRef.currentTime = time;
     }
   };
 
-  const logTime = () => {
-    const plyrRef = plyr.current;
-    if (plyrRef != null) {
-      console.log(plyrRef.currentTime);
-    }
-  };
+  const saveProgress = useCallback(
+    async () => {
+      const plyrRef = plyr.current;
+      if (plyrRef != null) {
+        const currentTime = plyrRef.currentTime;
+        await updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
+      }
+    },
+    [id],
+  )
 
   const goToEdit = () => {
     history.push(match.url + '/edit');
@@ -52,6 +60,7 @@ const VideoPage = () => {
     fetchVideoInfo(id)
       .then(result => {
         setVideoInfo(result);
+        setProgress(result.progress);
       })
       .catch(err => {
         console.log(err);
@@ -78,7 +87,9 @@ const VideoPage = () => {
     
     // For more options see: https://github.com/sampotts/plyr/#options
     // captions.update is required for captions to work with hls.js
-    const defaultOptions: Plyr.Options = {};
+    const defaultOptions: Plyr.Options = {
+      invertTime: false
+    };
   
     if (video.current) {
 
@@ -105,6 +116,11 @@ const VideoPage = () => {
             onChange: (e) => updateQuality(e),
           }
           plyr.current = new Plyr(video.current!!, defaultOptions);
+          plyr.current.on('play', () => updateInterval.current = setInterval(() => saveProgress(), 5000));
+          plyr.current.on('pause', () => {clearInterval(updateInterval.current); updateInterval.current = null});
+          plyr.current.on('seeked', () => saveProgress());
+          plyr.current.on('ended', () => saveProgress());
+          plyr.current.on('loadeddata', () => { if (progress != null) { seek(progress) }});
           hls.attachMedia(video.current!!);
         });
 
@@ -129,8 +145,12 @@ const VideoPage = () => {
       if (hls != null) {
         hls.destroy();
       }
+      if (updateInterval.current != null) {
+        clearInterval(updateInterval.current);
+        updateInterval.current = null
+      }
     };
-  }, [video, source]);
+  }, [video, source, saveProgress, progress]);
 
   return (
     <div className="container">
@@ -141,10 +161,8 @@ const VideoPage = () => {
         <div className="mb-2">Description: {videoInfo?.description}</div>
         <div className="mb-2">
           <Button variant="outline-primary" onClick={() => goToEdit()} >Edit</Button>{' '}
-          <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>{' '}
-          <Button variant="primary" onClick={() => seek()}>Seek</Button>{' '}
-          <Button variant="primary" onClick={() => logTime()}>Log time</Button>{' '}
-          <Button variant="outline-primary" onClick={addToList}>Add to list</Button>
+          <Button variant="primary" onClick={addToList}>Add to list</Button>{' '}
+          <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
         </div>
       </div>
     </div>

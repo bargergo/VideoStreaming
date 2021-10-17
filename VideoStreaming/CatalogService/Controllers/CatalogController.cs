@@ -34,15 +34,34 @@ namespace CatalogService.Controllers
             return videos;
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Video>> GetVideo(string id)
+        [HttpGet("list")]
+        public async Task<ActionResult<List<Video>>> GetVideosForUser([FromHeader] HeaderParams headerParams)
         {
-            var video = await _catalogService.GetVideo(id);
+            var videos = await _catalogService.GetVideosForUser(headerParams);
+            return videos;
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<GetVideoResult>> GetVideo(string id, [FromHeader] HeaderParams headerParams)
+        {
+            var video = await _catalogService.GetVideoWithProgress(id, headerParams);
             if (video == null)
             {
                 return NotFound();
             }
             return video;
+        }
+
+        [HttpPut("{id}/progress")]
+        public async Task<IActionResult> UpdateProgress(string id, UpdateProgressParam param, [FromHeader] HeaderParams headerParams)
+        {
+            var video = await _catalogService.GetVideoWithProgress(id, headerParams);
+            if (video == null)
+            {
+                return NotFound();
+            }
+            await _catalogService.UpdateProgress(id, param, headerParams);
+            return Ok();
         }
 
         [HttpGet("{id}/image")]
