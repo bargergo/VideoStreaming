@@ -1,6 +1,7 @@
 import { VideoInfo } from "../models/VideoInfo";
 import { GetVideoResult } from "../models/GetVideoResult";
 import { UpdateListParam } from "../models/UpdateListParam";
+import { CheckVideoIdsForUserListParam } from "../models/CheckVideoIdsForUserListParam";
 
 export async function getVideoInfos(): Promise<VideoInfo[]> {
   const response = await fetch("/api/catalog")
@@ -11,6 +12,18 @@ export async function getVideoInfos(): Promise<VideoInfo[]> {
 export async function getVideoInfosForUser(): Promise<VideoInfo[]> {
   const response = await fetch("/api/catalog/list", { headers: { 'userId': '1' } })
     .then(r => r.json());
+  return response;
+}
+
+export async function checkVideoIdsForUserList(data: CheckVideoIdsForUserListParam): Promise<number[]> {
+  const response = await fetch("/api/catalog/list/check", { 
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      'userId': '1'
+    },
+    body: JSON.stringify(data) 
+  }).then(r => r.json());
   return response;
 }
 

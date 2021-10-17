@@ -1,28 +1,63 @@
 import React, { useEffect, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import { getVideoInfos, searchVideos } from '../../misc/api-calls';
-import { VideoInfo } from '../../models/VideoInfo';
-import SearchForm from './SearchForm';
+import { checkVideoIdsForUserList, getVideoInfos, searchVideos } from '../../misc/api-calls';
+import { VideoInfoEx } from '../../models/VideoInfoEx';
 import VideoListElement from '../Shared/VideoListElement/VideoListElement';
+import SearchForm from './SearchForm';
 
 const VideosPage = () => {
 
-  const [videos, setVideos] = useState<VideoInfo[]>([]);
+  const [videos, setVideos] = useState<VideoInfoEx[]>([]);
   const match = useRouteMatch();
+  const [isLoading, setLoading] = useState<boolean>(true);
 
   const search = async (searchText: string) => {
-    const result = await searchVideos({searchText: searchText});
-    setVideos(result);
+    setLoading(true);
+    try {
+      const response = await searchVideos({searchText: searchText});
+      const videosOnList = await checkVideoIdsForUserList({videoIds: response.map(r => r.id)});
+      const result = response.map<VideoInfoEx>(video => ({
+        ...video,
+        addedToList: videosOnList.includes(video.id)
+      }));
+      setVideos(result);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const showAll = () => {
+    setLoading(true);
     getVideoInfos()
-    .then(results => {
-      setVideos(results);
+    .then(async (response) => {
+      const videosOnList = await checkVideoIdsForUserList({videoIds: response.map(r => r.id)});
+      const result = response.map<VideoInfoEx>(video => ({
+        ...video,
+        addedToList: videosOnList.includes(video.id)
+      }));
+      setVideos(result);
     })
     .catch(err => {
       console.log(err);
+      setLoading(false);
     });
+    setLoading(false);
+  };
+
+  const updateMyList = async () => {
+    setLoading(true);
+    try {
+      const videosOnList = await checkVideoIdsForUserList({videoIds: videos.map(r => r.id)});
+      setVideos(prev => {
+        const result = prev.map<VideoInfoEx>(video => ({
+          ...video,
+          addedToList: videosOnList.includes(video.id)
+        }));
+        return result;
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -36,17 +71,26 @@ const VideosPage = () => {
         <SearchForm onSearch={(text) => search(text)} onShowAll={showAll}/>
       </div>
       <div className="row">
-        {videos.length === 0
-          ? (<p>No videos found</p>)
-          : videos.map(video => 
-            <div className="col-4 mb-4" key={video.id}>
-              <VideoListElement
-                title={video.name}
-                description={video.description} 
-                url={`${match.url}/${video.fileId}`}
-                imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} 
-                id={video.id}
-                addedToList={false} /> {/* TODO: kitölteni az igazi értékkel */}
+        {isLoading
+          ? (<div className="container">
+              <div className="d-flex justify-content-center">
+                <div className="spinner-border m-5" role="status">
+                  <span className="sr-only">Loading...</span>
+                </div>
+              </div>
+            </div>)
+          : videos.length === 0
+            ? (<p>No videos found</p>)
+            : videos.map(video => 
+              <div className="col-4 mb-4" key={video.id}>
+                <VideoListElement
+                  title={video.name}
+                  description={video.description} 
+                  url={`${match.url}/${video.fileId}`}
+                  imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} 
+                  id={video.id}
+                  addedToList={video.addedToList}
+                  onListChanged={updateMyList} />
             </div>
           )}
       </div>

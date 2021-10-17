@@ -96,10 +96,10 @@ namespace CatalogService.Services
                 .FirstOrDefaultAsync(v => v.FileId == id);
         }
 
-        public async Task<GetVideoResult> GetVideoWithProgress(string id, HeaderParams headerParams)
+        public async Task<GetVideoResult> GetVideoWithProgress(string id, int userId)
         {
             var videoWithProgress = await _catalogDb.UserVideoProgresses
-                .Where(uvp => uvp.UserId == headerParams.UserId && uvp.Video.FileId == id)
+                .Where(uvp => uvp.UserId == userId && uvp.Video.FileId == id)
                 .Select(uvp => new GetVideoResult
                 {
                     Id = uvp.Video.Id,
@@ -131,16 +131,16 @@ namespace CatalogService.Services
             };
         }
 
-        public async Task<List<Video>> GetVideos()
+        public async Task<List<Video>> GetVideos(int userId)
         {
             var videos = await _catalogDb.Videos.ToListAsync();
             return videos;
         }
 
-        public async Task<List<Video>> GetVideosForUser(HeaderParams headerParams)
+        public async Task<List<Video>> GetVideosForUser(int userId)
         {
             var videos = await _catalogDb.UserVideoLists
-                .Where(uvl => uvl.UserId == headerParams.UserId)
+                .Where(uvl => uvl.UserId == userId)
                 .Select(uvl => uvl.Video)
                 .ToListAsync();
             return videos;
@@ -182,10 +182,10 @@ namespace CatalogService.Services
             await _catalogDb.SaveChangesAsync();
         }
 
-        public async Task UpdateProgress(string id, UpdateProgressParam param, HeaderParams headerParams)
+        public async Task UpdateProgress(string id, UpdateProgressParam param, int userId)
         {
             var progress = await _catalogDb.UserVideoProgresses
-                .FirstOrDefaultAsync(uvp => uvp.UserId == headerParams.UserId && uvp.Video.FileId == id);
+                .FirstOrDefaultAsync(uvp => uvp.UserId == userId && uvp.Video.FileId == id);
             if (param.Finished)
             {
                 if (progress != null)
@@ -201,7 +201,7 @@ namespace CatalogService.Services
                     progress = new UserVideoProgress
                     {
                         Video = video,
-                        UserId = headerParams.UserId
+                        UserId = userId
                     };
                     await _catalogDb.AddAsync(progress);
                 }
@@ -210,7 +210,7 @@ namespace CatalogService.Services
             await _catalogDb.SaveChangesAsync();
         }
 
-        public async Task UpdateList(UpdateListParam param, HeaderParams headerParams)
+        public async Task UpdateList(UpdateListParam param, int userId)
         {
             if (param.VideosToRemove.Count != 0)
             {
@@ -227,7 +227,7 @@ namespace CatalogService.Services
                 var userVideosToAdd = videosToAdd.Select(video => new UserVideoList
                 {
                     Video = video,
-                    UserId = headerParams.UserId
+                    UserId = userId
                 });
                 await _catalogDb.AddRangeAsync(userVideosToAdd);
             }
@@ -235,6 +235,15 @@ namespace CatalogService.Services
             {
                 await _catalogDb.SaveChangesAsync();
             }
+        }
+
+        public async Task<List<int>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, int userId)
+        {
+            var videoIds = await _catalogDb.UserVideoLists
+                .Where(uvl => uvl.UserId == userId && param.VideoIds.Contains(uvl.Video.Id))
+                .Select(uvl => uvl.Video.Id)
+                .ToListAsync();
+            return videoIds;
         }
     }
 }

@@ -37,7 +37,8 @@ const MyListPage = () => {
               url={`${match.url}/${video.fileId}`}
               imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} 
               id={video.id}
-              addedToList={true} />
+              addedToList={true}
+              onListChanged={getMyVideos} />
           </div>
         )}
     </div>

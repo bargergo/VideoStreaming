@@ -28,30 +28,37 @@ namespace CatalogService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Video>>> GetVideos()
+        public async Task<ActionResult<List<Video>>> GetVideos([FromHeader] HeaderParams headerParams)
         {
-            var videos = await _catalogService.GetVideos();
+            var videos = await _catalogService.GetVideos(headerParams.UserId);
+            return videos;
+        }
+
+        [HttpPost("list/check")]
+        public async Task<ActionResult<List<int>>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, [FromHeader] HeaderParams headerParams)
+        {
+            var videos = await _catalogService.CheckVideoIdsForUserList(param, headerParams.UserId);
             return videos;
         }
 
         [HttpGet("list")]
         public async Task<ActionResult<List<Video>>> GetVideosForUser([FromHeader] HeaderParams headerParams)
         {
-            var videos = await _catalogService.GetVideosForUser(headerParams);
+            var videos = await _catalogService.GetVideosForUser(headerParams.UserId);
             return videos;
         }
 
         [HttpPut("list")]
         public async Task<IActionResult> UpdateList(UpdateListParam param, [FromHeader] HeaderParams headerParams)
         {
-            await _catalogService.UpdateList(param, headerParams);
+            await _catalogService.UpdateList(param, headerParams.UserId);
             return Ok();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<GetVideoResult>> GetVideo(string id, [FromHeader] HeaderParams headerParams)
         {
-            var video = await _catalogService.GetVideoWithProgress(id, headerParams);
+            var video = await _catalogService.GetVideoWithProgress(id, headerParams.UserId);
             if (video == null)
             {
                 return NotFound();
@@ -62,12 +69,12 @@ namespace CatalogService.Controllers
         [HttpPut("{id}/progress")]
         public async Task<IActionResult> UpdateProgress(string id, UpdateProgressParam param, [FromHeader] HeaderParams headerParams)
         {
-            var video = await _catalogService.GetVideoWithProgress(id, headerParams);
+            var video = await _catalogService.GetVideoWithProgress(id, headerParams.UserId);
             if (video == null)
             {
                 return NotFound();
             }
-            await _catalogService.UpdateProgress(id, param, headerParams);
+            await _catalogService.UpdateProgress(id, param, headerParams.UserId);
             return Ok();
         }
 
