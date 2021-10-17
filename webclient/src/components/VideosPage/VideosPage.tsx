@@ -9,7 +9,7 @@ const VideosPage = () => {
 
   const [videos, setVideos] = useState<VideoInfoEx[]>([]);
   const match = useRouteMatch();
-  const [isLoading, setLoading] = useState<boolean>(true);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const search = async (searchText: string) => {
     setLoading(true);
@@ -36,12 +36,12 @@ const VideosPage = () => {
         addedToList: videosOnList.includes(video.id)
       }));
       setVideos(result);
+      setLoading(false);
     })
     .catch(err => {
       console.log(err);
       setLoading(false);
     });
-    setLoading(false);
   };
 
   const updateMyList = async () => {
