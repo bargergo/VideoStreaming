@@ -44,7 +44,9 @@ const VideosPage = () => {
                 title={video.name}
                 description={video.description} 
                 url={`${match.url}/${video.fileId}`}
-                imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} />
+                imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} 
+                id={video.id}
+                addedToList={false} /> {/* TODO: kitölteni az igazi értékkel */}
             </div>
           )}
       </div>

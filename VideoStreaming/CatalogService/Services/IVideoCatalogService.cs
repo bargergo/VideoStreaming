@@ -19,5 +19,6 @@ namespace CatalogService.Services
         Task<ImageHolder> GetImage(string id);
         Task<List<Video>> GetVideosForUser(HeaderParams headerParams);
         Task UpdateProgress(string id, UpdateProgressParam param, HeaderParams headerParams);
+        Task UpdateList(UpdateListParam param, HeaderParams headerParams);
     }
 }

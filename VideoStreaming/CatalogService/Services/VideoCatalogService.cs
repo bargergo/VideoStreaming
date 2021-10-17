@@ -209,5 +209,32 @@ namespace CatalogService.Services
             }
             await _catalogDb.SaveChangesAsync();
         }
+
+        public async Task UpdateList(UpdateListParam param, HeaderParams headerParams)
+        {
+            if (param.VideosToRemove.Count != 0)
+            {
+                var videosToRemove = await _catalogDb.UserVideoLists
+                    .Where(uvl => param.VideosToRemove.Contains(uvl.Video.Id))
+                    .ToListAsync();
+                _catalogDb.RemoveRange(videosToRemove);
+            }
+            if (param.VideosToAdd.Count != 0)
+            {
+                var videosToAdd = await _catalogDb.Videos
+                    .Where(v => param.VideosToAdd.Contains(v.Id))
+                    .ToListAsync();
+                var userVideosToAdd = videosToAdd.Select(video => new UserVideoList
+                {
+                    Video = video,
+                    UserId = headerParams.UserId
+                });
+                await _catalogDb.AddRangeAsync(userVideosToAdd);
+            }
+            if (param.VideosToRemove.Count != 0 || param.VideosToAdd.Count != 0)
+            {
+                await _catalogDb.SaveChangesAsync();
+            }
+        }
     }
 }

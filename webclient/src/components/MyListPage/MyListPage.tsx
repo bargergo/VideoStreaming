@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import { getVideoInfosForUser } from '../../misc/api-calls';
 import { VideoInfo } from '../../models/VideoInfo';
 import VideoListElement from '../Shared/VideoListElement/VideoListElement';
 
@@ -7,6 +8,21 @@ const MyListPage = () => {
 
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const match = useRouteMatch();
+
+  const getMyVideos = () => {
+    getVideoInfosForUser()
+    .then(results => {
+      setVideos(results);
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  };
+
+  useEffect(() => {
+    getMyVideos();
+    return;
+  }, []);
 
   return (
     <div className="container">
@@ -19,7 +35,9 @@ const MyListPage = () => {
               title={video.name}
               description={video.description} 
               url={`${match.url}/${video.fileId}`}
-              imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} />
+              imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} 
+              id={video.id}
+              addedToList={true} />
           </div>
         )}
     </div>

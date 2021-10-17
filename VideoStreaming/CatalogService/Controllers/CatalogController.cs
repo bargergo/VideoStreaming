@@ -41,6 +41,13 @@ namespace CatalogService.Controllers
             return videos;
         }
 
+        [HttpPut("list")]
+        public async Task<IActionResult> UpdateList(UpdateListParam param, [FromHeader] HeaderParams headerParams)
+        {
+            await _catalogService.UpdateList(param, headerParams);
+            return Ok();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<GetVideoResult>> GetVideo(string id, [FromHeader] HeaderParams headerParams)
         {
