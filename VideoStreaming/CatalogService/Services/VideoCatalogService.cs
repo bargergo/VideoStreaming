@@ -114,21 +114,36 @@ namespace CatalogService.Services
                 .FirstOrDefaultAsync();
             if (videoWithProgress != null)
             {
+                var videoIds = await _catalogDb.UserVideoLists
+                    .Where(uvl => uvl.UserId == userId && uvl.Video.Id == videoWithProgress.Id)
+                    .Select(uvl => uvl.Video.Id)
+                    .ToListAsync();
+                videoWithProgress.AddedToList = videoIds.Count > 0;
                 return videoWithProgress;
             }
             var video = await _catalogDb.Videos
                 .FirstOrDefaultAsync(v => v.FileId == id);
-            return new GetVideoResult
+            if (video != null)
             {
-                Id = video.Id,
-                FileId = video.FileId,
-                Name = video.Name,
-                Description = video.Description,
-                Status = video.Status,
-                ImageFileName = video.ImageFileName,
-                UploadedAt = video.UploadedAt,
-                Progress = null
-            };
+                var videoIds = await _catalogDb.UserVideoLists
+                    .Where(uvl => uvl.UserId == userId && uvl.Video.Id == video.Id)
+                    .Select(uvl => uvl.Video.Id)
+                    .ToListAsync();
+                videoWithProgress = new GetVideoResult
+                {
+                    Id = video.Id,
+                    FileId = video.FileId,
+                    Name = video.Name,
+                    Description = video.Description,
+                    Status = video.Status,
+                    ImageFileName = video.ImageFileName,
+                    UploadedAt = video.UploadedAt,
+                    Progress = null,
+                    AddedToList = videoIds.Count > 0
+                };
+            }
+
+            return null;
         }
 
         public async Task<List<Video>> GetVideos(int userId)

@@ -4,7 +4,7 @@ import 'plyr/dist/plyr.css';
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
-import { deleteVideo, fetchVideoInfo, updateProgress } from "../../misc/api-calls";
+import { deleteVideo, fetchVideoInfo, updateList, updateProgress } from "../../misc/api-calls";
 import { GetVideoResult } from "../../models/GetVideoResult";
 import './VideoPage.css';
 
@@ -52,8 +52,20 @@ const VideoPage = () => {
     history.push(match.url + '/edit');
   };
 
-  const addToList = () => {
-    console.log('addToList');
+  const addToList = async () => {
+    await updateList({videosToAdd: [videoInfo.id], videosToRemove: []});
+    setVideoInfo((prev: GetVideoResult) => ({
+      ...prev,
+      addedToList: !prev.addedToList
+    }));
+  }
+
+  const removeFromList = async () => {
+    await updateList({videosToAdd: [], videosToRemove: [videoInfo.id]});
+    setVideoInfo((prev: GetVideoResult) => ({
+      ...prev,
+      addedToList: !prev.addedToList
+    }));
   }
 
   useEffect(() => {
@@ -152,6 +164,10 @@ const VideoPage = () => {
     };
   }, [video, source, saveProgress, progress]);
 
+  const addToOrRemoveFromList = !!videoInfo?.addedToList
+  ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
+  : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
+
   return (
     <div className="container">
       <h1 className="mb-4">{videoInfo?.name}</h1>
@@ -161,7 +177,7 @@ const VideoPage = () => {
         <div className="mb-2">Description: {videoInfo?.description}</div>
         <div className="mb-2">
           <Button variant="outline-primary" onClick={() => goToEdit()} >Edit</Button>{' '}
-          <Button variant="primary" onClick={addToList}>Add to list</Button>{' '}
+          {addToOrRemoveFromList}{' '}
           <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
         </div>
       </div>

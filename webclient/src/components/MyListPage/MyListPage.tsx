@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useRouteMatch } from 'react-router-dom';
 import { getVideoInfosForUser } from '../../misc/api-calls';
 import { VideoInfo } from '../../models/VideoInfo';
 import VideoListElement from '../Shared/VideoListElement/VideoListElement';
@@ -8,7 +7,6 @@ const MyListPage = () => {
 
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
-  const match = useRouteMatch();
 
   const getMyVideos = () => {
     setLoading(true);
@@ -46,7 +44,7 @@ const MyListPage = () => {
               <VideoListElement
                 title={video.name}
                 description={video.description} 
-                url={`${match.url}/${video.fileId}`}
+                url={`/videos/${video.fileId}`}
                 imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} 
                 id={video.id}
                 addedToList={true}

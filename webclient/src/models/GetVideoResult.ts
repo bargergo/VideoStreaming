@@ -6,4 +6,5 @@ export interface GetVideoResult {
   status: string;
   imageFileName?: string;
   progress: number;
+  addedToList: boolean;
 };

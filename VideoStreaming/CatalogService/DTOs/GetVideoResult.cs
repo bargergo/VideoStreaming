@@ -16,5 +16,7 @@ namespace CatalogService.DTOs
 
         public DateTime UploadedAt { get; set; }
         public float? Progress { get; set; }
+
+        public bool AddedToList { get; set; }
     }
 }
