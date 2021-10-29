@@ -12,7 +12,7 @@ on:
     paths:
       - '.github/workflows/convert-service.yml'
       - 'VideoStreaming/ConvertService/**'
-      - 'VideoStreaming/MessageQueueDTOs/**''
+      - 'VideoStreaming/MessageQueueDTOs/**'
 
 jobs:
   build:
