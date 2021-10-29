@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
-@RestController
+@RestController("api/user-service")
 class AppController(
     val helloWorldService: HelloWorldService
 ) {

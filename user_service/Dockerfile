@@ -11,8 +11,8 @@ COPY gradle ./gradle
 # Only download dependencies
 RUN ./gradlew downloadDependencies --no-daemon
 COPY . .
-RUN ./gradlew clean build --no-daemon
+RUN ./gradlew clean build --no-daemon -x test
 
 FROM base AS final
-COPY --from=build /home/gradle/src/build/libs/demo-0.0.1-SNAPSHOT.jar .
-CMD ["java", "-server", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=100", "-XX:+UseStringDeduplication", "-jar", "demo-0.0.1-SNAPSHOT.jar"]
+COPY --from=build /home/gradle/src/build/libs/user_service-0.0.1-SNAPSHOT.jar .
+CMD ["java", "-server", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseG1GC", "-XX:MaxGCPauseMillis=100", "-XX:+UseStringDeduplication", "-jar", "user_service-0.0.1-SNAPSHOT.jar"]

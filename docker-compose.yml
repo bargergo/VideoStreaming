@@ -93,6 +93,35 @@ services:
     volumes:
       - mssql-server-data:/var/opt/mssql
       
+  user-service:
+    build:
+      context: user_service
+      dockerfile: Dockerfile
+    environment:
+      JWT__SECRET: top_secret_secret
+      SPRING__DATASOURCE__URL: "jdbc:mysql://user-db:3306/user-db?createDatabaseIfNotExist=true&autoReconnect=true"
+      SPRING__DATASOURCE__USERNAME: root
+      SPRING__DATASOURCE__PASSWORD: helloworld
+    ports: 
+      - "5004:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user-service`)"
+      - "traefik.http.routers.user-service.entrypoints=web"
+    depends_on:
+      - user-db
+      
+  user-db:
+    image: mysql:8.0.26
+    container_name: user-db
+    environment:
+        MYSQL_ROOT_PASSWORD: helloworld
+        MYSQL_DATABASE: user-db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      
   webclient:
     build:
       context: webclient
@@ -106,6 +135,7 @@ services:
     
 volumes:
   mssql-server-data:
+  mysql-data:
   tusfiles:
     driver: local
     driver_opts:
