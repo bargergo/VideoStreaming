@@ -3,16 +3,16 @@ name: ConvertService
 on:
   push:
     branches: [ master ]
-    paths-ignore:
-      - 'VideoStreaming/CatalogService/**'
-      - 'VideoStreaming/UploadService/**'
-      - 'webclient/**'
+    paths:
+      - '.github/workflows/convert-service.yml'
+      - 'VideoStreaming/ConvertService/**'
+      - 'VideoStreaming/MessageQueueDTOs/**'
   pull_request:
     branches: [ master ]
-    paths-ignore:
-      - 'VideoStreaming/CatalogService/**'
-      - 'VideoStreaming/UploadService/**'
-      - 'webclient/**'
+    paths:
+      - '.github/workflows/convert-service.yml'
+      - 'VideoStreaming/ConvertService/**'
+      - 'VideoStreaming/MessageQueueDTOs/**''
 
 jobs:
   build:
