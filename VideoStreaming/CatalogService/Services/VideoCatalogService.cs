@@ -129,7 +129,7 @@ namespace CatalogService.Services
                     .Where(uvl => uvl.UserId == userId && uvl.Video.Id == video.Id)
                     .Select(uvl => uvl.Video.Id)
                     .ToListAsync();
-                videoWithProgress = new GetVideoResult
+                return new GetVideoResult
                 {
                     Id = video.Id,
                     FileId = video.FileId,
@@ -142,7 +142,6 @@ namespace CatalogService.Services
                     AddedToList = videoIds.Count > 0
                 };
             }
-
             return null;
         }
 
