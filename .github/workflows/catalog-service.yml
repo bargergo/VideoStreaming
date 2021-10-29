@@ -3,16 +3,14 @@ name: CatalogService
 on:
   push:
     branches: [ master ]
-    paths-ignore:
-      - 'VideoStreaming/ConvertService/**'
-      - 'VideoStreaming/UploadService/**'
-      - 'webclient/**'
+    paths:
+      - 'VideoStreaming/CatalogService/**'
+      - 'VideoStreaming/MessageQueueDTOs/**'
   pull_request:
     branches: [ master ]
-    paths-ignore:
-      - 'VideoStreaming/ConvertService/**'
-      - 'VideoStreaming/UploadService/**'
-      - 'webclient/**'
+    paths:
+      - 'VideoStreaming/CatalogService/**'
+      - 'VideoStreaming/MessageQueueDTOs/**'
 
 jobs:
   build:
