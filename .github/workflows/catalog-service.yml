@@ -4,11 +4,13 @@ on:
   push:
     branches: [ master ]
     paths:
+      - '.github/workflows/catalog-service.yml'
       - 'VideoStreaming/CatalogService/**'
       - 'VideoStreaming/MessageQueueDTOs/**'
   pull_request:
     branches: [ master ]
     paths:
+      - '.github/workflows/catalog-service.yml'
       - 'VideoStreaming/CatalogService/**'
       - 'VideoStreaming/MessageQueueDTOs/**'
 
