@@ -19,13 +19,13 @@ const VideoListElement = ({title, description, url, imageUrl, id, addedToList, o
     onListChanged();
   }
 
-  const RemoveFromList = async () => {
+  const removeFromList = async () => {
     await updateList({videosToAdd: [], videosToRemove: [id]});
     onListChanged();
   }
 
   const addToOrRemoveFromList = !!addedToList
-    ? (<Button variant="outline-danger" onClick={RemoveFromList}>Remove from list</Button>)
+    ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
     : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
 
   return (
