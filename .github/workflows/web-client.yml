@@ -3,12 +3,14 @@ name: Webclient
 on:
   push:
     branches: [ master ]
-    paths-ignore:
-      - 'VideoStreaming/**'
+    paths:
+      - '.github/workflows/web-client.yml'
+      - 'webclient/**'
   pull_request:
     branches: [ master ]
-    paths-ignore:
-      - 'VideoStreaming/**'
+    paths:
+      - '.github/workflows/web-client.yml'
+      - 'webclient/**'
 
 jobs:
   build:
