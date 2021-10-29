@@ -2,8 +2,10 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router";
 import Home from "./components/Home/Home";
+import LoginPage from "./components/LoginPage/LoginPage";
 import MyListPage from "./components/MyListPage/MyListPage";
 import Navs from "./components/Navigation/Navs";
+import RegisterPage from "./components/RegisterPage/RegisterPage";
 import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
 import VideoPage from "./components/VideoPage/VideoPage";
@@ -40,6 +42,14 @@ const App = () => {
 
         <Route path="/my-list">
           <MyListPage />
+        </Route>
+
+        <Route path="/login">
+          <LoginPage />
+        </Route>
+
+        <Route path="/register">
+          <RegisterPage />
         </Route>
 
         <Route>

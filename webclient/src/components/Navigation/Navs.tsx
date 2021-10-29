@@ -17,7 +17,7 @@ const Navs = () => {
         <Link className="navbar-brand" to="/">Navbar</Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <ul className="navbar-nav">
+          <ul className="navbar-nav mr-auto">
           {
             LINKS.map(item => 
             <li
@@ -35,6 +35,28 @@ const Navs = () => {
                 </Nav.Link>
             </li>)
           }
+          </ul>
+          <ul className="navbar-nav ml-auto">
+            <li className="nav-item">
+                <Nav.Link
+                  as={NavLink}
+                  className="nav-link"
+                  activeClassName="active"
+                  to='/login'
+                >
+                  Login
+                </Nav.Link>
+            </li>
+            <li className="nav-item">
+                <Nav.Link
+                  as={NavLink}
+                  className="nav-link"
+                  activeClassName="active"
+                  to='/register'
+                >
+                  Register
+                </Nav.Link>
+            </li>
           </ul>
         </Navbar.Collapse>
       </Container>
