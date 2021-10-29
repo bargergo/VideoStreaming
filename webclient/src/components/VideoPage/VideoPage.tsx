@@ -5,7 +5,9 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import { deleteVideo, fetchVideoInfo, updateList, updateProgress } from "../../misc/api-calls";
+import { convertStatus } from "../../misc/status-converter";
 import { GetVideoResult } from "../../models/GetVideoResult";
+import { VideoDetails } from "../../models/VideoDetails";
 import './VideoPage.css';
 
 type VideoParams = {
@@ -23,7 +25,7 @@ const VideoPage = () => {
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/${id}/playlist.m3u8`;
-  const [videoInfo, setVideoInfo] = useState<GetVideoResult | null>(null);
+  const [videoInfo, setVideoInfo] = useState<VideoDetails | null>(null);
   const history = useHistory();
   const match = useRouteMatch();
   const plyr = useRef<Plyr | null>(null);
@@ -54,7 +56,7 @@ const VideoPage = () => {
 
   const addToList = async () => {
     await updateList({videosToAdd: [videoInfo.id], videosToRemove: []});
-    setVideoInfo((prev: GetVideoResult) => ({
+    setVideoInfo((prev: VideoDetails) => ({
       ...prev,
       addedToList: !prev.addedToList
     }));
@@ -62,7 +64,7 @@ const VideoPage = () => {
 
   const removeFromList = async () => {
     await updateList({videosToAdd: [], videosToRemove: [videoInfo.id]});
-    setVideoInfo((prev: GetVideoResult) => ({
+    setVideoInfo((prev: VideoDetails) => ({
       ...prev,
       addedToList: !prev.addedToList
     }));
@@ -70,8 +72,8 @@ const VideoPage = () => {
 
   useEffect(() => {
     fetchVideoInfo(id)
-      .then(result => {
-        setVideoInfo(result);
+      .then((result: GetVideoResult) => {
+        setVideoInfo({...result, status: convertStatus(result.status)});
         setProgress(result.progress);
       })
       .catch(err => {

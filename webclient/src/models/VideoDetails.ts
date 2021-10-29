@@ -1,9 +1,9 @@
-export interface GetVideoResult {
+export interface VideoDetails {
   id: number;
   fileId: string;
   name: string;
   description: string;
-  status: number;
+  status: string;
   imageFileName?: string;
   progress: number;
   addedToList: boolean;
