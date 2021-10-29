@@ -21,5 +21,7 @@ namespace CatalogService.Services
         Task UpdateProgress(string id, UpdateProgressParam param, int userId);
         Task UpdateList(UpdateListParam param, int userId);
         Task<List<int>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, int userId);
+
+        Task UpdateVideoStatus(string id, Status newStatus);
     }
 }

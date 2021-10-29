@@ -70,8 +70,14 @@ namespace UploadService.Services
 
         private async Task DoSomeProcessing(ITusFile file, Dictionary<string, tusdotnet.Models.Metadata> metadata)
         {
-            _logger.LogInformation($"Publish message with:FileId = {file.Id}, Name = {metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8)}, Type = {metadata.GetValueOrDefault("filetype", null)?.GetString(Encoding.UTF8)}");
+            _logger.LogInformation($"Publish message with: FileId = {file.Id}, Name = {metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8)}, Type = {metadata.GetValueOrDefault("filetype", null)?.GetString(Encoding.UTF8)}");
             await _messageQueue.Publish<IVideoUploadedEvent>(new VideoUploadedEvent
+            {
+                FileId = file.Id,
+                Name = metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8),
+                Type = metadata.GetValueOrDefault("filetype", null)?.GetString(Encoding.UTF8)
+            });
+            await _messageQueue.Publish<IVideoUploadedForCatalogEvent>(new VideoUploadedForCatalogEvent
             {
                 FileId = file.Id,
                 Name = metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8),

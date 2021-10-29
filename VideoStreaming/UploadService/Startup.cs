@@ -55,6 +55,7 @@ namespace UploadService
                     })
                 );
                 EndpointConvention.Map<IVideoUploadedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoUploaded"));
+                EndpointConvention.Map<IVideoUploadedForCatalogEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoUploadedForCatalog"));
             });
 
             services.AddTransient<ITusService, TusService>();

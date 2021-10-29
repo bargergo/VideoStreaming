@@ -5,7 +5,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import { deleteVideo, fetchVideoInfo, updateList, updateProgress } from "../../misc/api-calls";
-import { convertStatus } from "../../misc/status-converter";
+import { convertStatus, Status } from "../../misc/status-converter";
 import { GetVideoResult } from "../../models/GetVideoResult";
 import { VideoDetails } from "../../models/VideoDetails";
 import './VideoPage.css';
@@ -31,6 +31,7 @@ const VideoPage = () => {
   const plyr = useRef<Plyr | null>(null);
   const updateInterval = useRef<NodeJS.Timeout | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
 
   const seek = (time: number) => {
     const plyrRef = plyr.current;
@@ -74,6 +75,7 @@ const VideoPage = () => {
     fetchVideoInfo(id)
       .then((result: GetVideoResult) => {
         setVideoInfo({...result, status: convertStatus(result.status)});
+        setStatus(convertStatus(result.status));
         setProgress(result.progress);
       })
       .catch(err => {
@@ -83,6 +85,10 @@ const VideoPage = () => {
   }, [id]);
 
   useEffect(() => {
+
+    if (status !== Status.CONVERTED.toString()) {
+      return;
+    }
 
     const hls = new Hls();
 
@@ -164,7 +170,7 @@ const VideoPage = () => {
         updateInterval.current = null
       }
     };
-  }, [video, source, saveProgress, progress]);
+  }, [video, source, saveProgress, progress, status]);
 
   const addToOrRemoveFromList = !!videoInfo?.addedToList
   ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
@@ -173,7 +179,9 @@ const VideoPage = () => {
   return (
     <div className="container">
       <h1 className="mb-4">{videoInfo?.name}</h1>
-      <video className="plyr" ref={video} controls crossOrigin="true" playsInline />
+      {status === Status.CONVERTED.toString()
+        ? <video className="plyr" ref={video} controls crossOrigin="true" playsInline />
+        : <div>The video is being converted and not ready to be played. Please check again later.</div>}
       <div className="mt-4">
         <p>Status: {videoInfo?.status}</p>
         <div className="mb-2">Description: {videoInfo?.description}</div>

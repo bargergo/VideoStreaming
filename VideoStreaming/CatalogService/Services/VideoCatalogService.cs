@@ -259,5 +259,13 @@ namespace CatalogService.Services
                 .ToListAsync();
             return videoIds;
         }
+
+        public async Task UpdateVideoStatus(string id, Status newStatus)
+        {
+            var video = await _catalogDb.Videos
+                .FirstOrDefaultAsync(v => v.FileId == id);
+            video.Status = newStatus;
+            await _catalogDb.SaveChangesAsync();
+        }
     }
 }

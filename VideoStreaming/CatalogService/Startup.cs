@@ -39,6 +39,7 @@ namespace CatalogService
             services.AddMassTransit(x =>
             {
                 var config = Configuration.GetSection(nameof(MessageQueueSettings)).Get<MessageQueueSettings>();
+                x.AddConsumer<VideoUploadedForCatalogEventHandler>();
                 x.AddConsumer<VideoConvertedEventHandler>();
                 x.AddBus(context =>
                     Bus.Factory.CreateUsingRabbitMq(cfg =>
@@ -53,9 +54,14 @@ namespace CatalogService
                         {
                             ep.ConfigureConsumer<VideoConvertedEventHandler>(context);
                         });
+                        cfg.ReceiveEndpoint("VideoUploadedForCatalog", ep =>
+                        {
+                            ep.ConfigureConsumer<VideoUploadedForCatalogEventHandler>(context);
+                        });
                     })
                 );
                 EndpointConvention.Map<IVideoConvertedEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoConverted"));
+                EndpointConvention.Map<IVideoUploadedForCatalogEvent>(new Uri($"rabbitmq://{config.Hostname}:/VideoUploadedForCatalog"));
             });
 
             services.AddTransient<IVideoCatalogService, VideoCatalogService>();

@@ -22,13 +22,7 @@ namespace CatalogService.MessageQueue
         public async Task Consume(ConsumeContext<IVideoConvertedEvent> context)
         {
             _logger.LogInformation($"Consumed IVideoConvertedEvent: {JsonSerializer.Serialize(context)}");
-            var video = new Video
-            {
-                FileId = context.Message.FileId,
-                Name = context.Message.Name,
-                Status = Status.Converted
-            };
-            await _videoCatalogService.CreateVideo(video);
+            await _videoCatalogService.UpdateVideoStatus(context.Message.FileId, Status.Converted);
         }
     }
 }
