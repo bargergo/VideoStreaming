@@ -29,12 +29,12 @@ class JwtUserDetailsService(
         )
     }
 
-    fun save(user: RegisterRequest): DAOUser {
-        val user = userDao.findByUsername(user.username)
+    fun save(param: RegisterRequest): DAOUser {
+        val user = userDao.findByUsername(param.username)
         if (user != null) {
-            throw UserAlreadyExistAuthenticationException("User with username: ${user.username} already exists")
+            throw UserAlreadyExistAuthenticationException("User with username: ${param.username} already exists")
         }
-        val newUser = DAOUser(null, user.username, bcryptEncoder.encode(user.password))
+        val newUser = DAOUser(null, param.username, bcryptEncoder.encode(param.password))
         return userDao.save(newUser)
     }
 }
