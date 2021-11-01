@@ -1,5 +1,6 @@
 package hu.bme.aut.user_service.utils
 
+import hu.bme.aut.user_service.model.UserWithId
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
@@ -43,8 +44,8 @@ class JwtTokenUtil(
     }
 
     //generate token for user
-    fun generateToken(userDetails: UserDetails): String {
-        val claims: Map<String, Any> = HashMap()
+    fun generateToken(userDetails: UserWithId): String {
+        val claims: Map<String, Any> = mutableMapOf("userId" to userDetails.id)
         return doGenerateToken(claims, userDetails.username)
     }
 

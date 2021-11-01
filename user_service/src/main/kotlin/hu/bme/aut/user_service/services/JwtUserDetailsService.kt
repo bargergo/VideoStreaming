@@ -4,6 +4,7 @@ import hu.bme.aut.user_service.dao.UserDao
 import hu.bme.aut.user_service.exceptions.UserAlreadyExistAuthenticationException
 import hu.bme.aut.user_service.model.DAOUser
 import hu.bme.aut.user_service.model.RegisterRequest
+import hu.bme.aut.user_service.model.UserWithId
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -18,13 +19,15 @@ class JwtUserDetailsService(
     private val bcryptEncoder: PasswordEncoder
 ): UserDetailsService {
 
-    override fun loadUserByUsername(username: String?): UserDetails {
+    override fun loadUserByUsername(username: String?): UserWithId {
         requireNotNull(username)
 
         val user = userDao.findByUsername(username)
             ?: throw UsernameNotFoundException("User not found with username: $username")
-        return User(
-            user.username, user.password,
+        return UserWithId(
+            user.id!!,
+            user.username,
+            user.password,
             ArrayList()
         )
     }
