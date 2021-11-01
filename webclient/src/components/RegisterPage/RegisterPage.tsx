@@ -1,16 +1,18 @@
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, useContext, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { register } from '../../misc/api-calls';
+import HttpServiceContext from '../../misc/HttpServiceContext';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
+
+  const httpService = useContext(HttpServiceContext);
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    register({username: username, password: password});
+    httpService.register({username: username, password: password});
   };
 
   return (<div className="container">

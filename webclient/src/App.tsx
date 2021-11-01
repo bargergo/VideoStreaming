@@ -10,11 +10,12 @@ import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
 import VideoPage from "./components/VideoPage/VideoPage";
 import VideosPage from "./components/VideosPage/VideosPage";
+import HttpServiceContext, { HttpService } from "./misc/HttpServiceContext";
 
 const App = () => {
 
   return (
-    <div>
+    <HttpServiceContext.Provider value={new HttpService()}>
       <Navs />
 
       <Container>
@@ -60,7 +61,7 @@ const App = () => {
       </Switch>
       </Container>
 
-    </div>
+    </HttpServiceContext.Provider>
   );
 };
 

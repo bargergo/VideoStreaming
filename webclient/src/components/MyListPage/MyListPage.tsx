@@ -1,30 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import { getVideoInfosForUser } from '../../misc/api-calls';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import HttpServiceContext from '../../misc/HttpServiceContext';
 import { VideoInfo } from '../../models/VideoInfo';
 import VideoListElement from '../Shared/VideoListElement/VideoListElement';
 
 const MyListPage = () => {
 
+  const httpService = useContext(HttpServiceContext);
+
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const getMyVideos = () => {
-    setLoading(true);
-    getVideoInfosForUser()
-    .then(results => {
-      setVideos(results);
-      setLoading(false);
-    })
-    .catch(err => {
-      console.log(err);
-      setLoading(false);
-    });
-  };
+  const getMyVideos = useCallback(
+    () => {
+      setLoading(true);
+      httpService.getVideoInfosForUser()
+      .then(results => {
+        setVideos(results);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.log(err);
+        setLoading(false);
+      });
+    },
+    [httpService]
+  );
 
   useEffect(() => {
     getMyVideos();
     return;
-  }, []);
+  }, [getMyVideos]);
 
   return (
     <div className="container">

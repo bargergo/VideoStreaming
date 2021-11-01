@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { useHistory, useParams } from "react-router-dom";
-import { fetchVideoInfo, updateVideo } from "../../misc/api-calls";
+import HttpServiceContext from "../../misc/HttpServiceContext";
 import { GetVideoResult } from "../../models/GetVideoResult";
 import './VideoEditPage.css';
 
@@ -11,6 +11,7 @@ type VideoParams = {
 
 const VideoEditPage = () => {
 
+  const httpService = useContext(HttpServiceContext);
   const { id } = useParams<VideoParams>();
   const history = useHistory();
   const [enteredTitle, setEnteredTitle] = useState<string>('');
@@ -24,8 +25,8 @@ const VideoEditPage = () => {
 
   const submit = async (event: any) => {
     event.preventDefault();
-    await updateVideo(id, {title: enteredTitle, description: enteredDescription}, file);
-    //goBack();
+    await httpService.updateVideo(id, {title: enteredTitle, description: enteredDescription}, file);
+    goBack();
   };
 
   const previewImageSrc = file != null
@@ -38,7 +39,7 @@ const VideoEditPage = () => {
     : null;
 
   useEffect(() => {
-    fetchVideoInfo(id)
+    httpService.fetchVideoInfo(id)
       .then((result: GetVideoResult) => {
         setEnteredTitle(result.name);
         setEnteredDescription(result.description || '');
@@ -48,7 +49,7 @@ const VideoEditPage = () => {
         console.log(err);
       });
     return;
-  }, [id]);
+  }, [id, httpService]);
 
   return (<div>
     <Form onSubmit={submit}>

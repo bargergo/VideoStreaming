@@ -1,10 +1,10 @@
 import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
-import { deleteVideo, fetchVideoInfo, updateList, updateProgress } from "../../misc/api-calls";
+import HttpServiceContext from "../../misc/HttpServiceContext";
 import { convertStatus, Status } from "../../misc/status-converter";
 import { GetVideoResult } from "../../models/GetVideoResult";
 import { VideoDetails } from "../../models/VideoDetails";
@@ -14,14 +14,9 @@ type VideoParams = {
   id: string;
 };
 
-//const source = "http://localhost:8080/bourne/playlist.m3u8";
-//const source = "bourne/playlist.m3u8";
-//const source = "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8";
-
-
-
 const VideoPage = () => {
 
+  const httpService = useContext(HttpServiceContext);
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/${id}/playlist.m3u8`;
@@ -45,26 +40,26 @@ const VideoPage = () => {
       const plyrRef = plyr.current;
       if (plyrRef != null) {
         const currentTime = plyrRef.currentTime;
-        await updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
+        await httpService.updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
       }
     },
-    [id],
-  )
+    [id, httpService],
+  );
 
   const goToEdit = () => {
     history.push(match.url + '/edit');
   };
 
   const addToList = async () => {
-    await updateList({videosToAdd: [videoInfo.id], videosToRemove: []});
+    await httpService.updateList({videosToAdd: [videoInfo.id], videosToRemove: []});
     setVideoInfo((prev: VideoDetails) => ({
       ...prev,
       addedToList: !prev.addedToList
     }));
-  }
+  };
 
   const removeFromList = async () => {
-    await updateList({videosToAdd: [], videosToRemove: [videoInfo.id]});
+    await httpService.updateList({videosToAdd: [], videosToRemove: [videoInfo.id]});
     setVideoInfo((prev: VideoDetails) => ({
       ...prev,
       addedToList: !prev.addedToList
@@ -72,7 +67,7 @@ const VideoPage = () => {
   }
 
   useEffect(() => {
-    fetchVideoInfo(id)
+    httpService.fetchVideoInfo(id)
       .then((result: GetVideoResult) => {
         setVideoInfo({...result, status: convertStatus(result.status)});
         setStatus(convertStatus(result.status));
@@ -82,7 +77,7 @@ const VideoPage = () => {
         console.log(err);
       });
     return;
-  }, [id]);
+  }, [id, httpService]);
 
   useEffect(() => {
 
@@ -188,7 +183,7 @@ const VideoPage = () => {
         <div className="mb-2">
           <Button variant="outline-primary" onClick={() => goToEdit()} >Edit</Button>{' '}
           {addToOrRemoveFromList}{' '}
-          <Button variant="danger" onClick={() => deleteVideo(id)}>Delete</Button>
+          <Button variant="danger" onClick={() => httpService.deleteVideo(id)}>Delete</Button>
         </div>
       </div>
     </div>
