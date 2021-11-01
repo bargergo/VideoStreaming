@@ -31,7 +31,7 @@ class AppController(
         val userDetails = userDetailsService
             .loadUserByUsername(authenticationRequest.username)
         val token = jwtTokenUtil.generateToken(userDetails)
-        return ResponseEntity.ok(LoginResponse(token))
+        return ResponseEntity.ok(LoginResponse(token, userDetails.username))
     }
 
     private fun authenticate(username: String, password: String) {

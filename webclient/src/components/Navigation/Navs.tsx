@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { Link, NavLink } from 'react-router-dom';
+import HttpServiceContext from '../../misc/HttpServiceContext';
 
 const LINKS = [
   {to: '/', text: 'Home'},
@@ -9,7 +10,52 @@ const LINKS = [
   {to: '/my-list', text: 'My List'}
 ];
 
-const Navs = () => {
+const Navs = ({ username }) => {
+
+  const httpService = useContext(HttpServiceContext);
+
+  const profileItems = username == null
+    ? (
+    <>
+      <li className="nav-item">
+          <Nav.Link
+            as={NavLink}
+            className="nav-link"
+            activeClassName="active"
+            to='/login'
+          >
+            Login
+          </Nav.Link>
+      </li>
+      <li className="nav-item">
+          <Nav.Link
+            as={NavLink}
+            className="nav-link"
+            activeClassName="active"
+            to='/register'
+          >
+            Register
+          </Nav.Link>
+      </li>
+    </>
+    )
+    : (
+      <>
+        <li className="nav-item">
+            <span className="navbar-text">
+              Hello, {username}!
+            </span>
+        </li>
+        <li className="nav-item">
+            <Nav.Link
+              className="nav-link"
+              onClick={() => httpService.logout()}
+            >
+              Logout
+            </Nav.Link>
+        </li>
+      </>
+    );
 
   return (
     <Navbar collapseOnSelect bg="dark" variant="dark" expand="lg">
@@ -37,26 +83,7 @@ const Navs = () => {
           }
           </ul>
           <ul className="navbar-nav ml-auto">
-            <li className="nav-item">
-                <Nav.Link
-                  as={NavLink}
-                  className="nav-link"
-                  activeClassName="active"
-                  to='/login'
-                >
-                  Login
-                </Nav.Link>
-            </li>
-            <li className="nav-item">
-                <Nav.Link
-                  as={NavLink}
-                  className="nav-link"
-                  activeClassName="active"
-                  to='/register'
-                >
-                  Register
-                </Nav.Link>
-            </li>
+            {profileItems}
           </ul>
         </Navbar.Collapse>
       </Container>

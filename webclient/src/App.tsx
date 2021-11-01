@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router";
 import Home from "./components/Home/Home";
@@ -14,9 +14,12 @@ import HttpServiceContext, { HttpService } from "./misc/HttpServiceContext";
 
 const App = () => {
 
+  const [username, setUsername] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+
   return (
-    <HttpServiceContext.Provider value={new HttpService()}>
-      <Navs />
+    <HttpServiceContext.Provider value={new HttpService(username, setUsername, token, setToken)}>
+      <Navs username={username}/>
 
       <Container>
       <Switch>

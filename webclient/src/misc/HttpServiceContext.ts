@@ -10,11 +10,13 @@ import { LoginResponse } from "../models/LoginResponse";
 
 export class HttpService {
 
-  constructor() {
-    console.log('HttpService constructor called');
-  }
+  constructor(
+    private username: string | null,
+    private setUsername: (value: string | null) => void,
+    private token: string | null,
+    private setToken: (value: string | null) => void
+  ) {}
 
-  private token: string | null = null;
   private authorizationHeader(): {[key: string]: string} {
     return this.token == null ? {} : {
       'Authorization': `Bearer ${this.token}`
@@ -116,8 +118,15 @@ export class HttpService {
       },
       body: JSON.stringify(data) 
     }).then(r => r.json());
-    this.token = (response as LoginResponse).token;
+    const castedResponse = response as LoginResponse;
+    this.setToken(castedResponse.token);
+    this.setUsername(castedResponse.username);
     return response;
+  }
+
+  logout(): void {
+    this.setUsername(null);
+    this.setToken(null);
   }
   
   async register(data: RegisterRequest): Promise<RegisterResponse> {
@@ -133,6 +142,6 @@ export class HttpService {
   }
 };
 
-const HttpServiceContext = React.createContext(new HttpService());
+const HttpServiceContext = React.createContext(new HttpService(null, () => {}, null, () => {}));
 
 export default HttpServiceContext;
