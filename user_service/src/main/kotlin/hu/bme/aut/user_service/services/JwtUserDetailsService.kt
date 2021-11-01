@@ -1,8 +1,9 @@
 package hu.bme.aut.user_service.services
 
 import hu.bme.aut.user_service.dao.UserDao
+import hu.bme.aut.user_service.exceptions.UserAlreadyExistAuthenticationException
 import hu.bme.aut.user_service.model.DAOUser
-import hu.bme.aut.user_service.model.UserDTO
+import hu.bme.aut.user_service.model.RegisterRequest
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
@@ -28,7 +29,11 @@ class JwtUserDetailsService(
         )
     }
 
-    fun save(user: UserDTO): DAOUser {
+    fun save(user: RegisterRequest): DAOUser {
+        val user = userDao.findByUsername(user.username)
+        if (user != null) {
+            throw UserAlreadyExistAuthenticationException("User with username: ${user.username} already exists")
+        }
         val newUser = DAOUser(null, user.username, bcryptEncoder.encode(user.password))
         return userDao.save(newUser)
     }

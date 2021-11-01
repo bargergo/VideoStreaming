@@ -1,6 +1,6 @@
 package hu.bme.aut.user_service.model
 
-data class JwtRequest(
+data class LoginRequest (
     val username: String,
     val password: String
-    )
+)

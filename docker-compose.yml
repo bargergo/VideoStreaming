@@ -102,8 +102,9 @@ services:
       SPRING__DATASOURCE__URL: "jdbc:mysql://user-db:3306/user-db?createDatabaseIfNotExist=true&autoReconnect=true"
       SPRING__DATASOURCE__USERNAME: root
       SPRING__DATASOURCE__PASSWORD: helloworld
+      SERVER__PORT: "80"
     ports: 
-      - "5004:8080"
+      - "5004:80"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user-service`)"
