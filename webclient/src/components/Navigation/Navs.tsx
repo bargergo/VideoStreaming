@@ -54,12 +54,12 @@ const Navs = ({ username }) => {
             </span>
         </li>
         <li className="nav-item">
-            <Nav.Link
-              className="nav-link"
+            <button
+              className="btn btn-link nav-link"
               onClick={() => httpService.logout()}
             >
               Logout
-            </Nav.Link>
+            </button>
         </li>
       </>
     );
