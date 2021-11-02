@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Container } from "react-bootstrap";
 import { Route, Switch } from "react-router";
 import Home from "./components/Home/Home";
@@ -10,12 +10,13 @@ import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
 import VideoPage from "./components/VideoPage/VideoPage";
 import VideosPage from "./components/VideosPage/VideosPage";
+import useLocalStorage from "./misc/custom-hooks";
 import HttpServiceContext, { HttpService } from "./misc/HttpServiceContext";
 
 const App = () => {
 
-  const [username, setUsername] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [username, setUsername] = useLocalStorage('USERNAME');
+  const [token, setToken] = useLocalStorage('TOKEN');
 
   return (
     <HttpServiceContext.Provider value={new HttpService(username, setUsername, token, setToken)}>
