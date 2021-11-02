@@ -17,7 +17,7 @@ interface Message {
   text: string;
 }
 
-const UploadPage = () => {
+const UploadPage = ({token}) => {
   const videoInput = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [message, setMessage] = useState<Message | null>(null);
@@ -33,7 +33,8 @@ const UploadPage = () => {
         // Get the selected file from the input element
         if (!!e) {
           const file = (e.target as HTMLInputElement)?.files![0];
-
+          
+          console.log(token);
           // Create a new tus upload
           var upload = new tus.Upload(file, {
             endpoint: "/api/files",
@@ -42,10 +43,17 @@ const UploadPage = () => {
               filename: file.name,
               filetype: file.type,
             },
+            headers: {
+              'Authorization': token != null ? `Bearer ${token}` : null
+            },
             onError: function (error) {
+              const responseCode = error.message.match(/(?!response code: )[0-9]{3}(?=,)/)[0];
+              const text = responseCode === '401'
+                ? 'You have to be logged in to upload files.'
+                : 'Failed because: ' + error;
               setMessage({
                 severity: Severity.ERROR,
-                text: "Failed because: " + error
+                text: text
               });
             },
             onProgress: function (bytesUploaded, bytesTotal) {

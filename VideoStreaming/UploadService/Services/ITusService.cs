@@ -7,5 +7,6 @@ namespace UploadService.Services
     {
         Task OnBeforeCreateAsync(BeforeCreateContext context);
         Task OnFileCompleteAsync(FileCompleteContext context);
+        Task OnAuthorizeAsync(AuthorizeContext context);
     }
 }

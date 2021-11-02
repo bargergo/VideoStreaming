@@ -41,7 +41,7 @@ const App = () => {
         </Route>
 
         <Route path="/upload">
-          <UploadPage />
+          <UploadPage token={token}/>
         </Route>
 
         <Route path="/my-list">

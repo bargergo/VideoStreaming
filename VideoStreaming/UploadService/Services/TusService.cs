@@ -2,6 +2,7 @@
 using MessageQueueDTOs;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using tusdotnet.Interfaces;
@@ -21,6 +22,18 @@ namespace UploadService.Services
             _logger = logger;
             _fileStorageSettings = fileStorageSettings;
             _messageQueue = messageQueue;
+        }
+
+        public Task OnAuthorizeAsync(AuthorizeContext context)
+        {
+            if (!context.HttpContext.User.Identity.IsAuthenticated)
+            {
+                _logger.LogInformation("user is not authenticated");
+                context.FailRequest(HttpStatusCode.Unauthorized);
+                return Task.CompletedTask;
+            }
+            _logger.LogInformation("user is authenticated");
+            return Task.CompletedTask;
         }
 
         public async Task OnBeforeCreateAsync(BeforeCreateContext context)

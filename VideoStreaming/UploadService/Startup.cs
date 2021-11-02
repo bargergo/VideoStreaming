@@ -1,5 +1,6 @@
 using MassTransit;
 using MessageQueueDTOs;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
@@ -13,6 +14,7 @@ using tusdotnet;
 using tusdotnet.Models;
 using tusdotnet.Models.Configuration;
 using tusdotnet.Stores;
+using UploadService.Authentication;
 using UploadService.Middlewares;
 using UploadService.Models;
 using UploadService.Services;
@@ -64,6 +66,8 @@ namespace UploadService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "UploadService", Version = "v1" });
             });
+            services.AddAuthentication("CustomJwtAuthentication")
+                    .AddScheme<AuthenticationSchemeOptions, CustomJwtAuthenticationHandler>("CustomJwtAuthentication", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,6 +79,8 @@ namespace UploadService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UploadService v1"));
             }
+
+            app.UseAuthentication();
 
             app.UseRequestResponseLogging();
             app.UseRouting();
@@ -90,7 +96,8 @@ namespace UploadService
                 Events = new Events
                 {
                     OnBeforeCreateAsync = async ctx => await tusService.OnBeforeCreateAsync(ctx),
-                    OnFileCompleteAsync = async eventContext => await tusService.OnFileCompleteAsync(eventContext)
+                    OnFileCompleteAsync = async eventContext => await tusService.OnFileCompleteAsync(eventContext),
+                    OnAuthorizeAsync = async ctx => await tusService.OnAuthorizeAsync(ctx)
                 }
             });
 

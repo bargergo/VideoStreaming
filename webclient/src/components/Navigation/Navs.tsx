@@ -3,16 +3,23 @@ import { Container, Nav, Navbar } from 'react-bootstrap';
 import { Link, NavLink } from 'react-router-dom';
 import HttpServiceContext from '../../misc/HttpServiceContext';
 
-const LINKS = [
-  {to: '/', text: 'Home'},
-  {to: '/videos', text: 'Videos'},
-  {to: '/upload', text: 'Upload'},
-  {to: '/my-list', text: 'My List'}
-];
+
 
 const Navs = ({ username }) => {
 
   const httpService = useContext(HttpServiceContext);
+
+  const LINKS = [
+    {to: '/', text: 'Home'},
+    {to: '/videos', text: 'Videos'},
+  ];
+
+  if (username != null) {
+    LINKS.push(
+      {to: '/upload', text: 'Upload'},
+      {to: '/my-list', text: 'My List'}
+    );
+  }
 
   const profileItems = username == null
     ? (
