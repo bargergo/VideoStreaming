@@ -173,7 +173,7 @@ const VideoPage = () => {
 
   return (
     <div className="container">
-      <h1 className="mb-4">{videoInfo?.name}</h1>
+      <h1 className="video-title mb-4">{videoInfo?.name}</h1>
       {status === Status.CONVERTED.toString()
         ? <video className="plyr" ref={video} controls crossOrigin="true" playsInline />
         : <div>The video is being converted and not ready to be played. Please check again later.</div>}
