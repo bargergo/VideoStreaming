@@ -141,5 +141,5 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      o: addr=host.docker.internal,rw,nolock
-      device: ":/F/tusfiles"
+      o: nfsvers=3,addr=host.docker.internal,rw,nolock,soft
+      device: ":/f/tusfiles"
