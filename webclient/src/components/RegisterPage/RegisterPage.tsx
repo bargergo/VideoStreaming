@@ -1,6 +1,7 @@
 import React, { FormEvent, useContext, useState } from 'react';
-import { Button, Form } from 'react-bootstrap';
+import { Alert, Button, Form } from 'react-bootstrap';
 import HttpServiceContext from '../../misc/HttpServiceContext';
+import { HttpStatusError } from '../../models/HttpStatusError';
 import './RegisterPage.css';
 
 const RegisterPage = () => {
@@ -9,15 +10,32 @@ const RegisterPage = () => {
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
+    setError(null);
     event.preventDefault();
-    httpService.register({username: username, password: password});
+    try {
+      await httpService.register({username: username, password: password});
+    } catch (e: any) {
+      if (e instanceof HttpStatusError) {
+        if (e.statusCode === 401) {
+          setError('The username is already taken.');
+        } else {
+          setError(`Unexpected error: ${e.statusCode} ${e.message}`);
+        }
+      }
+    }
   };
+
+  const errorMessage = error != null ? (
+    <Alert variant="danger">{error}</Alert>
+  ) : null;
 
   return (
   <div className="container">
-    <div className="col-4 mx-auto">
+    <div className="col-6 mx-auto">
+      {errorMessage}
       <Form onSubmit={onSubmit}>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email address</Form.Label>

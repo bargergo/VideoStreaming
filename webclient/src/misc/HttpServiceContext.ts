@@ -7,6 +7,7 @@ import { LoginRequest } from "../models/LoginRequest";
 import { RegisterRequest } from "../models/RegisterRequest";
 import { RegisterResponse } from "../models/RegisterResponse";
 import { LoginResponse } from "../models/LoginResponse";
+import { HttpStatusError } from "../models/HttpStatusError";
 
 export class HttpService {
 
@@ -117,7 +118,13 @@ export class HttpService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data) 
-    }).then(r => r.json());
+    }).then(r => {
+      if (r.ok) {
+        return r.json();
+      } else {
+        throw new HttpStatusError(r.statusText, r.status);
+      }
+    });
     const castedResponse = response as LoginResponse;
     this.setToken(castedResponse.token);
     this.setUsername(castedResponse.username);
@@ -137,7 +144,13 @@ export class HttpService {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(data) 
-    }).then(r => r.json());
+    }).then(r => {
+      if (r.ok) {
+        return r.json();
+      } else {
+        throw new HttpStatusError(r.statusText, r.status);
+      }
+    });
     return response;
   }
 };
