@@ -1,0 +1,8 @@
+doc/**
+languages/**
+firewall.bat
+inodes.nfs
+mounttab
+nfsd.ini
+*.log
+*.exe
