@@ -4,5 +4,6 @@ build
 obj
 
 .gitignore
+.gitattributes
 .dockerignore
 Dockerfile
