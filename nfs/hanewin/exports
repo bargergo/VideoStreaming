@@ -14,4 +14,4 @@
 # Use UNC path specification for access to remote drive
 # Hidden volumes without a drive letter can be mounted by volume GUID
 #
-d:\tusfiles -alldirs -maproot:0
+f:\tusfiles -alldirs -maproot:0
