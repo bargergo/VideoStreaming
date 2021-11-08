@@ -1,30 +1,27 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import HttpServiceContext from '../../misc/HttpServiceContext';
-import { VideoInfo } from '../../models/VideoInfo';
-import VideoListElement from '../Shared/VideoListElement/VideoListElement';
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import HttpServiceContext from "../../misc/HttpServiceContext";
+import { VideoInfo } from "../../models/VideoInfo";
+import VideoListElement from "../Shared/VideoListElement/VideoListElement";
 
 const MyListPage = () => {
-
   const httpService = useContext(HttpServiceContext);
 
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
-  const getMyVideos = useCallback(
-    () => {
-      setLoading(true);
-      httpService.getVideoInfosForUser()
-      .then(results => {
+  const getMyVideos = useCallback(() => {
+    setLoading(true);
+    httpService
+      .getVideoInfosForUser()
+      .then((results) => {
         setVideos(results);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
         setLoading(false);
       });
-    },
-    [httpService]
-  );
+  }, [httpService]);
 
   useEffect(() => {
     getMyVideos();
@@ -33,31 +30,42 @@ const MyListPage = () => {
 
   return (
     <div className="container">
-    <div className="row">
-      {isLoading
-        ? (<div className="container">
+      <h1 className="mb-4">My List</h1>
+      <div className="row">
+        {isLoading ? (
+          <div className="container">
             <div className="d-flex justify-content-center">
               <div className="spinner-border m-5" role="status">
                 <span className="sr-only">Loading...</span>
               </div>
             </div>
-          </div>)
-        : videos.length === 0
-          ? (<p>Your video list is empty. Add videos to your list with the 'Add to list' button.</p>)
-          : videos.map(video => 
+          </div>
+        ) : videos.length === 0 ? (
+          <p>
+            Your video list is empty. Add videos to your list with the 'Add to
+            list' button.
+          </p>
+        ) : (
+          videos.map((video) => (
             <div className="col-4 mb-4" key={video.id}>
               <VideoListElement
                 title={video.name}
-                description={video.description} 
+                description={video.description}
                 url={`/videos/${video.fileId}`}
-                imageUrl={video.imageFileName ? `/api/catalog/${video.fileId}/image` : null} 
+                imageUrl={
+                  video.imageFileName
+                    ? `/api/catalog/${video.fileId}/image`
+                    : null
+                }
                 id={video.id}
                 addedToList={true}
-                onListChanged={getMyVideos} />
+                onListChanged={getMyVideos}
+              />
             </div>
+          ))
         )}
+      </div>
     </div>
-  </div>
   );
 };
 
