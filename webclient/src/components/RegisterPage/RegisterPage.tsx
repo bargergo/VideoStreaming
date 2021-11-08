@@ -1,5 +1,6 @@
 import React, { FormEvent, useContext, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
+import { useHistory } from "react-router";
 import HttpServiceContext from "../../misc/HttpServiceContext";
 import { HttpStatusError } from "../../models/HttpStatusError";
 import "./RegisterPage.css";
@@ -10,12 +11,14 @@ const RegisterPage = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+  const history = useHistory();
 
   const onSubmit = async (event: FormEvent) => {
     setError(null);
     event.preventDefault();
     try {
       await httpService.register({ username: username, password: password });
+      history.push('./login', { fromRegistration: true });
     } catch (e: any) {
       if (e instanceof HttpStatusError) {
         if (e.statusCode === 401) {

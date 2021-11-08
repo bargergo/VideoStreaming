@@ -1,6 +1,6 @@
-import React, { ChangeEvent, FormEvent, useContext, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useContext, useEffect, useState } from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import HttpServiceContext from '../../misc/HttpServiceContext';
 import { HttpStatusError } from '../../models/HttpStatusError';
 import './LoginPage.css';
@@ -9,15 +9,23 @@ const LoginPage = () => {
 
   const httpService = useContext(HttpServiceContext);
   const history = useHistory();
+  const location = useLocation<{fromRegistration: boolean}>();
 
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [showRegistrationSuccess, setShowRegistrationSuccess] = useState<boolean>(false);
+
+  useEffect(() => {
+    setShowRegistrationSuccess(location.state != null && !!location.state.fromRegistration);
+    return () => {}
+  }, [location.state])
 
   const onSubmit = async (event: FormEvent) => {
     setError(null);
     event.preventDefault();
     try {
+      setShowRegistrationSuccess(false);
       await httpService.login({username: username, password: password});
       history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')) + '/my-list');
     } catch (e: any) {
@@ -43,10 +51,15 @@ const LoginPage = () => {
     <Alert variant="danger">{error}</Alert>
   ) : null;
 
+  const successfulRegistrationMessage = showRegistrationSuccess ?  (
+    <Alert variant="success">You have successfuly registered. You can log in now.</Alert>
+  ) : null;
+
   return (
     <div className="container">
       <h1 className="mb-4">Login</h1>
       <div className="col-6 pl-0">
+        {successfulRegistrationMessage}
         {errorMessage}
         <Form onSubmit={onSubmit}>
           <Form.Group className="mb-3" controlId="formBasicEmail">
