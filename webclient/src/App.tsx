@@ -10,8 +10,9 @@ import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
 import VideoPage from "./components/VideoPage/VideoPage";
 import VideosPage from "./components/VideosPage/VideosPage";
-import useSessionStorage from "./misc/custom-hooks";
+import { useSessionStorage } from "./misc/custom-hooks";
 import HttpServiceContext, { HttpService } from "./misc/HttpServiceContext";
+import UserContext from "./misc/UserContext";
 
 const App = () => {
 
@@ -20,51 +21,52 @@ const App = () => {
 
   return (
     <HttpServiceContext.Provider value={new HttpService(username, setUsername, token, setToken)}>
-      <Navs username={username}/>
+      <UserContext.Provider value={{token: token, user: username}}>
+        <Navs username={username}/>
 
-      <Container>
-      <Switch>
+        <Container>
+        <Switch>
 
-        <Route exact path="/">
-          <Home />
-        </Route>
+          <Route exact path="/">
+            <Home />
+          </Route>
 
-        <Route path="/videos/:id/edit">
-          <VideoEditPage />
-        </Route>
+          <Route path="/videos/:id/edit">
+            <VideoEditPage />
+          </Route>
 
-        <Route path="/videos/:id">
-          <VideoPage />
-        </Route>
+          <Route path="/videos/:id">
+            <VideoPage />
+          </Route>
 
-        <Route path="/videos">
-          <VideosPage />
-        </Route>
+          <Route path="/videos">
+            <VideosPage />
+          </Route>
 
-        <Route path="/upload">
-          <UploadPage token={token}/>
-        </Route>
+          <Route path="/upload">
+            <UploadPage token={token}/>
+          </Route>
 
-        <Route path="/my-list">
-          <MyListPage />
-        </Route>
+          <Route path="/my-list">
+            <MyListPage />
+          </Route>
 
-        <Route path="/login">
-          <LoginPage />
-        </Route>
+          <Route path="/login">
+            <LoginPage />
+          </Route>
 
-        <Route path="/register">
-          <RegisterPage />
-        </Route>
+          <Route path="/register">
+            <RegisterPage />
+          </Route>
 
-        <Route>
-          <div>
-            Not found
-          </div>
-        </Route>
-      </Switch>
-      </Container>
-
+          <Route>
+            <div>
+              Not found
+            </div>
+          </Route>
+        </Switch>
+        </Container>
+      </UserContext.Provider>
     </HttpServiceContext.Provider>
   );
 };

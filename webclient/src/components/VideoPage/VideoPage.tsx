@@ -6,6 +6,7 @@ import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import HttpServiceContext from "../../misc/HttpServiceContext";
 import { convertStatus, Status } from "../../misc/status-converter";
+import UserContext from "../../misc/UserContext";
 import { GetVideoResult } from "../../models/GetVideoResult";
 import { VideoDetails } from "../../models/VideoDetails";
 import './VideoPage.css';
@@ -27,6 +28,7 @@ const VideoPage = () => {
   const updateInterval = useRef<NodeJS.Timeout | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const userContext = useContext(UserContext);
 
   const goBack = () => {
     history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')));
@@ -49,10 +51,12 @@ const VideoPage = () => {
       const plyrRef = plyr.current;
       if (plyrRef != null) {
         const currentTime = plyrRef.currentTime;
-        await httpService.updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
+        if (userContext.token != null) {
+          await httpService.updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
+        }
       }
     },
-    [id, httpService],
+    [id, httpService, userContext.token],
   );
 
   const goToEdit = () => {

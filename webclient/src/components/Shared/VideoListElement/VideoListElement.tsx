@@ -17,17 +17,23 @@ const VideoListElement = ({title, description, url, imageUrl, id, addedToList, o
 
   const addToList = async () => {
     await httpService.updateList({videosToAdd: [id], videosToRemove: []});
-    onListChanged();
+    if (onListChanged != null) {
+      onListChanged();
+    }
   }
 
   const removeFromList = async () => {
     await httpService.updateList({videosToAdd: [], videosToRemove: [id]});
-    onListChanged();
+    if (onListChanged != null) {
+      onListChanged();
+    }
   }
 
-  const addToOrRemoveFromList = !!addedToList
-    ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
-    : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
+  const addToOrRemoveFromList = onListChanged == null
+    ? null
+    : !!addedToList
+      ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
+      : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
 
   return (
     <Card style={{ height: '24rem' }}>
