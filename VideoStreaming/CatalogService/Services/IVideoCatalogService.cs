@@ -9,7 +9,7 @@ namespace CatalogService.Services
 {
     public interface IVideoCatalogService
     {
-        Task<List<Video>> GetVideos(int userId);
+        Task<List<Video>> GetVideos();
         Task<Video> CreateVideo(Video param);
         Task<Video> GetVideo(string id);
         Task<GetVideoResult> GetVideoWithProgress(string id, int userId);

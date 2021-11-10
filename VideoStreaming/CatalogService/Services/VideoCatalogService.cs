@@ -160,7 +160,7 @@ namespace CatalogService.Services
             return null;
         }
 
-        public async Task<List<Video>> GetVideos(int userId)
+        public async Task<List<Video>> GetVideos()
         {
             var videos = await _catalogDb.Videos.ToListAsync();
             return videos;

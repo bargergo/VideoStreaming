@@ -31,7 +31,7 @@ export class HttpService {
   }
   
   async getVideoInfosForUser(): Promise<VideoInfo[]> {
-    const response = await fetch("/api/catalog/list", { headers: { ...this.authorizationHeader(), 'userId': '1' } })
+    const response = await fetch("/api/catalog/list", { headers: { ...this.authorizationHeader() } })
       .then(r => r.json());
     return response;
   }
@@ -41,8 +41,7 @@ export class HttpService {
       method: "POST",
       headers: {
         ...this.authorizationHeader(),
-        'Content-Type': 'application/json',
-        'userId': '1'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(data) 
     }).then(r => r.json());
@@ -55,15 +54,14 @@ export class HttpService {
       method: "PUT",
       headers: {
         ...this.authorizationHeader(),
-        'Content-Type': 'application/json',
-        'userId': '1'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     });
   }
   
   async fetchVideoInfo(id: string): Promise<GetVideoResult> {
-    const response = await fetch("/api/catalog/" + id, { headers: { ...this.authorizationHeader(), 'userId': '1' } })
+    const response = await fetch("/api/catalog/" + id, { headers: { ...this.authorizationHeader() } })
       .then(r => r.json());
     return response;
   }
@@ -90,8 +88,7 @@ export class HttpService {
       method: "PUT",
       headers: {
         ...this.authorizationHeader(),
-        'Content-Type': 'application/json',
-        'userId': '1'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(data)
     });

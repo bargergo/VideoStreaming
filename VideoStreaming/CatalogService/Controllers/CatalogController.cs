@@ -10,8 +10,6 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CatalogService.Controllers
@@ -32,37 +30,37 @@ namespace CatalogService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Video>>> GetVideos([FromHeader] HeaderParams headerParams)
+        public async Task<ActionResult<List<Video>>> GetVideos()
         {
-            var videos = await _catalogService.GetVideos(headerParams.UserId);
+            var videos = await _catalogService.GetVideos();
             return videos;
         }
 
         [HttpPost("list/check")]
-        public async Task<ActionResult<List<int>>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, [FromHeader] HeaderParams headerParams)
+        public async Task<ActionResult<List<int>>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param)
         {
-            var videos = await _catalogService.CheckVideoIdsForUserList(param, headerParams.UserId);
+            var videos = await _catalogService.CheckVideoIdsForUserList(param, User.UserId());
             return videos;
         }
 
         [HttpGet("list")]
-        public async Task<ActionResult<List<Video>>> GetVideosForUser([FromHeader] HeaderParams headerParams)
+        public async Task<ActionResult<List<Video>>> GetVideosForUser()
         {
-            var videos = await _catalogService.GetVideosForUser(headerParams.UserId);
+            var videos = await _catalogService.GetVideosForUser(User.UserId());
             return videos;
         }
 
         [HttpPut("list")]
-        public async Task<IActionResult> UpdateList(UpdateListParam param, [FromHeader] HeaderParams headerParams)
+        public async Task<IActionResult> UpdateList(UpdateListParam param)
         {
-            await _catalogService.UpdateList(param, headerParams.UserId);
+            await _catalogService.UpdateList(param, User.UserId());
             return Ok();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetVideoResult>> GetVideo(string id, [FromHeader] HeaderParams headerParams)
+        public async Task<ActionResult<GetVideoResult>> GetVideo(string id)
         {
-            var video = await _catalogService.GetVideoWithProgress(id, headerParams.UserId);
+            var video = await _catalogService.GetVideoWithProgress(id, User.UserId());
             if (video == null)
             {
                 return NotFound();
@@ -71,15 +69,15 @@ namespace CatalogService.Controllers
         }
 
         [HttpPut("{id}/progress")]
-        public async Task<IActionResult> UpdateProgress(string id, UpdateProgressParam param, [FromHeader] HeaderParams headerParams)
+        public async Task<IActionResult> UpdateProgress(string id, UpdateProgressParam param)
         {
-            // var userId = User.UserId()
-            var video = await _catalogService.GetVideoWithProgress(id, headerParams.UserId);
+            var userId = User.UserId();
+            var video = await _catalogService.GetVideoWithProgress(id, userId);
             if (video == null)
             {
                 return NotFound();
             }
-            await _catalogService.UpdateProgress(id, param, headerParams.UserId);
+            await _catalogService.UpdateProgress(id, param, userId);
             return Ok();
         }
 
