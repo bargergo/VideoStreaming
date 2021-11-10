@@ -4,6 +4,7 @@ import 'plyr/dist/plyr.css';
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
+import { useLocalStorageForNumber } from "../../misc/custom-hooks";
 import HttpServiceContext from "../../misc/HttpServiceContext";
 import { convertStatus, Status } from "../../misc/status-converter";
 import UserContext from "../../misc/UserContext";
@@ -26,7 +27,8 @@ const VideoPage = () => {
   const match = useRouteMatch();
   const plyr = useRef<Plyr | null>(null);
   const updateInterval = useRef<NodeJS.Timeout | null>(null);
-  const [progress, setProgress] = useState<number | null>(null);
+  const [progress, setProgress] = useLocalStorageForNumber('PROGRESS_' + id);
+  const progressRef = useRef<number | null>(progress);
   const [status, setStatus] = useState<string | null>(null);
   const userContext = useContext(UserContext);
 
@@ -54,9 +56,12 @@ const VideoPage = () => {
         if (userContext.token != null) {
           await httpService.updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
         }
+        if (plyrRef.currentTime != null) {
+          setProgress(currentTime);
+        }
       }
     },
-    [id, httpService, userContext.token],
+    [id, httpService, userContext.token, setProgress],
   );
 
   const goToEdit = () => {
@@ -80,17 +85,23 @@ const VideoPage = () => {
   }
 
   useEffect(() => {
+    progressRef.current = progress;
+  }, [progress]);
+
+  useEffect(() => {
     httpService.fetchVideoInfo(id)
       .then((result: GetVideoResult) => {
         setVideoInfo({...result, status: convertStatus(result.status)});
         setStatus(convertStatus(result.status));
-        setProgress(result.progress);
+        if (userContext.token != null) {
+          setProgress(result.progress);
+        }
       })
       .catch(err => {
         console.log(err);
       });
     return;
-  }, [id, httpService]);
+  }, [id, httpService, setProgress, userContext.token]);
 
   useEffect(() => {
 
@@ -148,7 +159,7 @@ const VideoPage = () => {
           plyr.current.on('pause', () => {clearInterval(updateInterval.current); updateInterval.current = null});
           plyr.current.on('seeked', () => saveProgress());
           plyr.current.on('ended', () => saveProgress());
-          plyr.current.on('loadeddata', () => { if (progress != null) { seek(progress) }});
+          plyr.current.on('loadeddata', () => { if (progressRef.current != null) { seek(progressRef.current) }});
           hls.attachMedia(video.current!!);
         });
 
@@ -178,7 +189,7 @@ const VideoPage = () => {
         updateInterval.current = null
       }
     };
-  }, [video, source, saveProgress, progress, status]);
+  }, [video, source, saveProgress, status]);
 
   const addToOrRemoveFromList = !!videoInfo?.addedToList
   ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
