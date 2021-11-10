@@ -1,8 +1,9 @@
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { Alert } from "react-bootstrap";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { Link } from "react-router-dom";
 import * as tus from "tus-js-client";
+import FileUploadButton from "../Shared/FileUploadButton/FileUploadButton";
 import "./UploadPage.css";
 
 enum Severity {
@@ -22,7 +23,6 @@ const UploadPage = ({ token }) => {
   const [message, setMessage] = useState<Message | null>(null);
   const [fileId, setFileId] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const onFileInputChanged = (e: ChangeEvent) => {
     if (e != null) {
@@ -102,10 +102,6 @@ const UploadPage = ({ token }) => {
     }
   };
 
-  const handleBrowse = () => {
-    inputRef.current?.click();
-  };
-
   const isAnimated = progress != null && progress !== 100;
 
   const successMessage =
@@ -135,20 +131,12 @@ const UploadPage = ({ token }) => {
       <h1 className="mb-4">Upload</h1>
       {successMessage || errorMessage}
       <label className="mr-3">Choose a video file: </label>
-      <input
-        className="d-none"
-        type="file"
-        ref={inputRef}
-        accept="video/mp4"
-        onChange={onFileInputChanged}
-      />
       <div>
-        <button
-          className={`btn btn-outline-${file != null ? "success" : "primary"}`}
-          onClick={handleBrowse}
-        >
-          {file != null ? file.name : "Browse"}
-        </button>{" "}
+        <FileUploadButton
+          text={file != null ? file.name : 'Browse'}
+          accept="video/mp4"
+          fileSelected={file != null} 
+          onFileInputChanged={onFileInputChanged}/>{" "}
         {uploadButton}
       </div>
       {progress != null ? (

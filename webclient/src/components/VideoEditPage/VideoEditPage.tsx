@@ -3,6 +3,7 @@ import { Button, Form } from "react-bootstrap";
 import { useHistory, useParams } from "react-router-dom";
 import HttpServiceContext from "../../misc/HttpServiceContext";
 import { GetVideoResult } from "../../models/GetVideoResult";
+import FileUploadButton from "../Shared/FileUploadButton/FileUploadButton";
 import './VideoEditPage.css';
 
 type VideoParams = {
@@ -61,10 +62,18 @@ const VideoEditPage = () => {
         <Form.Label>Description</Form.Label>
         <Form.Control as="textarea" rows={3} onChange={(event) => setEnteredDescription(event.target.value)} value={enteredDescription} />
       </Form.Group>
-      {previewImage}
-      <Form.Group controlId="formFile" className="mb-3">
+      <Form.Group controlId="formFile" className="mb-3 mt-3">
         <Form.Label>Change image</Form.Label>
-        <Form.Control type="file" accept="image/jpeg" onChange={(event) => setFile((event.target as HTMLInputElement).files[0])}/>
+        <div>
+          <FileUploadButton
+            text={file != null ? file.name : 'Browse'}
+            accept="image/jpeg"
+            fileSelected={file != null} 
+            onFileInputChanged={(event) => setFile((event.target as HTMLInputElement).files[0])}/>
+          <div className="mt-3">
+            {previewImage}
+          </div>
+        </div>
       </Form.Group>
       <Button type="button" variant="outline-primary" onClick={goBack} >Cancel</Button>{' '}
       <Button type="submit" variant="primary">Submit</Button>

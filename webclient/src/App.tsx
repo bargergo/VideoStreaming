@@ -10,13 +10,13 @@ import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
 import VideoPage from "./components/VideoPage/VideoPage";
 import VideosPage from "./components/VideosPage/VideosPage";
-import useLocalStorage from "./misc/custom-hooks";
+import useSessionStorage from "./misc/custom-hooks";
 import HttpServiceContext, { HttpService } from "./misc/HttpServiceContext";
 
 const App = () => {
 
-  const [username, setUsername] = useLocalStorage('USERNAME');
-  const [token, setToken] = useLocalStorage('TOKEN');
+  const [username, setUsername] = useSessionStorage('USERNAME');
+  const [token, setToken] = useSessionStorage('TOKEN');
 
   return (
     <HttpServiceContext.Provider value={new HttpService(username, setUsername, token, setToken)}>
