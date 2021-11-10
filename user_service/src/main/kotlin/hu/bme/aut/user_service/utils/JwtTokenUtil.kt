@@ -1,13 +1,13 @@
 package hu.bme.aut.user_service.utils
 
-import hu.bme.aut.user_service.model.UserWithId
+import hu.bme.aut.user_service.model.User
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
 import org.springframework.core.env.Environment
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
-import java.util.Date
+import java.util.*
 
 
 @Component
@@ -44,8 +44,8 @@ class JwtTokenUtil(
     }
 
     //generate token for user
-    fun generateToken(userDetails: UserWithId): String {
-        val claims: Map<String, Any> = mutableMapOf("userId" to userDetails.id)
+    fun generateToken(userDetails: User): String {
+        val claims: Map<String, Any> = mutableMapOf("userId" to userDetails.id!!, "roles" to userDetails.roles.map { it.name })
         return doGenerateToken(claims, userDetails.username)
     }
 

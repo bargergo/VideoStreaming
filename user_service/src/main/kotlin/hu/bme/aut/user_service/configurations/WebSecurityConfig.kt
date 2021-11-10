@@ -1,37 +1,49 @@
 package hu.bme.aut.user_service.configurations
 
-import org.springframework.beans.factory.annotation.Autowired
+import hu.bme.aut.user_service.services.UserService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import javax.sql.DataSource
+
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 class WebSecurityConfig(
-    private val jwtUserDetailsService: UserDetailsService,
-    private val jwtRequestFilter: JwtRequestFilter,
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private val userService: UserService
 ) : WebSecurityConfigurerAdapter() {
 
-    @Autowired
+    /*@Autowired
     fun configureGlobal(auth: AuthenticationManagerBuilder) {
         // configure AuthenticationManager so that it knows from where to load
         // user for matching credentials
         // Use BCryptPasswordEncoder
         auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder)
+    }*/
+
+    override fun configure(auth: AuthenticationManagerBuilder?) {
+        requireNotNull(auth)
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
     }
+
+    /*@Bean
+    fun authenticationProvider(): DaoAuthenticationProvider {
+        val auth = DaoAuthenticationProvider()
+        auth.setUserDetailsService(userService)
+        auth.setPasswordEncoder(passwordEncoder)
+        return auth
+    }*/
 
     @Bean
     override fun authenticationManagerBean(): AuthenticationManager? {
