@@ -4,6 +4,7 @@ using CatalogService.DTOs;
 using CatalogService.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,11 +17,13 @@ namespace CatalogService.Services
     {
         private readonly CatalogDbContext _catalogDb;
         private readonly IFileStorageSettings _fileStorageSettings;
+        private readonly ILogger<VideoCatalogService> _logger;
 
-        public VideoCatalogService(CatalogDbContext catalogDb, IFileStorageSettings fileStorageSettings)
+        public VideoCatalogService(CatalogDbContext catalogDb, IFileStorageSettings fileStorageSettings, ILogger<VideoCatalogService> logger)
         {
             _catalogDb = catalogDb;
             _fileStorageSettings = fileStorageSettings;
+            _logger = logger;
         }
 
         public async Task<Video> CreateVideo(Video param)
@@ -72,20 +75,32 @@ namespace CatalogService.Services
 
         public async Task<ImageHolder> GetImage(string id)
         {
+            _logger.LogInformation($"GetImage for video with id: {id}");
             var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
             if (video != null && video.ImageFileName != null)
             {
+                _logger.LogInformation($"Video found with id: {id}");
                 var imgPath = Path.Combine(_fileStorageSettings.Path, "images", video.ImageFileName);
                 var fileInfo = new FileInfo(imgPath);
-                if (fileInfo.Exists)
+                _logger.LogInformation($"Get image from path {imgPath}");
+                try
                 {
-                    return new ImageHolder
+                    if (fileInfo.Exists)
                     {
-                        Data = File.OpenRead(imgPath),
-                        Filename = video.ImageFileName,
-                        ContentType = fileInfo.Extension
-                    };
+                        _logger.LogInformation($"Image exists for video with id: {id}");
+                        return new ImageHolder
+                        {
+                            Data = File.OpenRead(imgPath),
+                            Filename = video.ImageFileName,
+                            ContentType = fileInfo.Extension
+                        };
+                    }
+                } catch(Exception e)
+                {
+                    _logger.LogError(e.Message);
                 }
+                
+                _logger.LogInformation($"Image does not exist for video with id: {id}");
             }
             return null;
         }

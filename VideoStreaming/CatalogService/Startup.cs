@@ -1,3 +1,4 @@
+using CatalogService.Authentication;
 using CatalogService.Database;
 using CatalogService.MessageQueue;
 using CatalogService.Middlewares;
@@ -5,6 +6,7 @@ using CatalogService.Models;
 using CatalogService.Services;
 using MassTransit;
 using MessageQueueDTOs;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -71,6 +73,8 @@ namespace CatalogService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogService", Version = "v1" });
             });
+            services.AddAuthentication("CustomJwtAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, CustomJwtAuthenticationHandler>("CustomJwtAuthentication", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,6 +87,7 @@ namespace CatalogService
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CatalogService v1"));
             }
 
+            app.UseAuthentication();
             app.UseRequestResponseLogging();
             app.UseRouting();
 

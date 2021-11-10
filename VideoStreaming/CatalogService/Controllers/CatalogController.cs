@@ -1,13 +1,17 @@
 ﻿using CatalogService.Database.Entities;
 using CatalogService.DTOs;
+using CatalogService.Extensions;
 using CatalogService.Models;
 using CatalogService.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace CatalogService.Controllers
@@ -69,6 +73,7 @@ namespace CatalogService.Controllers
         [HttpPut("{id}/progress")]
         public async Task<IActionResult> UpdateProgress(string id, UpdateProgressParam param, [FromHeader] HeaderParams headerParams)
         {
+            // var userId = User.UserId()
             var video = await _catalogService.GetVideoWithProgress(id, headerParams.UserId);
             if (video == null)
             {
@@ -124,12 +129,15 @@ namespace CatalogService.Controllers
         [HttpGet("{fileId}/{fileName}")]
         public async Task<IActionResult> GetHlsFiles(string fileId, string fileName)
         {
+            _logger.LogInformation($"Get file {fileId}/{fileName}");
             var video = await _catalogService.GetVideo(fileId);
             if (video == null)
             {
+                _logger.LogInformation($"Video with id: {fileId} not found");
                 return NotFound();
             }
             var pathToFile = Path.Combine(_fileStorageSettings.Path, "hls", fileId, fileName);
+            _logger.LogInformation($"Path to file: {pathToFile}");
 
             var supportedExtensions = new List<string>
             {
@@ -138,10 +146,23 @@ namespace CatalogService.Controllers
             };
 
             var extension = fileName.Substring(fileName.LastIndexOf("."));
-
-            if (!System.IO.File.Exists(pathToFile) || !supportedExtensions.Contains(extension))
+            try
             {
-                return NotFound($"File was not found.");
+                if (!System.IO.File.Exists(pathToFile) || !supportedExtensions.Contains(extension))
+                {
+                    if (!System.IO.File.Exists(pathToFile))
+                    {
+                        _logger.LogInformation($"File does not exist: {pathToFile}");
+                    } else
+                    {
+                        _logger.LogInformation($"Forbidden extension: {extension}");
+                    }
+                    return NotFound($"File was not found.");
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
             }
 
 
@@ -149,7 +170,9 @@ namespace CatalogService.Controllers
                 ? "video/mp2t"
                 : "application/x-mpegURL";
 
+            _logger.LogInformation($"Opening file for read: {pathToFile}");
             var file = System.IO.File.OpenRead(pathToFile);
+            _logger.LogInformation($"Opened file for read: {pathToFile}");
             return File(file, contentType, fileName);
         }
     }

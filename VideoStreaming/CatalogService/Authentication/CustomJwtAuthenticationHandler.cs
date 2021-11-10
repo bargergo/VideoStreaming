@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace UploadService.Authentication
+namespace CatalogService.Authentication
 {
     public class CustomJwtAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
@@ -37,7 +38,7 @@ namespace UploadService.Authentication
             var authHeader = Request.Headers["Authorization"].ToString();
             _ilogger.LogInformation($"Authorization header: {authHeader}");
 
-
+            
             if (authHeader == null && authHeader.Length == 0)
             {
                 return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
@@ -66,7 +67,7 @@ namespace UploadService.Authentication
             };
             foreach (var role in roles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, $"{role.Value}"));
+                claims.Add(new Claim(ClaimTypes.Role, $"{role.Value}")); 
             }
             return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name)), Scheme.Name)));
         }
