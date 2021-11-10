@@ -29,14 +29,15 @@ class JwtRequestFilter(
         var jwtToken: String? = null
         // JWT Token is in the form "Bearer token". Remove Bearer word and get
         // only the Token
+        logger.info("Authorization header: $requestTokenHeader")
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7)
             try {
                 username = jwtTokenUtil.getUsernameFromToken(jwtToken)
             } catch (e: IllegalArgumentException) {
-                println("Unable to get JWT Token")
+                logger.info("Unable to get JWT Token")
             } catch (e: ExpiredJwtException) {
-                println("JWT Token has expired")
+                logger.info("JWT Token has expired")
             }
         } else {
             logger.warn("JWT Token does not begin with Bearer String")

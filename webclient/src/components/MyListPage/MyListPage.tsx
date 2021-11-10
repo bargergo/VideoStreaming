@@ -54,7 +54,7 @@ const MyListPage = () => {
                 url={`/videos/${video.fileId}`}
                 imageUrl={
                   video.imageFileName
-                    ? `/api/catalog/${video.fileId}/image`
+                    ? `/api/catalog/public/${video.fileId}/image`
                     : null
                 }
                 id={video.id}

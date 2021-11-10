@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import javax.sql.DataSource
 
 
@@ -21,29 +22,14 @@ import javax.sql.DataSource
 class WebSecurityConfig(
     private val jwtAuthenticationEntryPoint: JwtAuthenticationEntryPoint,
     private val passwordEncoder: PasswordEncoder,
-    private val userService: UserService
+    private val userService: UserService,
+    private val jwtRequestFilter: JwtRequestFilter
 ) : WebSecurityConfigurerAdapter() {
-
-    /*@Autowired
-    fun configureGlobal(auth: AuthenticationManagerBuilder) {
-        // configure AuthenticationManager so that it knows from where to load
-        // user for matching credentials
-        // Use BCryptPasswordEncoder
-        auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder)
-    }*/
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
         requireNotNull(auth)
         auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
     }
-
-    /*@Bean
-    fun authenticationProvider(): DaoAuthenticationProvider {
-        val auth = DaoAuthenticationProvider()
-        auth.setUserDetailsService(userService)
-        auth.setPasswordEncoder(passwordEncoder)
-        return auth
-    }*/
 
     @Bean
     override fun authenticationManagerBean(): AuthenticationManager? {
@@ -64,7 +50,6 @@ class WebSecurityConfig(
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         // Add a filter to validate the tokens with every request
-        // Add a filter to validate the tokens with every request
-        // httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
+        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter::class.java)
     }
 }

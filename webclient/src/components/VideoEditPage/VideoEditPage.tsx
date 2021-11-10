@@ -43,7 +43,7 @@ const VideoEditPage = () => {
       .then((result: GetVideoResult) => {
         setEnteredTitle(result.name);
         setEnteredDescription(result.description || '');
-        setImageUrl(result.imageFileName != null ? `/api/catalog/${result.fileId}/image` : null);
+        setImageUrl(result.imageFileName != null ? `/api/catalog/public/${result.fileId}/image` : null);
       })
       .catch(err => {
         console.log(err);

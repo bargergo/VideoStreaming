@@ -25,19 +25,19 @@ export class HttpService {
   }
 
   async getVideoInfos(): Promise<VideoInfo[]> {
-    const response = await fetch("/api/catalog", { headers: { ...this.authorizationHeader() } })
+    const response = await fetch("/api/catalog/public", { headers: { ...this.authorizationHeader() } })
       .then(r => r.json());
     return response;
   }
   
   async getVideoInfosForUser(): Promise<VideoInfo[]> {
-    const response = await fetch("/api/catalog/list", { headers: { ...this.authorizationHeader() } })
+    const response = await fetch("/api/catalog/private/list", { headers: { ...this.authorizationHeader() } })
       .then(r => r.json());
     return response;
   }
   
   async checkVideoIdsForUserList(data: CheckVideoIdsForUserListParam): Promise<number[]> {
-    const response = await fetch("/api/catalog/list/check", { 
+    const response = await fetch("/api/catalog/private/list/check", { 
       method: "POST",
       headers: {
         ...this.authorizationHeader(),
@@ -49,7 +49,7 @@ export class HttpService {
   }
   
   async updateList(data: UpdateListParam): Promise<void> {
-    await fetch("/api/catalog/list",
+    await fetch("/api/catalog/private/list",
     {
       method: "PUT",
       headers: {
@@ -61,20 +61,21 @@ export class HttpService {
   }
   
   async fetchVideoInfo(id: string): Promise<GetVideoResult> {
-    const response = await fetch("/api/catalog/" + id, { headers: { ...this.authorizationHeader() } })
+    const baseUrl = this.token != null ? "/api/catalog/private/" : "/api/catalog/public/";
+    const response = await fetch(baseUrl + id, { headers: { ...this.authorizationHeader() } })
       .then(r => r.json());
     return response;
   }
   
   async deleteVideo(id: string): Promise<void> {
-    await fetch("/api/catalog/" + id, { method: "DELETE", headers: { ...this.authorizationHeader() } });
+    await fetch("/api/catalog/private/" + id, { method: "DELETE", headers: { ...this.authorizationHeader() } });
   }
   
   async updateVideo(id: string, data: {title?: string, description?: string}, file: File): Promise<void> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('jsonString', JSON.stringify(data));
-    await fetch("/api/catalog/" + id, 
+    await fetch("/api/catalog/private/" + id, 
     {
       method: "PUT",
       body: formData,
@@ -83,7 +84,7 @@ export class HttpService {
   }
   
   async updateProgress(id: string, data: {progress: number, finished: boolean}): Promise<void> {
-    await fetch(`/api/catalog/${id}/progress`, 
+    await fetch(`/api/catalog/private/${id}/progress`, 
     {
       method: "PUT",
       headers: {
@@ -95,7 +96,7 @@ export class HttpService {
   }
   
   async searchVideos(data: {searchText: string}): Promise<VideoInfo[]> {
-    const response =  await fetch("/api/catalog/search",
+    const response =  await fetch("/api/catalog/public/search",
     {
       method: "POST",
       headers: {

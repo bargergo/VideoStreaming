@@ -40,7 +40,7 @@ class JwtTokenUtil(
     //check if the token has expired
     private fun isTokenExpired(token: String): Boolean {
         val expiration = getExpirationDateFromToken(token)
-        return expiration!!.before(Date())
+        return expiration?.before(Date()) ?: true
     }
 
     //generate token for user

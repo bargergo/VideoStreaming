@@ -19,7 +19,7 @@ const VideoPage = () => {
   const httpService = useContext(HttpServiceContext);
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
-  const source = `/api/catalog/${id}/playlist.m3u8`;
+  const source = `/api/catalog/public/${id}/playlist.m3u8`;
   const [videoInfo, setVideoInfo] = useState<VideoDetails | null>(null);
   const history = useHistory();
   const match = useRouteMatch();
@@ -27,6 +27,15 @@ const VideoPage = () => {
   const updateInterval = useRef<NodeJS.Timeout | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+
+  const goBack = () => {
+    history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')));
+  };
+
+  const deleteVideo = async () => {
+    await httpService.deleteVideo(id);
+    goBack();
+  };
 
   const seek = (time: number) => {
     const plyrRef = plyr.current;
@@ -181,9 +190,9 @@ const VideoPage = () => {
         <p>Status: {videoInfo?.status}</p>
         <div className="mb-2">Description: {videoInfo?.description}</div>
         <div className="mb-2">
-          <Button variant="outline-primary" onClick={() => goToEdit()} >Edit</Button>{' '}
+          <Button variant="outline-primary" onClick={goToEdit} >Edit</Button>{' '}
           {addToOrRemoveFromList}{' '}
-          <Button variant="danger" onClick={() => httpService.deleteVideo(id)}>Delete</Button>
+          <Button variant="danger" onClick={deleteVideo}>Delete</Button>
         </div>
       </div>
     </div>

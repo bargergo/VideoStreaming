@@ -41,6 +41,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.upload-service.rule=PathPrefix(`/api/files`)"
       - "traefik.http.routers.upload-service.entrypoints=web"
+      - "traefik.http.routers.upload-service.middlewares=user-service"
     depends_on:
       - videostreaming-messagequeue
       
@@ -76,8 +77,11 @@ services:
       - tusfiles:/data
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.catalog-service.rule=PathPrefix(`/api/catalog`)"
+      - "traefik.http.routers.catalog-service.rule=PathPrefix(`/api/catalog/public`)"
       - "traefik.http.routers.catalog-service.entrypoints=web"
+      - "traefik.http.routers.catalog-service-private.rule=PathPrefix(`/api/catalog/private`)"
+      - "traefik.http.routers.catalog-service-private.entrypoints=web"
+      - "traefik.http.routers.catalog-service-private.middlewares=user-service"
     depends_on:
       - catalog-db
       - videostreaming-messagequeue
@@ -109,6 +113,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user-service`)"
       - "traefik.http.routers.user-service.entrypoints=web"
+      - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/api/user-service/check"
     depends_on:
       - user-db
       
