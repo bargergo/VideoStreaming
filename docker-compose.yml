@@ -107,8 +107,8 @@ services:
     environment:
       JWT__SECRET: top_secret_secret
       SPRING__DATASOURCE__URL: "jdbc:mysql://user-db:3306/user-db?createDatabaseIfNotExist=true&autoReconnect=true"
-      SPRING__DATASOURCE__USERNAME: root
-      SPRING__DATASOURCE__PASSWORD: helloworld
+      SPRING__DATASOURCE__USERNAME: ${user_db_user}
+      SPRING__DATASOURCE__PASSWORD: ${user_db_password}
       SERVER__PORT: "80"
     ports: 
       - "5004:80"
@@ -124,7 +124,9 @@ services:
     image: mysql:8.0.26
     container_name: user-db
     environment:
-        MYSQL_ROOT_PASSWORD: helloworld
+        MYSQL_ROOT_PASSWORD: ${user_db_root_password}
+        MYSQL_USER: ${user_db_user}
+        MYSQL_PASSWORD: ${user_db_password}
         MYSQL_DATABASE: user-db
     ports:
       - "3306:3306"
