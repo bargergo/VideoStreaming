@@ -18,6 +18,9 @@ services:
   videostreaming-messagequeue:
     image: rabbitmq:3.8.3-management
     container_name: "videostreaming-messagequeue"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${message_queue_user}
+      RABBITMQ_DEFAULT_PASS: ${message_queue_password}
     ports:
     # The standard AMQP protocol port
     - '5672:5672'
@@ -31,8 +34,8 @@ services:
     environment:
       FileStorageSettings__DiskStorePath: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
-      MessageQueueSettings__Username: guest
-      MessageQueueSettings__Password: guest
+      MessageQueueSettings__Username: ${message_queue_user}
+      MessageQueueSettings__Password: ${message_queue_password}
     ports: 
       - "5001:80"
     volumes:
@@ -52,8 +55,8 @@ services:
     environment:
       FileStorageSettings__Path: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
-      MessageQueueSettings__Username: guest
-      MessageQueueSettings__Password: guest
+      MessageQueueSettings__Username: ${message_queue_user}
+      MessageQueueSettings__Password: ${message_queue_password}
     ports: 
       - "5002:80"
     volumes:
@@ -68,8 +71,8 @@ services:
     environment:
       FileStorageSettings__Path: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
-      MessageQueueSettings__Username: guest
-      MessageQueueSettings__Password: guest
+      MessageQueueSettings__Username: ${message_queue_user}
+      MessageQueueSettings__Password: ${message_queue_password}
       ConnectionStrings__CatalogDb: "Server=catalog-db;Database=master;User=sa;Password=Your_password123;"
     ports: 
       - "5003:80"
