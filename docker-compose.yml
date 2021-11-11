@@ -73,7 +73,7 @@ services:
       MessageQueueSettings__Hostname: videostreaming-messagequeue
       MessageQueueSettings__Username: ${message_queue_user}
       MessageQueueSettings__Password: ${message_queue_password}
-      ConnectionStrings__CatalogDb: "Server=catalog-db;Database=master;User=sa;Password=Your_password123;"
+      ConnectionStrings__CatalogDb: "Server=catalog-db;Database=master;User=sa;Password=${catalog_db_password};"
     ports: 
       - "5003:80"
     volumes:
@@ -93,8 +93,8 @@ services:
     image: "mcr.microsoft.com/mssql/server:2019-CU13-ubuntu-20.04"
     container_name: catalog-db
     environment:
-        SA_PASSWORD: "Your_password123"
-        ACCEPT_EULA: "Y"
+        SA_PASSWORD: ${catalog_db_password}
+        ACCEPT_EULA: Y
     ports:
       - "1433:1433"
     volumes:
@@ -105,7 +105,7 @@ services:
       context: user_service
       dockerfile: Dockerfile
     environment:
-      JWT__SECRET: top_secret_secret
+      JWT__SECRET: ${jwt_secret}
       SPRING__DATASOURCE__URL: "jdbc:mysql://user-db:3306/user-db?createDatabaseIfNotExist=true&autoReconnect=true"
       SPRING__DATASOURCE__USERNAME: ${user_db_user}
       SPRING__DATASOURCE__PASSWORD: ${user_db_password}
