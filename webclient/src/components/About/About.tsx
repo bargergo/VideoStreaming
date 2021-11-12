@@ -6,7 +6,7 @@ const About = () => {
     <Container>
       <h1 className="mb-4">About</h1>
       <p>
-        VideoStreaming is a web application for streaming videos with HLS.
+        <b>VideoStreaming</b> is a web application for streaming videos with HLS.
         The application is implemented in microservices architecture.
         The signed in users can upload videos.
         The videos are converted to HLS streams with FFmpeg.
