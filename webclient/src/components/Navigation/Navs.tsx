@@ -10,12 +10,12 @@ const Navs = ({ username }) => {
   const httpService = useContext(HttpServiceContext);
 
   const LINKS = [
-    {to: '/', text: 'Home'},
-    {to: '/videos', text: 'Videos'},
+    {to: '/', text: 'Videos'},
+    {to: '/about', text: 'About'},
   ];
 
   if (username != null) {
-    LINKS.push(
+    LINKS.splice(1, 0,
       {to: '/upload', text: 'Upload'},
       {to: '/my-list', text: 'My List'}
     );
@@ -66,8 +66,8 @@ const Navs = ({ username }) => {
 
   return (
     <Navbar collapseOnSelect bg="dark" variant="dark" expand="lg">
-      <Container fluid>
-        <Link className="navbar-brand" to="/">Navbar</Link>
+      <Container className="my-0">
+        <Link className="navbar-brand" to="/">VideoStreaming</Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <ul className="navbar-nav mr-auto">

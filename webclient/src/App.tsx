@@ -1,7 +1,7 @@
 import React from "react";
 import { Container } from "react-bootstrap";
-import { Route, Switch } from "react-router";
-import Home from "./components/Home/Home";
+import { Redirect, Route, Switch } from "react-router";
+import About from "./components/About/About";
 import LoginPage from "./components/LoginPage/LoginPage";
 import MyListPage from "./components/MyListPage/MyListPage";
 import Navs from "./components/Navigation/Navs";
@@ -28,11 +28,14 @@ const App = () => {
         <Switch>
 
           <Route exact path="/">
-            <Home />
+            <Redirect to="/videos" />
           </Route>
 
           <Route path="/videos/:id/edit">
-            <VideoEditPage />
+            {token == null
+              ? <Redirect to="/login" />
+              : <VideoEditPage />
+            }
           </Route>
 
           <Route path="/videos/:id">
@@ -44,11 +47,21 @@ const App = () => {
           </Route>
 
           <Route path="/upload">
-            <UploadPage token={token}/>
+            {token == null
+              ? <Redirect to="/login" />
+              : <UploadPage token={token}/>
+            }
           </Route>
 
           <Route path="/my-list">
-            <MyListPage />
+            {token == null
+              ? <Redirect to="/login" />
+              : <MyListPage />
+            }
+          </Route>
+
+          <Route path="/about">
+            <About />
           </Route>
 
           <Route path="/login">
@@ -60,9 +73,12 @@ const App = () => {
           </Route>
 
           <Route>
-            <div>
-              Not found
-            </div>
+            <Container>
+              <h1 className="mb-4">Not found</h1>
+              <div>
+                The requested page was not found.
+              </div>
+            </Container>
           </Route>
         </Switch>
         </Container>

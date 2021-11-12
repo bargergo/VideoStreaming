@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Form } from "react-bootstrap";
+import { Button, Container, Form } from "react-bootstrap";
 import { useHistory, useParams } from "react-router-dom";
 import HttpServiceContext from "../../misc/HttpServiceContext";
 import { GetVideoResult } from "../../models/GetVideoResult";
@@ -52,33 +52,35 @@ const VideoEditPage = () => {
     return;
   }, [id, httpService]);
 
-  return (<div>
-    <Form onSubmit={submit}>
-      <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-        <Form.Label>Title</Form.Label>
-        <Form.Control type="text" onChange={(event) => setEnteredTitle(event.target.value)} value={enteredTitle} />
-      </Form.Group>
-      <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-        <Form.Label>Description</Form.Label>
-        <Form.Control as="textarea" rows={3} onChange={(event) => setEnteredDescription(event.target.value)} value={enteredDescription} />
-      </Form.Group>
-      <Form.Group controlId="formFile" className="mb-3 mt-3">
-        <Form.Label>Change image</Form.Label>
-        <div>
-          <FileUploadButton
-            text={file != null ? file.name : 'Browse'}
-            accept="image/jpeg"
-            fileSelected={file != null} 
-            onFileInputChanged={(event) => setFile((event.target as HTMLInputElement).files[0])}/>
-          <div className="mt-3">
-            {previewImage}
+  return (
+    <Container>
+      <h1 className="mb-4">Edit Video</h1>
+      <Form onSubmit={submit}>
+        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+          <Form.Label>Title</Form.Label>
+          <Form.Control type="text" onChange={(event) => setEnteredTitle(event.target.value)} value={enteredTitle} />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+          <Form.Label>Description</Form.Label>
+          <Form.Control as="textarea" rows={3} onChange={(event) => setEnteredDescription(event.target.value)} value={enteredDescription} />
+        </Form.Group>
+        <Form.Group controlId="formFile" className="mb-3 mt-3">
+          <Form.Label>Change image</Form.Label>
+          <div>
+            <FileUploadButton
+              text={file != null ? file.name : 'Browse'}
+              accept="image/jpeg"
+              fileSelected={file != null} 
+              onFileInputChanged={(event) => setFile((event.target as HTMLInputElement).files[0])}/>
+            <div className="mt-3">
+              {previewImage}
+            </div>
           </div>
-        </div>
-      </Form.Group>
-      <Button type="button" variant="outline-primary" onClick={goBack} >Cancel</Button>{' '}
-      <Button type="submit" variant="primary">Submit</Button>
-    </Form>
-    </div>);
+        </Form.Group>
+        <Button type="button" variant="outline-primary" onClick={goBack} >Cancel</Button>{' '}
+        <Button type="submit" variant="primary">Save</Button>
+      </Form>
+    </Container>);
 }
 
 export default VideoEditPage;
