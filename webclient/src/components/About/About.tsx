@@ -7,13 +7,13 @@ const About = () => {
       <h1 className="mb-4">About</h1>
       <p>
         <b>VideoStreaming</b> is a web application for streaming videos with HLS.
-        The application is implemented in microservices architecture.
+        The application is implemented in <b>microservices architecture</b>.
         The signed in users can upload videos.
         The videos are converted to HLS streams with FFmpeg.
         Users can add videos to their list, and their progress with playing the video is saved, so the video playback can be resumed.
       </p>
       <h2 className="mb-2">Used Technologies</h2>
-      <p>React, TypeScript, C#, ASP.NET Core, Spring, Kotlin, Docker, RabbitMQ, Traefik, FFmpeg, HLS.js, Plyr</p>
+      <p>React, TypeScript, C#, ASP.NET Core, Spring, Kotlin, Docker, RabbitMQ, Traefik, FFmpeg, HLS.js, Plyr, tusdotnet</p>
       <h2 className="mb-2">Author</h2>
       <p>Bargergo</p>
     </Container>);
