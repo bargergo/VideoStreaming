@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from "react";
-import { Alert } from "react-bootstrap";
+import { Alert, Container } from "react-bootstrap";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import { Link } from "react-router-dom";
 import * as tus from "tus-js-client";
@@ -127,7 +127,7 @@ const UploadPage = ({ token }) => {
     ) : null;
 
   return (
-    <>
+    <Container>
       <h1 className="mb-4">Upload</h1>
       {successMessage || errorMessage}
       <label className="mr-3">Choose a video file: </label>
@@ -144,7 +144,7 @@ const UploadPage = ({ token }) => {
           <ProgressBar animated={isAnimated} now={progress} />
         </div>
       ) : null}
-    </>
+    </Container>
   );
 };
 
