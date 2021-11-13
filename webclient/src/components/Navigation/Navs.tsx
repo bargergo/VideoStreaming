@@ -1,13 +1,12 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { Link, NavLink } from 'react-router-dom';
-import HttpServiceContext from '../../misc/HttpServiceContext';
+import { logout } from '../../misc/api';
+import { useAppSelector } from '../../misc/store-hooks';
 
+const Navs = () => {
 
-
-const Navs = ({ username }) => {
-
-  const httpService = useContext(HttpServiceContext);
+  const username = useAppSelector((state) => state.user.name);
 
   const LINKS = [
     {to: '/', text: 'Videos'},
@@ -56,7 +55,7 @@ const Navs = ({ username }) => {
         <li className="nav-item">
             <button
               className="btn btn-link nav-link"
-              onClick={() => httpService.logout()}
+              onClick={() => logout()}
             >
               Logout
             </button>

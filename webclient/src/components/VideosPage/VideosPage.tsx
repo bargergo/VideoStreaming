@@ -1,15 +1,14 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import HttpServiceContext from '../../misc/HttpServiceContext';
-import UserContext from '../../misc/UserContext';
+import { checkVideoIdsForUserList, getVideoInfos, searchVideos } from '../../misc/api';
+import { useAppSelector } from '../../misc/store-hooks';
 import { VideoInfoEx } from '../../models/VideoInfoEx';
 import VideoListElement from '../Shared/VideoListElement/VideoListElement';
 import SearchForm from './SearchForm';
 
 const VideosPage = () => {
   
-  const httpService = useContext(HttpServiceContext);
-  const userContext = useContext(UserContext);
+  const token = useAppSelector((state) => state.user.token);
   const [videos, setVideos] = useState<VideoInfoEx[]>([]);
   const match = useRouteMatch();
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -17,10 +16,9 @@ const VideosPage = () => {
   const search = async (searchText: string) => {
     setLoading(true);
     try {
-      const response = await httpService.searchVideos({searchText: searchText});
-      console.log(userContext.token);
-      const videosOnList = userContext.token != null
-        ? await httpService.checkVideoIdsForUserList({videoIds: response.map(r => r.id)})
+      const response = await searchVideos({searchText: searchText});
+      const videosOnList = token != null
+        ? await checkVideoIdsForUserList({videoIds: response.map(r => r.id)})
         : [];
       const result = response.map<VideoInfoEx>(video => ({
         ...video,
@@ -35,10 +33,10 @@ const VideosPage = () => {
   const showAll = useCallback(
     () => {
       setLoading(true);
-      httpService.getVideoInfos()
+      getVideoInfos()
       .then(async (response) => {
-        const videosOnList = userContext.token != null
-          ? await httpService.checkVideoIdsForUserList({videoIds: response.map(r => r.id)})
+        const videosOnList = token != null
+          ? await checkVideoIdsForUserList({videoIds: response.map(r => r.id)})
           : [];
         const result = response.map<VideoInfoEx>(video => ({
           ...video,
@@ -52,13 +50,13 @@ const VideosPage = () => {
         setLoading(false);
       });
     },
-    [httpService, userContext.token],
+    [token],
   );
 
   const updateMyList = async () => {
     setLoading(true);
     try {
-      const videosOnList = await httpService.checkVideoIdsForUserList({videoIds: videos.map(r => r.id)});
+      const videosOnList = await checkVideoIdsForUserList({videoIds: videos.map(r => r.id)});
       setVideos(prev => {
         const result = prev.map<VideoInfoEx>(video => ({
           ...video,
@@ -101,7 +99,7 @@ const VideosPage = () => {
                   imageUrl={video.imageFileName ? `/api/catalog/public/${video.fileId}/image` : null} 
                   id={video.id}
                   addedToList={video.addedToList}
-                  onListChanged={userContext.token != null ? updateMyList : null} />
+                  onListChanged={token != null ? updateMyList : null} />
             </div>
           )}
       </div>

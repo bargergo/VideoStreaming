@@ -1,18 +1,16 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import HttpServiceContext from "../../misc/HttpServiceContext";
+import React, { useCallback, useEffect, useState } from "react";
+import { getVideoInfosForUser } from "../../misc/api";
 import { VideoInfo } from "../../models/VideoInfo";
 import VideoListElement from "../Shared/VideoListElement/VideoListElement";
 
 const MyListPage = () => {
-  const httpService = useContext(HttpServiceContext);
 
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const getMyVideos = useCallback(() => {
     setLoading(true);
-    httpService
-      .getVideoInfosForUser()
+    getVideoInfosForUser()
       .then((results) => {
         setVideos(results);
         setLoading(false);
@@ -21,7 +19,7 @@ const MyListPage = () => {
         console.log(err);
         setLoading(false);
       });
-  }, [httpService]);
+  }, []);
 
   useEffect(() => {
     getMyVideos();

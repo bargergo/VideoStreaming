@@ -1,13 +1,13 @@
 import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
-import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
+import { deleteVideo, fetchVideoInfo, updateList, updateProgress } from "../../misc/api";
 import { useLocalStorageForNumber } from "../../misc/custom-hooks";
-import HttpServiceContext from "../../misc/HttpServiceContext";
 import { convertStatus, Status } from "../../misc/status-converter";
-import UserContext from "../../misc/UserContext";
+import { useAppSelector } from "../../misc/store-hooks";
 import { GetVideoResult } from "../../models/GetVideoResult";
 import { VideoDetails } from "../../models/VideoDetails";
 import './VideoPage.css';
@@ -18,7 +18,7 @@ type VideoParams = {
 
 const VideoPage = () => {
 
-  const httpService = useContext(HttpServiceContext);
+  const token = useAppSelector((state) => state.user.token);
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/public/${id}/playlist.m3u8`;
@@ -30,14 +30,13 @@ const VideoPage = () => {
   const [progress, setProgress] = useLocalStorageForNumber('PROGRESS_' + id);
   const progressRef = useRef<number | null>(progress);
   const [status, setStatus] = useState<string | null>(null);
-  const userContext = useContext(UserContext);
 
   const goBack = () => {
     history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')));
   };
 
-  const deleteVideo = async () => {
-    await httpService.deleteVideo(id);
+  const removeVideo = async () => {
+    await deleteVideo(id);
     goBack();
   };
 
@@ -53,15 +52,15 @@ const VideoPage = () => {
       const plyrRef = plyr.current;
       if (plyrRef != null) {
         const currentTime = plyrRef.currentTime;
-        if (userContext.token != null) {
-          await httpService.updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
+        if (token != null) {
+          await updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
         }
         if (plyrRef.currentTime != null) {
           setProgress(currentTime);
         }
       }
     },
-    [id, httpService, userContext.token, setProgress],
+    [id, token, setProgress],
   );
 
   const goToEdit = () => {
@@ -69,7 +68,7 @@ const VideoPage = () => {
   };
 
   const addToList = async () => {
-    await httpService.updateList({videosToAdd: [videoInfo.id], videosToRemove: []});
+    await updateList({videosToAdd: [videoInfo.id], videosToRemove: []});
     setVideoInfo((prev: VideoDetails) => ({
       ...prev,
       addedToList: !prev.addedToList
@@ -77,7 +76,7 @@ const VideoPage = () => {
   };
 
   const removeFromList = async () => {
-    await httpService.updateList({videosToAdd: [], videosToRemove: [videoInfo.id]});
+    await updateList({videosToAdd: [], videosToRemove: [videoInfo.id]});
     setVideoInfo((prev: VideoDetails) => ({
       ...prev,
       addedToList: !prev.addedToList
@@ -89,11 +88,11 @@ const VideoPage = () => {
   }, [progress]);
 
   useEffect(() => {
-    httpService.fetchVideoInfo(id)
+    fetchVideoInfo(id)
       .then((result: GetVideoResult) => {
         setVideoInfo({...result, status: convertStatus(result.status)});
         setStatus(convertStatus(result.status));
-        if (userContext.token != null) {
+        if (token != null) {
           setProgress(result.progress);
         }
       })
@@ -101,7 +100,7 @@ const VideoPage = () => {
         console.log(err);
       });
     return;
-  }, [id, httpService, setProgress, userContext.token]);
+  }, [id, setProgress, token]);
 
   useEffect(() => {
 
@@ -207,7 +206,7 @@ const VideoPage = () => {
         <div className="mb-2">
           <Button variant="outline-primary" onClick={goToEdit} >Edit</Button>{' '}
           {addToOrRemoveFromList}{' '}
-          <Button variant="danger" onClick={deleteVideo}>Delete</Button>
+          <Button variant="danger" onClick={removeVideo}>Delete</Button>
         </div>
       </div>
     </div>

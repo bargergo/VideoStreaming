@@ -1,13 +1,12 @@
-import React, { ChangeEvent, FormEvent, useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
 import { useHistory, useLocation } from 'react-router';
-import HttpServiceContext from '../../misc/HttpServiceContext';
+import { login } from '../../misc/api';
 import { HttpStatusError } from '../../models/HttpStatusError';
 import './LoginPage.css';
 
 const LoginPage = () => {
-
-  const httpService = useContext(HttpServiceContext);
+  
   const history = useHistory();
   const location = useLocation<{fromRegistration: boolean}>();
 
@@ -26,7 +25,7 @@ const LoginPage = () => {
     event.preventDefault();
     try {
       setShowRegistrationSuccess(false);
-      await httpService.login({username: username, password: password});
+      await login({username: username, password: password});
       history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')) + '/my-list');
     } catch (e: any) {
       if (e instanceof HttpStatusError) {

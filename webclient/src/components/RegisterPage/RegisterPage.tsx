@@ -1,12 +1,11 @@
-import React, { FormEvent, useContext, useState } from "react";
+import React, { FormEvent, useState } from "react";
 import { Alert, Button, Form } from "react-bootstrap";
 import { useHistory } from "react-router";
-import HttpServiceContext from "../../misc/HttpServiceContext";
+import { register } from "../../misc/api";
 import { HttpStatusError } from "../../models/HttpStatusError";
 import "./RegisterPage.css";
 
 const RegisterPage = () => {
-  const httpService = useContext(HttpServiceContext);
 
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -17,7 +16,7 @@ const RegisterPage = () => {
     setError(null);
     event.preventDefault();
     try {
-      await httpService.register({ username: username, password: password });
+      await register({ username: username, password: password });
       history.push('./login', { fromRegistration: true });
     } catch (e: any) {
       if (e instanceof HttpStatusError) {

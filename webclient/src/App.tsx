@@ -10,32 +10,23 @@ import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
 import VideoPage from "./components/VideoPage/VideoPage";
 import VideosPage from "./components/VideosPage/VideosPage";
-import { useSessionStorage } from "./misc/custom-hooks";
-import HttpServiceContext, { HttpService } from "./misc/HttpServiceContext";
-import UserContext from "./misc/UserContext";
+import { useAppSelector } from "./misc/store-hooks";
 
 const App = () => {
-
-  const [username, setUsername] = useSessionStorage('USERNAME');
-  const [token, setToken] = useSessionStorage('TOKEN');
+  const token = useAppSelector((state) => state.user.token);
 
   return (
-    <HttpServiceContext.Provider value={new HttpService(username, setUsername, token, setToken)}>
-      <UserContext.Provider value={{token: token, user: username}}>
-        <Navs username={username}/>
+    <>
+      <Navs />
 
-        <Container>
+      <Container>
         <Switch>
-
           <Route exact path="/">
             <Redirect to="/videos" />
           </Route>
 
           <Route path="/videos/:id/edit">
-            {token == null
-              ? <Redirect to="/login" />
-              : <VideoEditPage />
-            }
+            {token == null ? <Redirect to="/login" /> : <VideoEditPage />}
           </Route>
 
           <Route path="/videos/:id">
@@ -47,17 +38,15 @@ const App = () => {
           </Route>
 
           <Route path="/upload">
-            {token == null
-              ? <Redirect to="/login" />
-              : <UploadPage token={token}/>
-            }
+            {token == null ? (
+              <Redirect to="/login" />
+            ) : (
+              <UploadPage token={token} />
+            )}
           </Route>
 
           <Route path="/my-list">
-            {token == null
-              ? <Redirect to="/login" />
-              : <MyListPage />
-            }
+            {token == null ? <Redirect to="/login" /> : <MyListPage />}
           </Route>
 
           <Route path="/about">
@@ -75,15 +64,12 @@ const App = () => {
           <Route>
             <Container>
               <h1 className="mb-4">Not found</h1>
-              <div>
-                The requested page was not found.
-              </div>
+              <div>The requested page was not found.</div>
             </Container>
           </Route>
         </Switch>
-        </Container>
-      </UserContext.Provider>
-    </HttpServiceContext.Provider>
+      </Container>
+    </>
   );
 };
 
