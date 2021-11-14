@@ -31,6 +31,7 @@ services:
     build:
       context: VideoStreaming
       dockerfile: UploadService/Dockerfile
+    image: upload-service:dev
     environment:
       FileStorageSettings__DiskStorePath: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
@@ -52,6 +53,7 @@ services:
     build:
       context: VideoStreaming
       dockerfile: ConvertService/Dockerfile
+    image: convert-service:dev
     environment:
       FileStorageSettings__Path: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
@@ -68,6 +70,7 @@ services:
     build:
       context: VideoStreaming
       dockerfile: CatalogService/Dockerfile
+    image: catalog-service:dev
     environment:
       FileStorageSettings__Path: /data
       MessageQueueSettings__Hostname: videostreaming-messagequeue
@@ -104,6 +107,7 @@ services:
     build:
       context: user_service
       dockerfile: Dockerfile
+    image: user-service:dev
     environment:
       JWT__SECRET: ${jwt_secret}
       SPRING__DATASOURCE__URL: "jdbc:mysql://user-db:3306/user-db?createDatabaseIfNotExist=true&autoReconnect=true"
@@ -137,6 +141,7 @@ services:
     build:
       context: webclient
       dockerfile: Dockerfile
+    image: webclient:dev
     ports:
       - "5000:80"
     labels:

@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: videostreaming-messagequeue
+  labels:
+    app.kubernetes.io/name: videostreaming-messagequeue
+spec:
+  ports:
+  - name: "5672"
+    port: 5672
+    targetPort: 5672
+  - name: "15672"
+    port: 15672
+    targetPort: 15672
+  selector:
+    app.kubernetes.io/name: videostreaming-messagequeue
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: videostreaming-messagequeue
+  labels:
+    app.kubernetes.io/name: videostreaming-messagequeue
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: videostreaming-messagequeue
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: videostreaming-messagequeue
+    spec:
+      containers:
+        - image: rabbitmq:3.8.3-management
+          name: videostreaming-messagequeue
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: user1
+            - name: RABBITMQ_DEFAULT_PASS
+              value: password1        
+      restartPolicy: Always

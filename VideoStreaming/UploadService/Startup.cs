@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System;
@@ -36,7 +37,12 @@ namespace UploadService
             services.Configure<FileStorageSettings>(
                 Configuration.GetSection(nameof(FileStorageSettings)));
             services.AddSingleton<IFileStorageSettings>(sp =>
-                sp.GetRequiredService<IOptions<FileStorageSettings>>().Value);
+            {
+                var logger = sp.GetRequiredService<ILogger<Startup>>();
+                var fileStorageSettings = sp.GetRequiredService<IOptions<FileStorageSettings>>().Value;
+                logger.LogInformation($"FileStorageSettings.DiskStorePath: {fileStorageSettings.DiskStorePath}");
+                return fileStorageSettings;
+            });
             services.Configure<KestrelServerOptions>(options =>
             {
                 options.Limits.MaxRequestBodySize = int.MaxValue; // if not set default value is: 30 MB
