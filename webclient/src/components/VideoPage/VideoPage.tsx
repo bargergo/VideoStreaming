@@ -19,6 +19,7 @@ type VideoParams = {
 const VideoPage = () => {
 
   const token = useAppSelector((state) => state.user.token);
+  const tokenRef = useRef<string | null>(token);
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
   const source = `/api/catalog/public/${id}/playlist.m3u8`;
@@ -47,12 +48,19 @@ const VideoPage = () => {
     }
   };
 
+  useEffect(
+    () => {
+      tokenRef.current = token;
+      return () => {};
+    }, [token]
+  );
+
   const saveProgress = useCallback(
     async () => {
       const plyrRef = plyr.current;
       if (plyrRef != null) {
         const currentTime = plyrRef.currentTime;
-        if (token != null) {
+        if (tokenRef.current != null) {
           await updateProgress(id, { progress: currentTime, finished: currentTime > plyrRef.duration - 5});
         }
         if (plyrRef.currentTime != null) {
@@ -60,7 +68,7 @@ const VideoPage = () => {
         }
       }
     },
-    [id, token, setProgress],
+    [id, setProgress],
   );
 
   const goToEdit = () => {
@@ -103,7 +111,6 @@ const VideoPage = () => {
   }, [id, setProgress, token]);
 
   useEffect(() => {
-
     if (status !== Status.CONVERTED.toString()) {
       return;
     }
@@ -128,7 +135,7 @@ const VideoPage = () => {
     const defaultOptions: Plyr.Options = {
       invertTime: false
     };
-  
+
     if (video.current) {
 
       if (!Hls.isSupported()) {
@@ -141,7 +148,7 @@ const VideoPage = () => {
         // all available video qualities. This is important, in this approach,
         // we will have one source on the Plyr player.
         hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
-    
+
           // Transform available levels into an array of integers (height values).
           const availableQualities = [0, ...hls.levels.map((l) => l.height)];
     
@@ -177,18 +184,18 @@ const VideoPage = () => {
       }
     }
     return () => {
-      if (plyr.current != null) {
+      /*if (plyr.current != null) {
         plyr.current.destroy();
-      }
+      }*/
       if (hls != null) {
         hls.destroy();
       }
       if (updateInterval.current != null) {
         clearInterval(updateInterval.current);
-        updateInterval.current = null
+        updateInterval.current = null;
       }
     };
-  }, [video, source, saveProgress, status]);
+  }, [video, source, saveProgress, status, token]);
 
   const editButton = (<Button variant="outline-primary" onClick={goToEdit} >Edit</Button>);
 
