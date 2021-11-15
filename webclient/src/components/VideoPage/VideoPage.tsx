@@ -190,9 +190,13 @@ const VideoPage = () => {
     };
   }, [video, source, saveProgress, status]);
 
+  const editButton = (<Button variant="outline-primary" onClick={goToEdit} >Edit</Button>);
+
+  const deleteButton = (<Button variant="danger" onClick={removeVideo}>Delete</Button>);
+
   const addToOrRemoveFromList = !!videoInfo?.addedToList
-  ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
-  : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
+    ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
+    : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
 
   return (
     <div className="container">
@@ -201,13 +205,16 @@ const VideoPage = () => {
         ? <video className="plyr" ref={video} controls crossOrigin="true" playsInline />
         : <div>The video is being converted and not ready to be played. Please check again later.</div>}
       <div className="mt-4">
-        <p>Status: {videoInfo?.status}</p>
-        <div className="mb-2">Description: {videoInfo?.description}</div>
-        <div className="mb-2">
-          <Button variant="outline-primary" onClick={goToEdit} >Edit</Button>{' '}
-          {addToOrRemoveFromList}{' '}
-          <Button variant="danger" onClick={removeVideo}>Delete</Button>
-        </div>
+        <p><b>Status:</b> {videoInfo?.status}</p>
+        <div className="mb-2"><b>Description:</b> {videoInfo?.description}</div>
+        { token != null
+          ? (        
+            <div className="mb-2">
+              {editButton}{' '}
+              {addToOrRemoveFromList}{' '}
+              {deleteButton}
+            </div>)
+          : null}
       </div>
     </div>
   );
