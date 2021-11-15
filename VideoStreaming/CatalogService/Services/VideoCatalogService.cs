@@ -68,6 +68,10 @@ namespace CatalogService.Services
                         oldFile.Delete();
                     }
                 }
+                var userVideos = await _catalogDb.UserVideoLists.Where(uvl => uvl.Video.Id == video.Id).ToListAsync();
+                var userProgresses = await _catalogDb.UserVideoProgresses.Where(uvp => uvp.Video.Id == video.Id).ToListAsync();
+                _catalogDb.RemoveRange(userVideos);
+                _catalogDb.RemoveRange(userProgresses);
                 _catalogDb.Remove(video);
                 await _catalogDb.SaveChangesAsync();
             }
