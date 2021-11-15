@@ -79,7 +79,7 @@ const VideosPage = () => {
       <div>
         <SearchForm onSearch={(text) => search(text)} onShowAll={showAll}/>
       </div>
-      <div className="row">
+      <div>
         {isLoading
           ? (<div className="container">
               <div className="d-flex justify-content-center">
@@ -90,7 +90,7 @@ const VideosPage = () => {
             </div>)
           : videos.length === 0
             ? (<p>No videos found</p>)
-            : videos.map(video => 
+            : (<div className="row">{videos.map(video => 
               <div className="col-4 mb-4" key={video.id}>
                 <VideoListElement
                   title={video.name}
@@ -101,7 +101,7 @@ const VideosPage = () => {
                   addedToList={video.addedToList}
                   onListChanged={token != null ? updateMyList : null} />
             </div>
-          )}
+          )}</div>)}
       </div>
     </div>
   )

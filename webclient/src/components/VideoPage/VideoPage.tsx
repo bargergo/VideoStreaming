@@ -99,7 +99,7 @@ const VideoPage = () => {
       .catch(err => {
         console.log(err);
       });
-    return;
+    return () => {};
   }, [id, setProgress, token]);
 
   useEffect(() => {
@@ -192,7 +192,9 @@ const VideoPage = () => {
 
   const editButton = (<Button variant="outline-primary" onClick={goToEdit} >Edit</Button>);
 
-  const deleteButton = (<Button variant="danger" onClick={removeVideo}>Delete</Button>);
+  const deleteButton = status === Status.CONVERTED.toString()
+    ? (<Button variant="danger" onClick={removeVideo}>Delete</Button>)
+    : null;
 
   const addToOrRemoveFromList = !!videoInfo?.addedToList
     ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)

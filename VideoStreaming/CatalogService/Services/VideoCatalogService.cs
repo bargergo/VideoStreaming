@@ -44,6 +44,10 @@ namespace CatalogService.Services
             var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
             if (video != null)
             {
+                if (video.Status != Status.Converted)
+                {
+                    throw new Exception("Video can be deleted only after converting finished.");
+                }
                 var dir = new DirectoryInfo(_fileStorageSettings.Path);
 
                 foreach (var file in dir.EnumerateFiles(id + ".*"))

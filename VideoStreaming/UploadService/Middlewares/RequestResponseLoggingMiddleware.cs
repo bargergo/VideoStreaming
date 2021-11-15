@@ -25,15 +25,30 @@ namespace UploadService.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            await LogResponse(context);
+            await LogRequestResponse(context);
         }
 
-        private async Task LogResponse(HttpContext context)
+        private async Task LogRequestResponse(HttpContext context)
         {
+            _logger.LogInformation($"Http Request Information:{Environment.NewLine}" +
+                                   $"Method: {context.Request.Method}{Environment.NewLine}" +
+                                   $"Schema: {context.Request.Scheme}{Environment.NewLine}" +
+                                   $"Host: {context.Request.Host}{Environment.NewLine}" +
+                                   $"Path: {context.Request.Path}{Environment.NewLine}" +
+                                   $"Body: {context.Request.Body}{Environment.NewLine}" +
+                                   $"QueryString: {context.Request.QueryString}");
             var originalBodyStream = context.Response.Body;
             await using var responseBody = _recyclableMemoryStreamManager.GetStream();
             context.Response.Body = responseBody;
-            await _next(context);
+            try
+            {
+                await _next(context);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation($"Error: {e.Message}");
+                throw;
+            }
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             _logger.LogInformation($"Http Response Information:{Environment.NewLine}" +
                                    $"StatusCode: {context.Response.StatusCode}{Environment.NewLine}" +

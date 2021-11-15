@@ -46,6 +46,7 @@ namespace CatalogService.Middlewares
             } catch(Exception e)
             {
                 _logger.LogInformation($"Error: {e.Message}");
+                throw;
             }
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             _logger.LogInformation($"Http Response Information:{Environment.NewLine}" +
