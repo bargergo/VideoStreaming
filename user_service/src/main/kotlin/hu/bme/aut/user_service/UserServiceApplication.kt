@@ -5,6 +5,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.context.annotation.Bean
+import org.springframework.core.env.Environment
 import org.springframework.jdbc.support.DatabaseStartupValidator
 import javax.persistence.EntityManagerFactory
 import javax.sql.DataSource
@@ -14,11 +15,11 @@ import javax.sql.DataSource
 class UserServiceApplication {
 
 	@Bean
-	fun databaseStartupValidator(dataSource: DataSource): DatabaseStartupValidator? {
+	fun databaseStartupValidator(dataSource: DataSource, env: Environment): DatabaseStartupValidator? {
 		val dsv = DatabaseStartupValidator()
 		dsv.setDataSource(dataSource)
-		dsv.setInterval(5)
-		dsv.setTimeout(120)
+		dsv.setInterval(env.getRequiredProperty("database.connection.retry.interval", Int::class.java))
+		dsv.setTimeout(env.getRequiredProperty("database.connection.retry.timeout", Int::class.java))
 		return dsv
 	}
 
