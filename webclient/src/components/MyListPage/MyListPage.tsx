@@ -29,7 +29,7 @@ const MyListPage = () => {
   return (
     <div className="container">
       <h1 className="mb-4">My List</h1>
-      <div className="row">
+      <div>
         {isLoading ? (
           <div className="container">
             <div className="d-flex justify-content-center">
@@ -44,23 +44,25 @@ const MyListPage = () => {
             list' button.
           </p>
         ) : (
-          videos.map((video) => (
-            <div className="col-4 mb-4" key={video.id}>
-              <VideoListElement
-                title={video.name}
-                description={video.description}
-                url={`/videos/${video.fileId}`}
-                imageUrl={
-                  video.imageFileName
-                    ? `/api/catalog/public/${video.fileId}/image`
-                    : null
-                }
-                id={video.id}
-                addedToList={true}
-                onListChanged={getMyVideos}
-              />
-            </div>
-          ))
+          <div className="row">{
+            videos.map((video) => (
+              <div className="col-4 mb-4" key={video.id}>
+                <VideoListElement
+                  title={video.name}
+                  description={video.description}
+                  url={`/videos/${video.fileId}`}
+                  imageUrl={
+                    video.imageFileName
+                      ? `/api/catalog/public/${video.fileId}/image`
+                      : null
+                  }
+                  id={video.id}
+                  addedToList={true}
+                  onListChanged={getMyVideos}
+                />
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
