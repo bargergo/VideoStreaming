@@ -33,5 +33,5 @@ jobs:
         run: npm build
         working-directory: ./webclient
       - name: Test
-        run: npm test --passWithNoTests
+        run: npm test
         working-directory: ./webclient
