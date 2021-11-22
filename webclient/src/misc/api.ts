@@ -96,7 +96,7 @@ export async function updateProgress(id: string, data: {progress: number, finish
   });
 }
 
-export async function searchVideos(data: {searchText: string}): Promise<VideoInfo[]> {
+export async function searchVideos(data: {searchText: string}): Promise<VideoInfo[] | ValidationErrorResponse> {
   const response =  await fetch("/api/catalog/public/search",
   {
     method: "POST",
