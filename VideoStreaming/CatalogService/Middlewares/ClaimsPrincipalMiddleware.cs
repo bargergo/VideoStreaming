@@ -1,47 +1,44 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using CatalogService.Exceptions;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
-namespace UploadService.Authentication
+namespace CatalogService.Middlewares
 {
-    public class CustomJwtAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
+    public class ClaimsPrincipalMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly JwtSecurityTokenHandler _tokenHandler = new JwtSecurityTokenHandler();
-        private readonly ILogger<CustomJwtAuthenticationHandler> _ilogger;
+        private readonly ILogger<ClaimsPrincipalMiddleware> _ilogger;
 
-        public CustomJwtAuthenticationHandler(
-            IOptionsMonitor<AuthenticationSchemeOptions> options,
-            ILoggerFactory logger,
-            UrlEncoder encoder,
-            ISystemClock clock,
-            ILogger<CustomJwtAuthenticationHandler> ilogger)
-            : base(options, logger, encoder, clock)
+        public ClaimsPrincipalMiddleware(RequestDelegate next, ILogger<ClaimsPrincipalMiddleware> ilogger)
         {
+            _next = next;
             _ilogger = ilogger;
         }
 
-        protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+        public async Task Invoke(HttpContext context)
         {
-            _ilogger.LogInformation($"HandleAuthenticateAsync");
-            if (!Request.Headers.ContainsKey("Authorization"))
+            _ilogger.LogInformation($"ClaimsPrincipalMiddleware");
+            if (!context.Request.Headers.ContainsKey("Authorization"))
             {
                 _ilogger.LogInformation($"Authorization header is missing");
-                return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
+                throw new AuthorizationException("Invalid Authorization Header");
             }
 
-            var authHeader = Request.Headers["Authorization"].ToString();
+            var authHeader = context.Request.Headers["Authorization"].ToString();
             _ilogger.LogInformation($"Authorization header: {authHeader}");
 
 
             if (authHeader == null && authHeader.Length == 0)
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
+                throw new AuthorizationException("Invalid Authorization Header");
             }
             int? userId = null;
             var token = _tokenHandler.ReadJwtToken(authHeader.Substring("Bearer ".Length));
@@ -53,11 +50,11 @@ namespace UploadService.Authentication
             }
             catch
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
+                throw new AuthorizationException("Invalid Authorization Header");
             }
             if (userId == null)
             {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
+                throw new AuthorizationException("Invalid Authorization Header");
             }
             var roles = token.Claims.Where(c => c.Type == "roles");
             var claims = new List<Claim> {
@@ -69,7 +66,16 @@ namespace UploadService.Authentication
             {
                 claims.Add(new Claim(ClaimTypes.Role, $"{role.Value}"));
             }
-            return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name)), Scheme.Name)));
+            context.User = new ClaimsPrincipal(new ClaimsIdentity(claims));
+            await _next(context);
+        }
+    }
+
+    public static class ClaimsPrincipalMiddlewareExtensions
+    {
+        public static IApplicationBuilder UseClaimsPrincipalMiddleware(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<ClaimsPrincipalMiddleware>();
         }
     }
 }

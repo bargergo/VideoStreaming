@@ -1,7 +1,6 @@
 using Hellang.Middleware.ProblemDetails;
 using MassTransit;
 using MessageQueueDTOs;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,7 +16,6 @@ using tusdotnet;
 using tusdotnet.Models;
 using tusdotnet.Models.Configuration;
 using tusdotnet.Stores;
-using UploadService.Authentication;
 using UploadService.Exceptions;
 using UploadService.Middlewares;
 using UploadService.Models;
@@ -87,8 +85,6 @@ namespace UploadService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "UploadService", Version = "v1" });
             });
-            services.AddAuthentication("CustomJwtAuthentication")
-                    .AddScheme<AuthenticationSchemeOptions, CustomJwtAuthenticationHandler>("CustomJwtAuthentication", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -106,7 +102,7 @@ namespace UploadService
                 app.UseProblemDetails();
             }
 
-            app.UseAuthentication();
+            app.UseClaimsPrincipalMiddleware();
 
             app.UseRouting();
 

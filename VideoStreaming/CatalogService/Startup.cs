@@ -1,4 +1,3 @@
-using CatalogService.Authentication;
 using CatalogService.Database;
 using CatalogService.Exceptions;
 using CatalogService.MessageQueue;
@@ -8,7 +7,6 @@ using CatalogService.Services;
 using Hellang.Middleware.ProblemDetails;
 using MassTransit;
 using MessageQueueDTOs;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -89,8 +87,6 @@ namespace CatalogService
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogService", Version = "v1" });
             });
-            services.AddAuthentication("CustomJwtAuthentication")
-                .AddScheme<AuthenticationSchemeOptions, CustomJwtAuthenticationHandler>("CustomJwtAuthentication", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,7 +104,7 @@ namespace CatalogService
                 app.UseProblemDetails();
             }
 
-            app.UseAuthentication();
+            app.UseClaimsPrincipalMiddleware();
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>

@@ -276,6 +276,7 @@ namespace CatalogService.Services
 
         public async Task<List<int>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, int userId)
         {
+            _logger.LogInformation("userId:" + userId);
             var videoIds = await _catalogDb.UserVideoLists
                 .Where(uvl => uvl.UserId == userId && param.VideoIds.Contains(uvl.Video.Id))
                 .Select(uvl => uvl.Video.Id)
