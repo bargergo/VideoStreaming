@@ -115,7 +115,13 @@ const VideoPage = () => {
       return;
     }
 
-    const hls = new Hls();
+    const hls = new Hls({
+      xhrSetup: xhr => {
+        if (token != null) {
+          xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+        }
+      }
+    });
 
     const updateQuality = (newQuality: number) => {
       if (newQuality === 0) {

@@ -29,7 +29,8 @@ namespace CatalogService.Middlewares
             if (!context.Request.Headers.ContainsKey("Authorization"))
             {
                 _ilogger.LogInformation($"Authorization header is missing");
-                throw new AuthorizationException("Invalid Authorization Header");
+                await _next(context);
+                return;
             }
 
             var authHeader = context.Request.Headers["Authorization"].ToString();
@@ -38,7 +39,8 @@ namespace CatalogService.Middlewares
 
             if (authHeader == null && authHeader.Length == 0)
             {
-                throw new AuthorizationException("Invalid Authorization Header");
+                await _next(context);
+                return;
             }
             int? userId = null;
             var token = _tokenHandler.ReadJwtToken(authHeader.Substring("Bearer ".Length));
@@ -50,11 +52,13 @@ namespace CatalogService.Middlewares
             }
             catch
             {
-                throw new AuthorizationException("Invalid Authorization Header");
+                await _next(context);
+                return;
             }
             if (userId == null)
             {
-                throw new AuthorizationException("Invalid Authorization Header");
+                await _next(context);
+                return;
             }
             var roles = token.Claims.Where(c => c.Type == "roles");
             var claims = new List<Claim> {
