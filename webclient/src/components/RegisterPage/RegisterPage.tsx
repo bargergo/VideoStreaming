@@ -84,7 +84,7 @@ const RegisterPage = () => {
     <div className="container">
       <h1 className="mb-4">Register</h1>
       <div className="row">
-        <div className="col-6">
+        <div className="col-md-6">
           {errors.map((errorMessage, idx) => (
             <Alert variant="danger" key={idx}>
               {errorMessage}

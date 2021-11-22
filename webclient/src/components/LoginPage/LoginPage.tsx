@@ -71,7 +71,7 @@ const LoginPage = () => {
     <div className="container">
       <h1 className="mb-4">Login</h1>
       <div className="row">
-        <div className="col-6">
+        <div className="col-md-6">
           {successfulRegistrationMessage}
           {errors.map((errorMessage, idx) => (
             <Alert variant="danger" key={idx}>
