@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using tusdotnet.Interfaces;
 using tusdotnet.Models.Configuration;
+using UploadService.Extensions;
 using UploadService.Models;
 
 namespace UploadService.Services
@@ -25,15 +26,19 @@ namespace UploadService.Services
         }
 
         public Task OnAuthorizeAsync(AuthorizeContext context)
-        {
-            if (!context.HttpContext.User.Identity.IsAuthenticated)
+        { 
+            try
+            {
+                var userId = context.HttpContext.User.UserId();
+                _logger.LogInformation("user is authenticated, id: " + userId);
+                return Task.CompletedTask;
+            }
+            catch
             {
                 _logger.LogInformation("user is not authenticated");
                 context.FailRequest(HttpStatusCode.Unauthorized);
                 return Task.CompletedTask;
             }
-            _logger.LogInformation("user is authenticated");
-            return Task.CompletedTask;
         }
 
         public async Task OnBeforeCreateAsync(BeforeCreateContext context)

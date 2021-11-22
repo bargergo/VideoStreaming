@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IO;
 using System;
 using System.IO;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace UploadService.Middlewares
@@ -30,14 +31,19 @@ namespace UploadService.Middlewares
 
         private async Task LogRequestResponse(HttpContext context)
         {
+            var requestBodytext = "Not JSON";
+            if (context.Request.ContentType != null && context.Request.ContentType.StartsWith(MediaTypeNames.Application.Json))
+            {
+                requestBodytext = await new StreamReader(context.Request.Body).ReadToEndAsync();
+            }
             _logger.LogInformation($"Http Request Information:{Environment.NewLine}" +
                                    $"Method: {context.Request.Method}{Environment.NewLine}" +
                                    $"Schema: {context.Request.Scheme}{Environment.NewLine}" +
                                    $"Host: {context.Request.Host}{Environment.NewLine}" +
                                    $"Path: {context.Request.Path}{Environment.NewLine}" +
-                                   $"Body: {context.Request.Body}{Environment.NewLine}" +
+                                   $"Body: {requestBodytext}{Environment.NewLine}" +
                                    $"QueryString: {context.Request.QueryString}");
-            var originalBodyStream = context.Response.Body;
+            var originalBodyStream = context.Response?.Body;
             await using var responseBody = _recyclableMemoryStreamManager.GetStream();
             context.Response.Body = responseBody;
             try
@@ -50,8 +56,12 @@ namespace UploadService.Middlewares
                 throw;
             }
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            var text = await new StreamReader(context.Response.Body).ReadToEndAsync();
-            context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var text = "Not JSON";
+            if (context.Response.ContentType != null && context.Response.ContentType.StartsWith(MediaTypeNames.Application.Json))
+            {
+                text = await new StreamReader(context.Response.Body).ReadToEndAsync();
+                context.Response.Body.Seek(0, SeekOrigin.Begin);
+            }
             _logger.LogInformation($"Http Response Information:{Environment.NewLine}" +
                                    $"StatusCode: {context.Response.StatusCode}{Environment.NewLine}" +
                                    $"Method: {context.Request.Method}{Environment.NewLine}" +
