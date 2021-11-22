@@ -38,5 +38,5 @@ jobs:
       run: ./gradlew downloadDependencies
       working-directory: ./user_service
     - name: Build with Gradle
-      run: ./gradlew build -x test 
+      run: ./gradlew build 
       working-directory: ./user_service
