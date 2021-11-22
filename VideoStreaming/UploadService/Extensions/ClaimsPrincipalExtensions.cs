@@ -10,16 +10,19 @@ namespace UploadService.Extensions
     {
         public static int UserId(this ClaimsPrincipal user)
         {
+            var userIdStr = user?.Claims.Where(c => c.Type == "userId").FirstOrDefault()?.Value;
+            if (userIdStr == null)
+            {
+                throw new AuthorizationException("The user is not authenticated correctly.");
+            }
             try
             {
-                var userIdStr = user?.Claims.Where(c => c.Type == "userId").FirstOrDefault()?.Value;
                 return Convert.ToInt32(userIdStr);
             }
             catch
             {
-                throw new AuthorizationException();
+                throw new AuthorizationException("The user is not authenticated correctly.");
             }
-
         }
 
         public static List<string> GetRoles(this ClaimsPrincipal user)

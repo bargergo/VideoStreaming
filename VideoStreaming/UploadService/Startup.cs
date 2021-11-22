@@ -1,8 +1,10 @@
+using Hellang.Middleware.ProblemDetails;
 using MassTransit;
 using MessageQueueDTOs;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,7 @@ using tusdotnet.Models;
 using tusdotnet.Models.Configuration;
 using tusdotnet.Stores;
 using UploadService.Authentication;
+using UploadService.Exceptions;
 using UploadService.Middlewares;
 using UploadService.Models;
 using UploadService.Services;
@@ -34,6 +37,18 @@ namespace UploadService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddProblemDetails(options =>
+            {
+                options.IncludeExceptionDetails = (ctx, ex) => false;
+                options.Map<AuthorizationException>(
+                    (ctx, ex) =>
+                    {
+                        var pd = StatusCodeProblemDetails.Create(StatusCodes.Status401Unauthorized);
+                        pd.Title = ex.Message;
+                        return pd;
+                    }
+                );
+            });
             services.Configure<FileStorageSettings>(
                 Configuration.GetSection(nameof(FileStorageSettings)));
             services.AddSingleton<IFileStorageSettings>(sp =>
@@ -79,16 +94,20 @@ namespace UploadService
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseRequestResponseLogging();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UploadService v1"));
             }
+            else
+            {
+                app.UseProblemDetails();
+            }
 
             app.UseAuthentication();
 
-            app.UseRequestResponseLogging();
             app.UseRouting();
 
             var tusService = app.ApplicationServices.GetRequiredService<ITusService>();

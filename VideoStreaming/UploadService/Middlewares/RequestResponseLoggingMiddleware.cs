@@ -50,12 +50,15 @@ namespace UploadService.Middlewares
                 throw;
             }
             context.Response.Body.Seek(0, SeekOrigin.Begin);
+            var text = await new StreamReader(context.Response.Body).ReadToEndAsync();
+            context.Response.Body.Seek(0, SeekOrigin.Begin);
             _logger.LogInformation($"Http Response Information:{Environment.NewLine}" +
                                    $"StatusCode: {context.Response.StatusCode}{Environment.NewLine}" +
                                    $"Method: {context.Request.Method}{Environment.NewLine}" +
                                    $"Schema: {context.Request.Scheme}{Environment.NewLine}" +
                                    $"Host: {context.Request.Host}{Environment.NewLine}" +
                                    $"Path: {context.Request.Path}{Environment.NewLine}" +
+                                   $"Body: {text}{Environment.NewLine}" +
                                    $"QueryString: {context.Request.QueryString}");
             await responseBody.CopyToAsync(originalBodyStream);
         }
