@@ -35,7 +35,7 @@ const VideoListElement = ({title, description, url, imageUrl, id, addedToList, o
       : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
 
   return (
-    <Card style={{ height: '24rem' }}>
+    <Card style={{ minHeight: '26rem' }}>
       <Card.Img variant="top" src={imageUrl || defaultImage} />
       <Card.Body>
         <Card.Title>{title}</Card.Title>

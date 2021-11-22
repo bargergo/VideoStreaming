@@ -91,7 +91,7 @@ const VideosPage = () => {
           : videos.length === 0
             ? (<p>No videos found</p>)
             : (<div className="row">{videos.map(video => 
-              <div className="col-4 mb-4" key={video.id}>
+              <div className="col-md-4 mb-4" key={video.id}>
                 <VideoListElement
                   title={video.name}
                   description={video.description} 
