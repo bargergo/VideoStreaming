@@ -1,6 +1,9 @@
+import { Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import { Button, Container, Form } from "react-bootstrap";
+import { Button, Container, FormControl, FormGroup, FormLabel } from "react-bootstrap";
+import Feedback from "react-bootstrap/esm/Feedback";
 import { useHistory, useParams } from "react-router-dom";
+import * as Yup from "yup";
 import { fetchVideoInfo, updateVideo } from "../../misc/api";
 import { GetVideoResult } from "../../models/GetVideoResult";
 import FileUploadButton from "../Shared/FileUploadButton/FileUploadButton";
@@ -14,19 +17,30 @@ const VideoEditPage = () => {
 
   const { id } = useParams<VideoParams>();
   const history = useHistory();
-  const [enteredTitle, setEnteredTitle] = useState<string>('');
-  const [enteredDescription, setEnteredDescription] = useState<string>('');
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [file, setFile] = useState<File>(null);
+  const [initialValue, setInitialValue] = useState<{title: string, description: string} | null>({title: '', description: ''});
+
+  const validationSchema = Yup.object({
+    title: Yup.string().required('Required'),
+    description: Yup.string().required('Required'),
+  });
 
   const goBack = () => {
     history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')));
   };
 
-  const submit = async (event: any) => {
-    event.preventDefault();
-    await updateVideo(id, {title: enteredTitle, description: enteredDescription}, file);
-    goBack();
+  const onSubmit = async (
+    values: { title: string; description: string },
+    { setSubmitting }
+  ) => {
+    setSubmitting(true);
+    try {
+      await updateVideo(id, {title: values.title, description: values.description}, file);
+      goBack();
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const previewImageSrc = file != null
@@ -41,45 +55,72 @@ const VideoEditPage = () => {
   useEffect(() => {
     fetchVideoInfo(id)
       .then((result: GetVideoResult) => {
-        setEnteredTitle(result.name);
-        setEnteredDescription(result.description || '');
+        setInitialValue({title: result.name, description: result.description || ''});
         setImageUrl(result.imageFileName != null ? `/api/catalog/public/${result.fileId}/image` : null);
       })
       .catch(err => {
         console.log(err);
       });
-    return;
+    return () => {};
   }, [id]);
 
   return (
     <Container>
       <h1 className="mb-4">Edit Video</h1>
-      <Form onSubmit={submit}>
-        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-          <Form.Label>Title</Form.Label>
-          <Form.Control type="text" onChange={(event) => setEnteredTitle(event.target.value)} value={enteredTitle} />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
-          <Form.Label>Description</Form.Label>
-          <Form.Control as="textarea" rows={3} onChange={(event) => setEnteredDescription(event.target.value)} value={enteredDescription} />
-        </Form.Group>
-        <Form.Group controlId="formFile" className="mb-3 mt-3">
-          <Form.Label>Change image</Form.Label>
-          <div>
-            <FileUploadButton
-              text={file != null ? file.name : 'Browse'}
-              accept="image/jpeg"
-              fileSelected={file != null} 
-              onFileInputChanged={(event) => setFile((event.target as HTMLInputElement).files[0])}/>
-            <div className="mt-3">
-              {previewImage}
-            </div>
-          </div>
-        </Form.Group>
-        <Button type="button" variant="outline-primary" onClick={goBack} >Cancel</Button>{' '}
-        <Button type="submit" variant="primary">Save</Button>
-      </Form>
-    </Container>);
+      <Formik
+        enableReinitialize
+        initialValues={initialValue}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+      >
+        {({ isSubmitting, touched, errors }) => (
+          <Form noValidate>
+            <FormGroup className="mb-3" controlId="title">
+              <FormLabel>Title</FormLabel>
+              <Field
+                as={FormControl}
+                type="text"
+                name="title"
+                isInvalid={touched.title && errors.title}
+              />
+              <Feedback type="invalid">{errors.title}</Feedback>
+            </FormGroup>
+            <FormGroup className="mb-3" controlId="description">
+              <FormLabel>Description</FormLabel>
+              <Field
+                as="textarea"
+                className={touched.description && errors.description ? "form-control is-invalid" : "form-control"}
+                type="text"
+                rows={3}
+                name="description"
+              />
+              <Feedback type="invalid">{errors.description}</Feedback>
+            </FormGroup>
+            <FormGroup controlId="formFile" className="mb-3 mt-3">
+              <FormLabel>Change image</FormLabel>
+              <div>
+                <FileUploadButton
+                  text={file != null ? file.name : "Browse"}
+                  accept="image/jpeg"
+                  fileSelected={file != null}
+                  onFileInputChanged={(event) =>
+                    setFile((event.target as HTMLInputElement).files[0])
+                  }
+                />
+                <div className="mt-3">{previewImage}</div>
+              </div>
+            </FormGroup>
+            <Button type="button" variant="outline-primary" onClick={goBack}>
+              Cancel
+            </Button>{" "}
+            <Button type="submit" variant="primary" disabled={isSubmitting}>
+              Save
+            </Button>
+          </Form>
+        )}
+      </Formik>
+    </Container>
+  );
 }
 
 export default VideoEditPage;

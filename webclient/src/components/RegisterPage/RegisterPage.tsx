@@ -95,7 +95,7 @@ const RegisterPage = () => {
             validationSchema={validationSchema}
             onSubmit={onSubmit}
           >
-            {({ isSubmitting, touched, errors, isValid }) => (
+            {({ isSubmitting, touched, errors }) => (
               <Form noValidate>
                 <FormGroup className="mb-3" controlId="formUsername">
                   <FormLabel>Username</FormLabel>
