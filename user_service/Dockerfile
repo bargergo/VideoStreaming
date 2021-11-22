@@ -13,6 +13,7 @@ COPY build.gradle.kts settings.gradle.kts ./
 # Only download dependencies
 RUN ./gradlew downloadDependencies
 COPY . .
+# Exclude tests for faster builds, CI will run tests
 RUN ./gradlew clean build -x test
 
 FROM base AS final
