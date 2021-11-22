@@ -61,11 +61,11 @@ const LoginPage = () => {
         {successfulRegistrationMessage}
         {errorMessage}
         <Form onSubmit={onSubmit}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Label>Email address</Form.Label>
+          <Form.Group className="mb-3" controlId="formBasicUsername">
+            <Form.Label>Username</Form.Label>
             <Form.Control
-              type="email"
-              placeholder="Enter email"
+              type="text"
+              placeholder="Enter username"
               onChange={onUsernameChanged}
             />
           </Form.Group>
