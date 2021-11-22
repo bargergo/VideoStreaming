@@ -34,7 +34,9 @@ namespace UploadService.Middlewares
             var requestBodytext = "Not JSON";
             if (context.Request.ContentType != null && context.Request.ContentType.StartsWith(MediaTypeNames.Application.Json))
             {
+                context.Request.EnableBuffering();
                 requestBodytext = await new StreamReader(context.Request.Body).ReadToEndAsync();
+                context.Request.Body.Position = 0;
             }
             _logger.LogInformation($"Http Request Information:{Environment.NewLine}" +
                                    $"Method: {context.Request.Method}{Environment.NewLine}" +
@@ -43,7 +45,7 @@ namespace UploadService.Middlewares
                                    $"Path: {context.Request.Path}{Environment.NewLine}" +
                                    $"Body: {requestBodytext}{Environment.NewLine}" +
                                    $"QueryString: {context.Request.QueryString}");
-            var originalBodyStream = context.Response?.Body;
+            var originalBodyStream = context.Response.Body;
             await using var responseBody = _recyclableMemoryStreamManager.GetStream();
             context.Response.Body = responseBody;
             try

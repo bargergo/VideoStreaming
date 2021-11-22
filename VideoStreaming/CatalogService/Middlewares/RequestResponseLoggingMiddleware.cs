@@ -34,7 +34,9 @@ namespace CatalogService.Middlewares
             var requestBodytext = "Not JSON";
             if (context.Request.ContentType != null && context.Request.ContentType.StartsWith(MediaTypeNames.Application.Json))
             {
+                context.Request.EnableBuffering();
                 requestBodytext = await new StreamReader(context.Request.Body).ReadToEndAsync();
+                context.Request.Body.Position = 0;
             }
             _logger.LogInformation($"Http Request Information:{Environment.NewLine}" +
                                    $"Method: {context.Request.Method}{Environment.NewLine}" +
