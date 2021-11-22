@@ -5,13 +5,15 @@ WORKDIR /app
 
 FROM openjdk:11.0.9.1-jdk-buster AS build
 WORKDIR /home/gradle/src
-# gradle.properties
-COPY build.gradle.kts settings.gradle.kts gradlew ./
 COPY gradle ./gradle
+COPY gradlew .
+RUN ./gradlew build || return 0
+# gradle.properties
+COPY build.gradle.kts settings.gradle.kts ./
 # Only download dependencies
-RUN ./gradlew downloadDependencies --no-daemon
+RUN ./gradlew downloadDependencies
 COPY . .
-RUN ./gradlew clean build --no-daemon -x test
+RUN ./gradlew clean build -x test
 
 FROM base AS final
 COPY --from=build /home/gradle/src/build/libs/user_service-0.0.1-SNAPSHOT.jar .
