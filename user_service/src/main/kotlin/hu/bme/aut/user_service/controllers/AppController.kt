@@ -69,12 +69,17 @@ class AppController(
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationExceptions(
         ex: MethodArgumentNotValidException
-    ): Map<String, String?> {
-        val errors: MutableMap<String, String?> = HashMap()
+    ): Map<String, List<String>> {
+        val errors: MutableMap<String, MutableList<String>> = HashMap()
         for (error: ObjectError in ex.bindingResult.allErrors) {
             val fieldName = (error as FieldError).field
             val errorMessage = error.getDefaultMessage()
-            errors[fieldName] = errorMessage
+            if (errors[fieldName] == null) {
+                errors[fieldName] = mutableListOf()
+            }
+            if (errorMessage != null) {
+                errors[fieldName]?.add(errorMessage)
+            }
         }
         return errors
     }
