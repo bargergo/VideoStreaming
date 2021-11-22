@@ -5,12 +5,10 @@ import javax.validation.constraints.Size
 
 class LoginRequest (
 
-    username: String,
+    @field:NotNull
+    val username: String,
 
     @field:NotNull
     val password: String
 ) {
-    @field:NotNull
-    @field:Size(min = 4, message = "The length of the username must be at least 4 characters")
-    val username: String = username.trim()
 }
