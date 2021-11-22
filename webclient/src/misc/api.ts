@@ -9,6 +9,7 @@ import { LoginResponse } from "../models/LoginResponse";
 import { HttpStatusError } from "../models/HttpStatusError";
 import { loginAction, logoutAction } from "./userSlice";
 import { AppStore } from "./store";
+import { ValidationErrorResponse } from "../models/ValidationErrorResponse";
 
 let store: AppStore;
 
@@ -132,7 +133,7 @@ export function logout(): void {
   store.dispatch(logoutAction());
 }
 
-export async function register(data: RegisterRequest): Promise<RegisterResponse> {
+export async function register(data: RegisterRequest): Promise<RegisterResponse | ValidationErrorResponse> {
   const response = await fetch("/api/user-service/register", { 
     method: "POST",
     headers: {
@@ -141,7 +142,7 @@ export async function register(data: RegisterRequest): Promise<RegisterResponse>
     },
     body: JSON.stringify(data) 
   }).then(r => {
-    if (r.ok) {
+    if (r.ok || r.status === 400) {
       return r.json();
     } else {
       throw new HttpStatusError(r.statusText, r.status);
