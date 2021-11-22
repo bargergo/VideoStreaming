@@ -5,6 +5,9 @@
   "proxy": "http://localhost:80",
   "dependencies": {
     "@babel/core": "^7.15.8",
+    "@fortawesome/fontawesome-svg-core": "^1.2.36",
+    "@fortawesome/free-solid-svg-icons": "^5.15.4",
+    "@fortawesome/react-fontawesome": "^0.1.16",
     "@reduxjs/toolkit": "^1.6.2",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.5",
@@ -17,6 +20,7 @@
     "@types/react-router": "^5.1.17",
     "@types/react-router-dom": "^5.3.1",
     "bootstrap": "^4.6.0",
+    "formik": "^2.2.9",
     "hls.js": "^0.14.17",
     "npm-force-resolutions": "0.0.10",
     "plyr": "^3.6.4",
@@ -29,7 +33,8 @@
     "react-scripts": "^4.0.3",
     "tus-js-client": "^2.2.0",
     "typescript": "^4.2.3",
-    "web-vitals": "^1.1.1"
+    "web-vitals": "^1.1.1",
+    "yup": "^0.32.11"
   },
   "resolutions": {
     "ansi-regex": "5.0.1",
