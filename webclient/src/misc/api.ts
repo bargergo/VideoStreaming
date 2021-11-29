@@ -139,7 +139,7 @@ export async function login(data: LoginRequest): Promise<LoginResponse> {
     }
   });
   const castedResponse = response as LoginResponse;
-  store.dispatch(loginAction({ token: castedResponse.token, name: castedResponse.username}));
+  store.dispatch(loginAction({ token: castedResponse.token, name: castedResponse.username, roles: castedResponse.roles || []}));
   return response;
 }
 

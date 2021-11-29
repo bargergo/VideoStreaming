@@ -4,21 +4,24 @@ export const userSlice = createSlice({
   name: 'user',
   initialState: {
     token: null,
-    name: null
+    name: null,
+    roles: []
   },
   reducers: {
-    loginAction: (state, action: {type: string, payload: {token: string, name: string}}) => {
+    loginAction: (state, action: {type: string, payload: {token: string, name: string, roles: string[]}}) => {
       return {
         ...state,
         token: action.payload.token,
-        name: action.payload.name
+        name: action.payload.name,
+        roles: action.payload.roles
       };
     },
     logoutAction: (state) => {
       return {
         ...state,
         token: null,
-        name: null
+        name: null,
+        roles: []
       };
     }
   },

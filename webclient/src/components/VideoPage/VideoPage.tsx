@@ -6,6 +6,7 @@ import { Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import { deleteVideo, fetchVideoInfo, updateList, updateProgress } from "../../misc/api";
 import { useLocalStorageForNumber } from "../../misc/custom-hooks";
+import { Roles } from "../../misc/Roles";
 import { convertStatus, Status } from "../../misc/status-converter";
 import { useAppSelector } from "../../misc/store-hooks";
 import { GetVideoResult } from "../../models/GetVideoResult";
@@ -19,6 +20,7 @@ type VideoParams = {
 const VideoPage = () => {
 
   const token = useAppSelector((state) => state.user.token);
+  const roles = useAppSelector((state) => state.user.roles);
   const tokenRef = useRef<string | null>(token);
   const video = useRef<HTMLVideoElement>(null);
   const { id } = useParams<VideoParams>();
@@ -225,9 +227,9 @@ const VideoPage = () => {
         { token != null
           ? (        
             <div className="mb-2">
-              {editButton}{' '}
-              {addToOrRemoveFromList}{' '}
-              {deleteButton}
+              {roles.includes(Roles.admin) ? (<>{editButton}{' '}</>) : null}
+              {addToOrRemoveFromList}
+              {roles.includes(Roles.admin) ? (<>{' '}{deleteButton}</>) : null}
             </div>)
           : null}
       </div>

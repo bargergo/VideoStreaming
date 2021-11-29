@@ -2,11 +2,13 @@ import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import { Link, NavLink } from 'react-router-dom';
 import { logout } from '../../misc/api';
+import { Roles } from '../../misc/Roles';
 import { useAppSelector } from '../../misc/store-hooks';
 
 const Navs = () => {
 
   const username = useAppSelector((state) => state.user.name);
+  const roles = useAppSelector((state) => state.user.roles);
 
   const LINKS = [
     {to: '/', text: 'Videos'},
@@ -14,10 +16,16 @@ const Navs = () => {
   ];
 
   if (username != null) {
-    LINKS.splice(1, 0,
-      {to: '/upload', text: 'Upload'},
-      {to: '/my-list', text: 'My List'}
-    );
+    if (roles.includes(Roles.admin)) {
+      LINKS.splice(1, 0,
+        {to: '/upload', text: 'Upload'},
+        {to: '/my-list', text: 'My List'}
+      );
+    } else {
+      LINKS.splice(1, 0,
+        {to: '/my-list', text: 'My List'}
+      );
+    }
   }
 
   const profileItems = username == null
