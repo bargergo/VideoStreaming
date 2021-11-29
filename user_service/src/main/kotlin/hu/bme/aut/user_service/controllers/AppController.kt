@@ -16,7 +16,6 @@ import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
-import java.util.function.Consumer
 import javax.validation.Valid
 
 
@@ -70,10 +69,16 @@ class AppController(
     @PostMapping("/changePassword")
     fun changePassword(@Valid @RequestBody changePasswordRequest: ChangePasswordRequest, principal: Principal): ResponseEntity<Any> {
         logger.info("change password for user '${principal.name}")
-        authenticate(principal.name, changePasswordRequest.currentPassword)
+        try {
+            auth.authenticate(UsernamePasswordAuthenticationToken(principal.name, changePasswordRequest.currentPassword))
+        } catch (e: BadCredentialsException) {
+            logger.info("INVALID_CREDENTIALS")
+            val errors = mapOf("currentPassword" to listOf("Wrong password"))
+            return ResponseEntity.badRequest().body(mapOf("errors" to errors))
+        }
         userDetailsService.changePassword(principal.name, changePasswordRequest.newPassword)
         logger.info("successfully changed password for user '${principal.name}")
-        return ResponseEntity.ok().build()
+        return ResponseEntity.ok().body(Unit)
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

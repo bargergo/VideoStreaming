@@ -132,7 +132,7 @@ export async function changePassword(data: ChangePasswordRequest): Promise<any |
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data) 
-  });
+  }).then(r => r.json());;
   return response;
 }
 
