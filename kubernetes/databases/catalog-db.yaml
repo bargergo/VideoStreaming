@@ -39,7 +39,10 @@ spec:
             - name: ACCEPT_EULA
               value: "Y"
             - name: SA_PASSWORD
-              value: Your_password123       
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: catalog_db_password
           volumeMounts:
             - mountPath: /var/opt/mssql
               name: catalog-db-data

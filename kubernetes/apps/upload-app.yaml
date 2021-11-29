@@ -43,9 +43,15 @@ spec:
           - name: MessageQueueSettings__Hostname
             value: videostreaming-messagequeue
           - name: MessageQueueSettings__Username
-            value: user1
+            valueFrom:
+              secretKeyRef:
+                name: my-secrets
+                key: message_queue_user
           - name: MessageQueueSettings__Password
-            value: password1
+            valueFrom:
+              secretKeyRef:
+                name: my-secrets
+                key: message_queue_password
         volumeMounts:
           - mountPath: "/data"
             name: nfs-volume

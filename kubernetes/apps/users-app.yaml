@@ -39,15 +39,24 @@ spec:
               containerPort: 80
           env:
             - name: JWT__SECRET
-              value: top_secret_secret
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: jwt_secret
             - name: SERVER__PORT
               value: "80"
             - name: SPRING__DATASOURCE__URL
               value: "jdbc:mysql://user-db:3306/user-db?createDatabaseIfNotExist=true&autoReconnect=true"
             - name: SPRING__DATASOURCE__USERNAME
-              value: mysql-user
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: user_db_user
             - name: SPRING__DATASOURCE__PASSWORD
-              value: mysql-password
+              valueFrom:
+                secretKeyRef:
+                  name: my-secrets
+                  key: user_db_password
       restartPolicy: Always
 ---
 apiVersion: networking.k8s.io/v1

@@ -43,11 +43,26 @@ spec:
           - name: MessageQueueSettings__Hostname
             value: videostreaming-messagequeue
           - name: MessageQueueSettings__Username
-            value: user1
+            valueFrom:
+              secretKeyRef:
+                name: my-secrets
+                key: message_queue_user
           - name: MessageQueueSettings__Password
-            value: password1
+            valueFrom:
+              secretKeyRef:
+                name: my-secrets
+                key: message_queue_password
+          - name: ConnectionStrings__CatalogDb__part1
+            value: "Server=catalog-db;Database=master;User=sa;Password="
+          - name: ConnectionStrings__CatalogDb__part2
+            valueFrom:
+              secretKeyRef:
+                name: my-secrets
+                key: catalog_db_password
+          - name: ConnectionStrings__CatalogDb__part3
+            value: ";"
           - name: ConnectionStrings__CatalogDb
-            value: "Server=catalog-db;Database=master;User=sa;Password=Your_password123;"
+            value: $(ConnectionStrings__CatalogDb__part1)$(ConnectionStrings__CatalogDb__part2)$(ConnectionStrings__CatalogDb__part3)
         volumeMounts:
           - mountPath: "/data"
             name: nfs-volume
