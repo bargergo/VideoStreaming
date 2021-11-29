@@ -29,8 +29,14 @@ namespace UploadService.Services
         { 
             try
             {
-                var userId = context.HttpContext.User.UserId();
+                var user = context.HttpContext.User;
+                var userId = user.UserId();
                 _logger.LogInformation("user is authenticated, id: " + userId);
+                if (!user.IsAdmin())
+                {
+                    _logger.LogInformation("user is not admin, admin right required for uploading");
+                    context.FailRequest(HttpStatusCode.Forbidden);
+                }
                 return Task.CompletedTask;
             }
             catch

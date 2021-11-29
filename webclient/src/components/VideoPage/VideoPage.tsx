@@ -2,7 +2,7 @@ import Hls from "hls.js";
 import Plyr from "plyr";
 import 'plyr/dist/plyr.css';
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Button } from "react-bootstrap";
+import { Alert, Button } from "react-bootstrap";
 import { useHistory, useParams, useRouteMatch } from "react-router-dom";
 import { deleteVideo, fetchVideoInfo, updateList, updateProgress } from "../../misc/api";
 import { useLocalStorageForNumber } from "../../misc/custom-hooks";
@@ -10,6 +10,7 @@ import { Roles } from "../../misc/Roles";
 import { convertStatus, Status } from "../../misc/status-converter";
 import { useAppSelector } from "../../misc/store-hooks";
 import { GetVideoResult } from "../../models/GetVideoResult";
+import { HttpStatusError } from "../../models/HttpStatusError";
 import { VideoDetails } from "../../models/VideoDetails";
 import './VideoPage.css';
 
@@ -19,6 +20,7 @@ type VideoParams = {
 
 const VideoPage = () => {
 
+  const [errors, setErrors] = useState<string[]>([]);
   const token = useAppSelector((state) => state.user.token);
   const roles = useAppSelector((state) => state.user.roles);
   const tokenRef = useRef<string | null>(token);
@@ -39,8 +41,15 @@ const VideoPage = () => {
   };
 
   const removeVideo = async () => {
-    await deleteVideo(id);
-    goBack();
+    setErrors([]);
+    try {
+      await deleteVideo(id);
+      goBack();
+    } catch(e: any) {
+      if (e instanceof HttpStatusError) {
+        setErrors([`Unexpected error: ${e.statusCode} ${e.message}`]);
+      }
+    }
   };
 
   const seek = (time: number) => {
@@ -217,6 +226,11 @@ const VideoPage = () => {
 
   return (
     <div className="container">
+      {errors.map((errorMessage, idx) => (
+        <Alert variant="danger" key={idx}>
+          {errorMessage}
+        </Alert>
+      ))}
       <h1 className="video-title mb-4">{videoInfo?.name}</h1>
       {status === Status.CONVERTED.toString()
         ? <video className="plyr" ref={video} controls crossOrigin="true" playsInline />

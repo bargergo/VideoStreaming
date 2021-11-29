@@ -1,5 +1,6 @@
 ﻿using CatalogService.Database.Entities;
 using CatalogService.DTOs;
+using CatalogService.Exceptions;
 using CatalogService.Extensions;
 using CatalogService.Models;
 using CatalogService.Services;
@@ -75,6 +76,11 @@ namespace CatalogService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateVideo(string id, [FromForm] IFormFile file, [FromForm] string jsonString)
         {
+            if (!User.IsAdmin())
+            {
+                _logger.LogInformation("User is not in admin role, admin rights are required for updating the video.");
+                throw new ForbiddenException("User is not in admin role, admin rights are required for updating the video.");
+            }
             var allowedContentTypes = new List<string> { "image/jpeg" };
             var allowedExtensions = new List<string> { "jpg" };
             if (file != null)
@@ -98,6 +104,11 @@ namespace CatalogService.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(string id)
         {
+            if (!User.IsAdmin())
+            {
+                _logger.LogInformation("User is not in admin role, admin rights are required for deleting the video.");
+                throw new ForbiddenException("User is not in admin role, admin rights are required for deleting the video.");
+            }
             await _catalogService.DeleteVideo(id);
             return NoContent();
         }

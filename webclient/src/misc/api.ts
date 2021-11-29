@@ -70,7 +70,14 @@ export async function fetchVideoInfo(id: string): Promise<GetVideoResult> {
 }
 
 export async function deleteVideo(id: string): Promise<void> {
-  await fetch("/api/catalog/private/" + id, { method: "DELETE", headers: { ...authorizationHeader() } });
+  await fetch("/api/catalog/private/" + id, { method: "DELETE", headers: { ...authorizationHeader() } })
+  .then(r => {
+    if (r.ok) {
+      return r.json();
+    } else {
+      throw new HttpStatusError(r.statusText, r.status);
+    }
+  });;
 }
 
 export async function updateVideo(id: string, data: {title?: string, description?: string}, file: File): Promise<void> {
@@ -82,6 +89,12 @@ export async function updateVideo(id: string, data: {title?: string, description
     method: "PUT",
     body: formData,
     headers: { ...authorizationHeader() }
+  }).then(r => {
+    if (r.ok) {
+      return r.json();
+    } else {
+      throw new HttpStatusError(r.statusText, r.status);
+    }
   });
 }
 

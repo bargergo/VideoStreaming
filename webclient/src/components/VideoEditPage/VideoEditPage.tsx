@@ -1,11 +1,12 @@
 import { Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
-import { Button, Container, FormControl, FormGroup, FormLabel } from "react-bootstrap";
+import { Alert, Button, Container, FormControl, FormGroup, FormLabel } from "react-bootstrap";
 import Feedback from "react-bootstrap/esm/Feedback";
 import { useHistory, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import { fetchVideoInfo, updateVideo } from "../../misc/api";
 import { GetVideoResult } from "../../models/GetVideoResult";
+import { HttpStatusError } from "../../models/HttpStatusError";
 import FileUploadButton from "../Shared/FileUploadButton/FileUploadButton";
 import './VideoEditPage.css';
 
@@ -15,6 +16,7 @@ type VideoParams = {
 
 const VideoEditPage = () => {
 
+  const [errors, setErrors] = useState<string[]>([]);
   const { id } = useParams<VideoParams>();
   const history = useHistory();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -34,10 +36,15 @@ const VideoEditPage = () => {
     values: { title: string; description: string },
     { setSubmitting }
   ) => {
+    setErrors([]);
     setSubmitting(true);
     try {
       await updateVideo(id, {title: values.title, description: values.description}, file);
       goBack();
+    } catch(e: any) {
+      if (e instanceof HttpStatusError) {
+        setErrors([`Unexpected error: ${e.statusCode} ${e.message}`]);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -67,6 +74,11 @@ const VideoEditPage = () => {
   return (
     <Container>
       <h1 className="mb-4">Edit Video</h1>
+      {errors.map((errorMessage, idx) => (
+        <Alert variant="danger" key={idx}>
+          {errorMessage}
+        </Alert>
+      ))}
       <Formik
         enableReinitialize
         initialValues={initialValue}

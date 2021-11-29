@@ -43,6 +43,14 @@ namespace CatalogService
                         return pd;
                     }
                 );
+                options.Map<ForbiddenException>(
+                    (ctx, ex) =>
+                    {
+                        var pd = StatusCodeProblemDetails.Create(StatusCodes.Status403Forbidden);
+                        pd.Title = ex.Message;
+                        return pd;
+                    }
+                );
             });
             services.Configure<FileStorageSettings>(
                 Configuration.GetSection(nameof(FileStorageSettings)));
