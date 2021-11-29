@@ -53,6 +53,16 @@ const Navs = () => {
             </span>
         </li>
         <li className="nav-item">
+          <Nav.Link
+            as={NavLink}
+            className="nav-link"
+            activeClassName="active"
+            to='/change-password'
+          >
+            Change Password
+          </Nav.Link>
+      </li>
+        <li className="nav-item">
             <button
               className="btn btn-link nav-link"
               onClick={() => logout()}

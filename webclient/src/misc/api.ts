@@ -10,6 +10,7 @@ import { HttpStatusError } from "../models/HttpStatusError";
 import { loginAction, logoutAction } from "./userSlice";
 import { AppStore } from "./store";
 import { ValidationErrorResponse } from "../models/ValidationErrorResponse";
+import { ChangePasswordRequest } from "../models/ChangePasswordRequest";
 
 let store: AppStore;
 
@@ -106,6 +107,19 @@ export async function searchVideos(data: {searchText: string}): Promise<VideoInf
     },
     body: JSON.stringify(data) 
   }).then(r => r.json());
+  return response;
+}
+
+export async function changePassword(data: ChangePasswordRequest): Promise<any | ValidationErrorResponse> {
+  const response =  await fetch("/api/user-service/changePassword",
+  {
+    method: "POST",
+    headers: {
+      ...authorizationHeader(),
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data) 
+  });
   return response;
 }
 

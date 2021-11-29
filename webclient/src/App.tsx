@@ -2,6 +2,7 @@ import React from "react";
 import { Container } from "react-bootstrap";
 import { Redirect, Route, Switch } from "react-router";
 import About from "./components/About/About";
+import ChangePassword from "./components/ChangePassword/ChangePassword";
 import LoginPage from "./components/LoginPage/LoginPage";
 import MyListPage from "./components/MyListPage/MyListPage";
 import Navs from "./components/Navigation/Navs";
@@ -59,6 +60,10 @@ const App = () => {
 
           <Route path="/register">
             <RegisterPage />
+          </Route>
+
+          <Route path="/change-password">
+            {token == null ? <Redirect to="/login" /> : <ChangePassword />}
           </Route>
 
           <Route>

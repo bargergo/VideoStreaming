@@ -4,7 +4,7 @@ import { Field, Form, Formik } from "formik";
 import React, { useRef, useState } from "react";
 import { Alert, Button, FormControl, FormGroup, FormLabel, InputGroup } from "react-bootstrap";
 import Feedback from "react-bootstrap/esm/Feedback";
-import { useHistory } from "react-router";
+import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import { register } from "../../misc/api";
 import { HttpStatusError } from "../../models/HttpStatusError";
@@ -13,9 +13,9 @@ import "./RegisterPage.css";
 
 const RegisterPage = () => {
   const [errors, setErrors] = useState<string[]>([]);
-  const history = useHistory();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const passwordInputRef = useRef<HTMLInputElement>();
+  const [showRegistrationSuccess, setShowRegistrationSuccess] = useState<boolean>(false);
 
   const showHide = (e: any) => {
     e.preventDefault();
@@ -37,27 +37,25 @@ const RegisterPage = () => {
       .required("Required")
       .min(8, "Must be at least 8 characters long.")
       .test("hasDigit", "Must contain a digit", (value) => /[0-9]/.test(value))
-      .test("hasLowercase", "Must contain a lowercase letter", (value) =>
-        /[a-z]/.test(value)
-      )
-      .test("hasUppercase", "Must contain a uppercase letter", (value) =>
-        /[A-Z]/.test(value)
-      ),
+      .test("hasLowercase", "Must contain a lowercase letter", (value) => /[a-z]/.test(value))
+      .test("hasUppercase", "Must contain a uppercase letter", (value) => /[A-Z]/.test(value)),
   });
 
   const onSubmit = async (
     values: { username: string; password: string },
-    { setSubmitting }
+    { setSubmitting, resetForm }
   ) => {
     setErrors([]);
     setSubmitting(true);
+    setShowRegistrationSuccess(false);
     try {
       const response = await register({
         username: values.username,
         password: values.password,
       });
       if (response["errors"] == null) {
-        history.push("./login", { fromRegistration: true });
+        resetForm();
+        setShowRegistrationSuccess(true);
       } else {
         const validationErrorResponse = response as ValidationErrorResponse;
         const validationErrors: string[] = [];
@@ -80,11 +78,16 @@ const RegisterPage = () => {
     }
   };
 
+  const successfulRegistrationMessage = showRegistrationSuccess ?  (
+    <Alert variant="success">You have successfully registered. <Link to='/login'>You can log in now.</Link></Alert>
+  ) : null;
+
   return (
     <div className="container">
       <h1 className="mb-4">Register</h1>
       <div className="row">
         <div className="col-md-6">
+          {successfulRegistrationMessage}
           {errors.map((errorMessage, idx) => (
             <Alert variant="danger" key={idx}>
               {errorMessage}

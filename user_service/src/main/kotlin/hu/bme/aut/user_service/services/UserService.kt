@@ -45,4 +45,10 @@ class UserService(
         ))
         return userRepository.save(newUser).toUserDTO()
     }
+
+    fun changePassword(username: String, newPassword: String) {
+        val user = findByUsername(username)
+        user.password =passwordEncoder.encode(newPassword)
+        userRepository.save(user)
+    }
 }

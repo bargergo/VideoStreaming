@@ -1,5 +1,6 @@
 package hu.bme.aut.user_service.controllers
 
+import hu.bme.aut.user_service.model.ChangePasswordRequest
 import hu.bme.aut.user_service.model.LoginRequest
 import hu.bme.aut.user_service.model.LoginResponse
 import hu.bme.aut.user_service.model.RegisterRequest
@@ -14,6 +15,7 @@ import org.springframework.validation.FieldError
 import org.springframework.validation.ObjectError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 import java.util.function.Consumer
 import javax.validation.Valid
 
@@ -65,6 +67,15 @@ class AppController(
         return ResponseEntity.ok(userDetailsService.save(user))
     }
 
+    @PostMapping("/changePassword")
+    fun changePassword(@Valid @RequestBody changePasswordRequest: ChangePasswordRequest, principal: Principal): ResponseEntity<Any> {
+        logger.info("change password for user '${principal.name}")
+        authenticate(principal.name, changePasswordRequest.currentPassword)
+        userDetailsService.changePassword(principal.name, changePasswordRequest.newPassword)
+        logger.info("successfully changed password for user '${principal.name}")
+        return ResponseEntity.ok().build()
+    }
+
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleValidationExceptions(
@@ -72,14 +83,25 @@ class AppController(
     ): Map<String, Map<String, List<String>>> {
         val errors: MutableMap<String, MutableList<String>> = HashMap()
         for (error: ObjectError in ex.bindingResult.allErrors) {
-            val fieldName = (error as FieldError).field
-            val errorMessage = error.getDefaultMessage()
-            if (errors[fieldName] == null) {
-                errors[fieldName] = mutableListOf()
+            if (error is FieldError) {
+                val fieldName = error.field
+                val errorMessage = error.getDefaultMessage()
+                if (errors[fieldName] == null) {
+                    errors[fieldName] = mutableListOf()
+                }
+                if (errorMessage != null) {
+                    errors[fieldName]?.add(errorMessage)
+                }
+            } else {
+                if (errors["classLevel"] == null) {
+                    errors["classLevel"] = mutableListOf()
+                }
+                val errorMessage = error.defaultMessage
+                if (errorMessage != null) {
+                    errors["classLevel"]?.add(errorMessage)
+                }
             }
-            if (errorMessage != null) {
-                errors[fieldName]?.add(errorMessage)
-            }
+
         }
         return mapOf("errors" to errors)
     }

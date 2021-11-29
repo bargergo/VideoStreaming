@@ -1,10 +1,10 @@
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Field, Form, Formik } from 'formik';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Alert, Button, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import Feedback from 'react-bootstrap/esm/Feedback';
-import { useHistory, useLocation } from 'react-router';
+import { useHistory } from 'react-router';
 import * as Yup from "yup";
 import { login } from '../../misc/api';
 import { HttpStatusError } from '../../models/HttpStatusError';
@@ -12,17 +12,10 @@ import './LoginPage.css';
 
 const LoginPage = () => {
   const history = useHistory();
-  const location = useLocation<{fromRegistration: boolean}>();
 
   const [errors, setErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const passwordInputRef = useRef<HTMLInputElement>();
-  const [showRegistrationSuccess, setShowRegistrationSuccess] = useState<boolean>(false);
-
-  useEffect(() => {
-    setShowRegistrationSuccess(location.state != null && !!location.state.fromRegistration);
-    return () => {}
-  }, [location.state]);
 
   const showHide = (e: any) => {
     e.preventDefault();
@@ -48,8 +41,8 @@ const LoginPage = () => {
     { setSubmitting }
   ) => {
     setErrors([]);
+    setSubmitting(true);
     try {
-      setShowRegistrationSuccess(false);
       await login({username: values.username, password: values.password});
       history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')) + '/my-list');
     } catch (e: any) {
@@ -60,19 +53,16 @@ const LoginPage = () => {
           setErrors([`Unexpected error: ${e.statusCode} ${e.message}`]);
         }
       }
+    } finally {
+      setSubmitting(false);
     }
   }
-
-  const successfulRegistrationMessage = showRegistrationSuccess ?  (
-    <Alert variant="success">You have successfuly registered. You can log in now.</Alert>
-  ) : null;
 
   return (
     <div className="container">
       <h1 className="mb-4">Login</h1>
       <div className="row">
         <div className="col-md-6">
-          {successfulRegistrationMessage}
           {errors.map((errorMessage, idx) => (
             <Alert variant="danger" key={idx}>
               {errorMessage}
