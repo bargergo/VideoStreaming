@@ -76,7 +76,7 @@ services:
       MessageQueueSettings__Hostname: videostreaming-messagequeue
       MessageQueueSettings__Username: ${message_queue_user}
       MessageQueueSettings__Password: ${message_queue_password}
-      ConnectionStrings__CatalogDb: "Server=catalog-db;Database=master;User=sa;Password=${catalog_db_password};"
+      ConnectionStrings__CatalogDb: "Server=catalog-db;Database=catalogdb;User=sa;Password=${catalog_db_password};"
     ports: 
       - "5003:80"
     volumes:

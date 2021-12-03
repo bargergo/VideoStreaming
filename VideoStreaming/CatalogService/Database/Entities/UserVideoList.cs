@@ -1,9 +1,14 @@
-﻿namespace CatalogService.Database.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CatalogService.Database.Entities
 {
     public class UserVideoList
     {
-        public int Id { get; set; }
+        [Required]
         public int UserId { get; set; }
+        [Required]
+        public int VideoId { get; set; }
+        [Required]
         public Video Video { get; set; }
     }
 }

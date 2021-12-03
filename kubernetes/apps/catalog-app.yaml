@@ -53,7 +53,7 @@ spec:
                 name: my-secrets
                 key: message_queue_password
           - name: ConnectionStrings__CatalogDb__part1
-            value: "Server=catalog-db;Database=master;User=sa;Password="
+            value: "Server=catalog-db;Database=catalogdb;User=sa;Password="
           - name: ConnectionStrings__CatalogDb__part2
             valueFrom:
               secretKeyRef:

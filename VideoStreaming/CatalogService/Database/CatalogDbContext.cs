@@ -22,13 +22,19 @@ namespace CatalogService.Database
 
             modelBuilder.Entity<UserVideoList>(entity =>
             {
-                entity.HasOne(uvl => uvl.Video);
+                entity.HasOne(uvl => uvl.Video)
+                    .WithMany()
+                    .HasForeignKey(uvl => uvl.VideoId);
+                entity.HasKey(uvl => new { uvl.UserId, uvl.VideoId });
                 entity.HasIndex(uvl => uvl.UserId);
             });
 
             modelBuilder.Entity<UserVideoProgress>(entity =>
             {
-                entity.HasOne(uvp => uvp.Video);
+                entity.HasOne(uvp => uvp.Video)
+                    .WithMany()
+                    .HasForeignKey(uvp => uvp.VideoId);
+                entity.HasKey(uvp => new { uvp.UserId, uvp.VideoId });
                 entity.HasIndex(uvp => uvp.UserId);
             });
         }
