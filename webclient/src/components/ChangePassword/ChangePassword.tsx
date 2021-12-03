@@ -4,6 +4,7 @@ import { Field, Form, Formik } from 'formik';
 import React, { useRef, useState } from 'react';
 import { Alert, Button, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import Feedback from 'react-bootstrap/esm/Feedback';
+import { Link } from 'react-router-dom';
 import * as Yup from "yup";
 import { changePassword } from '../../misc/api';
 import { HttpStatusError } from '../../models/HttpStatusError';
@@ -12,7 +13,7 @@ import './ChangePassword.css';
 
 const ChangePassword = () => {
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<(string | JSX.Element)[]>([]);
   const [showCurrentPassword, setShowCurrentPassword] = useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
   const [showNewPasswordAgain, setShowNewPasswordAgain] = useState<boolean>(false);
@@ -85,7 +86,9 @@ const ChangePassword = () => {
       }
     } catch (e: any) {
       if (e instanceof HttpStatusError) {
-        if (e.statusCode !== 400) {
+        if (e.statusCode === 401) {
+          setErrors([(<>Token expired, <Link to='login'>please login</Link></>)]);
+        } else if (e.statusCode !== 400) {
           setErrors([`Unexpected error: ${e.statusCode} ${e.message}`]);
         }
       }

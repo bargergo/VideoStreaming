@@ -104,6 +104,7 @@ const VideoPage = () => {
 
   useEffect(() => {
     progressRef.current = progress;
+    return () => {};
   }, [progress]);
 
   useEffect(() => {
@@ -123,7 +124,7 @@ const VideoPage = () => {
 
   useEffect(() => {
     if (status !== Status.CONVERTED.toString()) {
-      return;
+      return () => {};
     }
 
     const hls = new Hls({

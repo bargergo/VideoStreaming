@@ -150,7 +150,13 @@ export async function changePassword(data: ChangePasswordRequest): Promise<any |
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data) 
-  }).then(r => r.json());;
+  }).then(r => {
+    if (r.ok || r.status === 400) {
+      return r.json();
+    } else {
+      throw new HttpStatusError(r.statusText, r.status);
+    }
+  });
   return response;
 }
 

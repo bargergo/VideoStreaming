@@ -1,12 +1,14 @@
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Field, Form, Formik } from 'formik';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Button, FormControl, FormGroup, FormLabel, InputGroup } from 'react-bootstrap';
 import Feedback from 'react-bootstrap/esm/Feedback';
 import { useHistory } from 'react-router';
 import * as Yup from "yup";
 import { login } from '../../misc/api';
+import { useAppDispatch } from '../../misc/store-hooks';
+import { logoutAction } from '../../misc/userSlice';
 import { HttpStatusError } from '../../models/HttpStatusError';
 import './LoginPage.css';
 
@@ -16,6 +18,7 @@ const LoginPage = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const passwordInputRef = useRef<HTMLInputElement>();
+  const dispatch = useAppDispatch();
 
   const showHide = (e: any) => {
     e.preventDefault();
@@ -35,6 +38,11 @@ const LoginPage = () => {
     password: Yup.string()
       .required("Required")
   });
+
+  useEffect(() => {
+    dispatch(logoutAction());
+    return () => {};
+  }, [dispatch]);
 
   const onSubmit = async (
     values: { username: string, password: string },
