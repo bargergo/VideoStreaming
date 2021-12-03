@@ -33,5 +33,5 @@ jobs:
         run: npm run build
         working-directory: ./webclient
       - name: Test
-        run: npm run test
+        run: npm test
         working-directory: ./webclient
