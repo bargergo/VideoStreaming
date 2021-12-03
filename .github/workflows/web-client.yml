@@ -30,8 +30,8 @@ jobs:
         run: npm ci
         working-directory: ./webclient
       - name: Build
-        run: npm build
+        run: npm run build
         working-directory: ./webclient
       - name: Test
-        run: npm test
+        run: npm run test
         working-directory: ./webclient
