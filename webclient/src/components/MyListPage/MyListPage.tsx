@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useHistory } from "react-router";
 import { getVideoInfosForUser } from "../../misc/api";
+import { useAppDispatch } from "../../misc/store-hooks";
+import { logoutAction } from "../../misc/userSlice";
+import { HttpStatusError } from "../../models/HttpStatusError";
 import { VideoInfo } from "../../models/VideoInfo";
 import VideoListElement from "../Shared/VideoListElement/VideoListElement";
 
@@ -7,23 +11,31 @@ const MyListPage = () => {
 
   const [videos, setVideos] = useState<VideoInfo[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const history = useHistory();
+  const dispatch = useAppDispatch();
 
-  const getMyVideos = useCallback(() => {
-    setLoading(true);
-    getVideoInfosForUser()
-      .then((results) => {
-        setVideos(results);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
-  }, []);
+  const getMyVideos = useCallback(async () => {
+    try {
+      setLoading(true);
+      const results = await getVideoInfosForUser();
+      setVideos(results);
+    } catch (e: any) {
+      if (e instanceof HttpStatusError) {
+        if (e.statusCode === 401) {
+          dispatch(logoutAction());
+          history.push('login');
+        } else {
+          console.log(e);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [history, dispatch]);
 
   useEffect(() => {
     getMyVideos();
-    return;
+    return () => {};
   }, [getMyVideos]);
 
   return (

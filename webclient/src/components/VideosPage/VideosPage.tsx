@@ -2,7 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Alert } from 'react-bootstrap';
 import { useRouteMatch } from 'react-router-dom';
 import { checkVideoIdsForUserList, getVideoInfos, searchVideos } from '../../misc/api';
-import { useAppSelector } from '../../misc/store-hooks';
+import { useAppDispatch, useAppSelector } from '../../misc/store-hooks';
+import { logoutAction } from '../../misc/userSlice';
+import { HttpStatusError } from '../../models/HttpStatusError';
 import { ValidationErrorResponse } from '../../models/ValidationErrorResponse';
 import { VideoInfo } from '../../models/VideoInfo';
 import { VideoInfoEx } from '../../models/VideoInfoEx';
@@ -16,6 +18,7 @@ const VideosPage = () => {
   const match = useRouteMatch();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
 
   const search = async (searchText: string) => {
     setErrors([]);
@@ -46,27 +49,32 @@ const VideosPage = () => {
   };
 
   const showAll = useCallback(
-    () => {
-      setErrors([]);
-      setLoading(true);
-      getVideoInfos()
-      .then(async (response) => {
+    async () => {
+      try {
+        setErrors([]);
+        setLoading(true);
+        const response = await getVideoInfos();
         const videosOnList = token != null
-          ? await checkVideoIdsForUserList({videoIds: response.map(r => r.id)})
-          : [];
+        ? await checkVideoIdsForUserList({videoIds: response.map(r => r.id)})
+        : [];
         const result = response.map<VideoInfoEx>(video => ({
           ...video,
           addedToList: videosOnList.includes(video.id)
         }));
         setVideos(result);
+      } catch(e: any) {
+        if (e instanceof HttpStatusError) {
+          if (e.statusCode === 401) {
+            dispatch(logoutAction());
+          } else {
+            console.log(e);
+          }
+        }
+      } finally {
         setLoading(false);
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-      });
+      }
     },
-    [token],
+    [token, dispatch],
   );
 
   const updateMyList = async () => {

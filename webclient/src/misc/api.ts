@@ -27,13 +27,25 @@ function authorizationHeader(): {[key: string]: string} {
 
 export async function getVideoInfos(): Promise<VideoInfo[]> {
   const response = await fetch("/api/catalog/public", { headers: { ...authorizationHeader() } })
-    .then(r => r.json());
+    .then(r => {
+      if (r.ok) {
+        return r.json();
+      } else {
+        throw new HttpStatusError(r.statusText, r.status);
+      }
+    });
   return response;
 }
 
 export async function getVideoInfosForUser(): Promise<VideoInfo[]> {
   const response = await fetch("/api/catalog/private/list", { headers: { ...authorizationHeader() } })
-    .then(r => r.json());
+    .then(r => {
+      if (r.ok) {
+        return r.json();
+      } else {
+        throw new HttpStatusError(r.statusText, r.status);
+      }
+    });
   return response;
 }
 
@@ -45,7 +57,13 @@ export async function checkVideoIdsForUserList(data: CheckVideoIdsForUserListPar
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(data) 
-  }).then(r => r.json());
+  }).then(r => {
+    if (r.ok) {
+      return r.json();
+    } else {
+      throw new HttpStatusError(r.statusText, r.status);
+    }
+  });
   return response;
 }
 

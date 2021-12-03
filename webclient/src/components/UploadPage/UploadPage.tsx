@@ -15,7 +15,7 @@ enum Severity {
 
 interface Message {
   severity: Severity;
-  text: string;
+  text: string | JSX.Element;
 }
 
 const UploadPage = ({ token }) => {
@@ -56,7 +56,7 @@ const UploadPage = ({ token }) => {
           )[0];
           const text =
             responseCode === "401"
-              ? "You have to be logged in to upload files."
+              ? (<>Token expired, <Link to='login'>please login</Link></>)
               : "Failed because: " + error;
           setMessage({
             severity: Severity.ERROR,
