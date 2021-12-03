@@ -1,0 +1,160 @@
+version: '3.4'
+
+services:
+  apigateway:
+    image: traefik:v2.5.3
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      
+  videostreaming-messagequeue:
+    image: rabbitmq:3.8.3-management
+    container_name: "videostreaming-messagequeue"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${message_queue_user}
+      RABBITMQ_DEFAULT_PASS: ${message_queue_password}
+    ports:
+    # The standard AMQP protocol port
+    - '5672:5672'
+    # HTTP management UI
+    - '15672:15672' 
+
+  upload-service:
+    build:
+      context: .
+      dockerfile: UploadService/Dockerfile
+    image: upload-service
+    environment:
+      FileStorageSettings__DiskStorePath: /data
+      MessageQueueSettings__Hostname: videostreaming-messagequeue
+      MessageQueueSettings__Username: ${message_queue_user}
+      MessageQueueSettings__Password: ${message_queue_password}
+    ports: 
+      - "5001:80"
+    volumes:
+      - tusfiles:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.upload-service.rule=PathPrefix(`/api/files`)"
+      - "traefik.http.routers.upload-service.entrypoints=web"
+      - "traefik.http.routers.upload-service.middlewares=user-service"
+    depends_on:
+      - videostreaming-messagequeue
+      
+  convert-service:
+    build:
+      context: .
+      dockerfile: ConvertService/Dockerfile
+    image: convert-service
+    environment:
+      FileStorageSettings__Path: /data
+      MessageQueueSettings__Hostname: videostreaming-messagequeue
+      MessageQueueSettings__Username: ${message_queue_user}
+      MessageQueueSettings__Password: ${message_queue_password}
+    ports: 
+      - "5002:80"
+    volumes:
+      - tusfiles:/data
+    depends_on:
+      - videostreaming-messagequeue
+      
+  catalog-service:
+    build:
+      context: .
+      dockerfile: CatalogService/Dockerfile
+    image: catalog-service
+    environment:
+      FileStorageSettings__Path: /data
+      MessageQueueSettings__Hostname: videostreaming-messagequeue
+      MessageQueueSettings__Username: ${message_queue_user}
+      MessageQueueSettings__Password: ${message_queue_password}
+      ConnectionStrings__CatalogDb: "Server=catalog-db;Database=catalogdb;User=sa;Password=${catalog_db_password};"
+    ports: 
+      - "5003:80"
+    volumes:
+      - tusfiles:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.catalog-service.rule=PathPrefix(`/api/catalog/public`)"
+      - "traefik.http.routers.catalog-service.entrypoints=web"
+      - "traefik.http.routers.catalog-service-private.rule=PathPrefix(`/api/catalog/private`)"
+      - "traefik.http.routers.catalog-service-private.entrypoints=web"
+      - "traefik.http.routers.catalog-service-private.middlewares=user-service"
+    depends_on:
+      - catalog-db
+      - videostreaming-messagequeue
+      
+  catalog-db:
+    image: "mcr.microsoft.com/mssql/server:2019-CU13-ubuntu-20.04"
+    container_name: catalog-db
+    environment:
+        SA_PASSWORD: ${catalog_db_password}
+        ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-server-data:/var/opt/mssql
+      
+  user-service:
+    build:
+      context: ../user_service
+      dockerfile: Dockerfile
+    image: user-service:dev
+    environment:
+      JWT__SECRET: ${jwt_secret}
+      SPRING__DATASOURCE__URL: "jdbc:mysql://user-db:3306/user-db?createDatabaseIfNotExist=true&autoReconnect=true"
+      SPRING__DATASOURCE__USERNAME: ${user_db_user}
+      SPRING__DATASOURCE__PASSWORD: ${user_db_password}
+      SERVER__PORT: "80"
+    ports: 
+      - "5004:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user-service.rule=PathPrefix(`/api/user-service`)"
+      - "traefik.http.routers.user-service.entrypoints=web"
+      - "traefik.http.middlewares.user-service.forwardauth.address=http://user-service:80/api/user-service/check"
+    depends_on:
+      - user-db
+      
+  user-db:
+    image: mysql:8.0.26
+    container_name: user-db
+    environment:
+        MYSQL_ROOT_PASSWORD: ${user_db_root_password}
+        MYSQL_USER: ${user_db_user}
+        MYSQL_PASSWORD: ${user_db_password}
+        MYSQL_DATABASE: user-db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      
+  webclient:
+    build:
+      context: ../webclient
+      dockerfile: Dockerfile
+    image: webclient:dev
+    ports:
+      - "5000:80"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.webclient.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.webclient.entrypoints=web"
+    
+volumes:
+  mssql-server-data:
+  mysql-data:
+  tusfiles:
+    driver: local
+    driver_opts:
+      type: nfs
+      o: nfsvers=3,addr=host.docker.internal,rw,nolock,soft
+      device: ${nfs_share}
