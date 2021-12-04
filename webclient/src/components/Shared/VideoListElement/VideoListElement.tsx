@@ -34,13 +34,17 @@ const VideoListElement = ({title, description, url, imageUrl, id, addedToList, o
       ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
       : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
 
+  const shortenedDescription = description != null && description.length > 64
+    ? description.substring(0, 64) + '...'
+    : description
+
   return (
     <Card style={{ minHeight: '26rem' }}>
       <Card.Img variant="top" src={imageUrl || defaultImage} />
       <Card.Body>
         <Card.Title>{title}</Card.Title>
         <Card.Text>
-          {description}
+          {shortenedDescription}
         </Card.Text>
       </Card.Body>
       <Card.Footer>
