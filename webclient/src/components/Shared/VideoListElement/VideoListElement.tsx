@@ -49,8 +49,8 @@ const VideoListElement = ({title, description, url, imageUrl, id, addedToList, o
       ? (<Button variant="outline-danger" onClick={removeFromList}>Remove from list</Button>)
       : (<Button variant="outline-primary" onClick={addToList}>Add to list</Button>);
 
-  const shortenedDescription = description != null && description.length > 64
-    ? description.substring(0, 64) + '...'
+  const shortenedDescription = description != null && description.length > 80
+    ? description.substring(0, 80) + '...'
     : description;
 
   return (
