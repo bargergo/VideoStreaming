@@ -13,7 +13,7 @@ const About = () => {
         Users can add videos to their list, and their progress with playing the video is saved, so the video playback can be resumed.
       </p>
       <h2 className="mb-2">Used Technologies</h2>
-      <p>React, TypeScript, C#, ASP.NET Core, Spring, Kotlin, Docker, RabbitMQ, Traefik, FFmpeg, HLS.js, Plyr, tusdotnet</p>
+      <p>React, TypeScript, C#, ASP.NET Core, Spring, Kotlin, Docker, RabbitMQ, Traefik, FFmpeg, HLS.js, Plyr, tusdotnet, tus-js-client, Formik, Yup</p>
       <h2 className="mb-2">Author</h2>
       <p>Bargergo</p>
     </Container>);
