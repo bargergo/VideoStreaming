@@ -132,7 +132,8 @@ const RegisterPage = () => {
                   
                 </FormGroup>
                 <Alert variant="info">
-                  Password requirements: it must contain at least 1 digit, 1
+                  Password requirements: it must be at least 8 characters long
+                  and it must contain at least 1 digit, 1
                   uppercase letter and 1 lowercase letter.
                 </Alert>
                 <Button variant="primary" type="submit" disabled={isSubmitting}>

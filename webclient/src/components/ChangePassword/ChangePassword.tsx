@@ -158,6 +158,12 @@ const ChangePassword = () => {
                   </InputGroup>
                 </FormGroup>
 
+                <Alert variant="info">
+                  Password requirements: it must be at least 8 characters long
+                  and it must contain at least 1 digit, 1
+                  uppercase letter and 1 lowercase letter.
+                </Alert>
+
                 <FormGroup className="mb-3">
                   <FormLabel>New Password Again</FormLabel>
                   <InputGroup>
