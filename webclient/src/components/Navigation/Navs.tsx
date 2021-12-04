@@ -82,7 +82,7 @@ const Navs = () => {
     );
 
   return (
-    <Navbar collapseOnSelect bg="dark" variant="dark" expand="lg">
+    <Navbar collapseOnSelect bg="dark" variant="dark" expand="md">
       <Container className="my-0">
         <Link className="navbar-brand" to="/">VideoStreaming</Link>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
