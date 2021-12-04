@@ -1,9 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace ConvertService.Services
 {
     public interface IHlsConverterService
     {
-        Task ConvertToHls(string fileId);
+        Task ConvertToHls(Guid fileId);
     }
 }

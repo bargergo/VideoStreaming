@@ -6,9 +6,8 @@ namespace CatalogService.Database.Entities
 {
     public class Video
     {
-        public int Id { get; set; }
         [Required]
-        public string FileId { get; set; }
+        public Guid Id { get; set; }
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }

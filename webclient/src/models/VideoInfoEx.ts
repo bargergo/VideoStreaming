@@ -1,9 +1,5 @@
-export interface VideoInfoEx {
-  id: number;
-  fileId: string;
-  name: string;
-  description: string;
-  status: string;
-  imageFileName: string;
+import { VideoInfo } from "./VideoInfo";
+
+export interface VideoInfoEx extends VideoInfo {
   addedToList: boolean;
 };

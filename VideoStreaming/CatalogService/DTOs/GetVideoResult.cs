@@ -5,8 +5,7 @@ namespace CatalogService.DTOs
 {
     public class GetVideoResult
     {
-        public int Id { get; set; }
-        public string FileId { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 

@@ -24,7 +24,7 @@ namespace CatalogService.MessageQueue
             _logger.LogInformation($"Consumed IVideoUploadedForCatalogEvent: {JsonSerializer.Serialize(context)}");
             var video = new Video
             {
-                FileId = context.Message.FileId,
+                Id = context.Message.FileId,
                 Name = context.Message.Name,
                 Status = Status.Uploaded
             };

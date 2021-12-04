@@ -1,15 +1,17 @@
-﻿namespace MessageQueueDTOs
+﻿using System;
+
+namespace MessageQueueDTOs
 {
     public interface IVideoUploadedForCatalogEvent
     {
-        string FileId { get; }
+        Guid FileId { get; }
         string Name { get; }
         string Type { get; }
     }
 
     public class VideoUploadedForCatalogEvent : IVideoUploadedForCatalogEvent
     {
-        public string FileId { get; set; }
+        public Guid FileId { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
     }

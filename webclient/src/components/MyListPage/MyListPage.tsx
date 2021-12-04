@@ -62,10 +62,10 @@ const MyListPage = () => {
                 <VideoListElement
                   title={video.name}
                   description={video.description}
-                  url={`/videos/${video.fileId}`}
+                  url={`/videos/${video.id}`}
                   imageUrl={
                     video.imageFileName
-                      ? `/api/catalog/public/${video.fileId}/image`
+                      ? `/api/catalog/public/${video.id}/image`
                       : null
                   }
                   id={video.id}

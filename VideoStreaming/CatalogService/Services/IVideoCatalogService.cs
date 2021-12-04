@@ -2,6 +2,7 @@
 using CatalogService.DTOs;
 using CatalogService.Models;
 using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -11,17 +12,17 @@ namespace CatalogService.Services
     {
         Task<List<Video>> GetVideos();
         Task<Video> CreateVideo(Video param);
-        Task<Video> GetVideo(string id);
-        Task<GetVideoResult> GetVideoWithProgress(string id, int userId);
-        Task DeleteVideo(string id);
-        Task UpdateVideo(string id, UpdateVideoParam param, IFormFile file);
+        Task<Video> GetVideo(Guid id);
+        Task<GetVideoResult> GetVideoWithProgress(Guid id, int userId);
+        Task DeleteVideo(Guid id);
+        Task UpdateVideo(Guid id, UpdateVideoParam param, IFormFile file);
         Task<List<Video>> Search(SearchVideoParam param);
-        Task<ImageHolder> GetImage(string id);
+        Task<ImageHolder> GetImage(Guid id);
         Task<List<Video>> GetVideosForUser(int userId);
-        Task UpdateProgress(string id, UpdateProgressParam param, int userId);
+        Task UpdateProgress(Guid id, UpdateProgressParam param, int userId);
         Task UpdateList(UpdateListParam param, int userId);
-        Task<List<int>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, int userId);
+        Task<List<Guid>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, int userId);
 
-        Task UpdateVideoStatus(string id, Status newStatus);
+        Task UpdateVideoStatus(Guid id, Status newStatus);
     }
 }

@@ -1,6 +1,5 @@
 export interface GetVideoResult {
-  id: number;
-  fileId: string;
+  id: string;
   name: string;
   description: string;
   status: number;

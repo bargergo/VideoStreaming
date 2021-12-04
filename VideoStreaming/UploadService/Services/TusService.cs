@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using MessageQueueDTOs;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
@@ -94,16 +95,17 @@ namespace UploadService.Services
 
         private async Task DoSomeProcessing(ITusFile file, Dictionary<string, tusdotnet.Models.Metadata> metadata)
         {
+            var guid = Guid.ParseExact(file.Id, "N");
             _logger.LogInformation($"Publish message with: FileId = {file.Id}, Name = {metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8)}, Type = {metadata.GetValueOrDefault("filetype", null)?.GetString(Encoding.UTF8)}");
             await _messageQueue.Publish<IVideoUploadedEvent>(new VideoUploadedEvent
             {
-                FileId = file.Id,
+                FileId = guid,
                 Name = metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8),
                 Type = metadata.GetValueOrDefault("filetype", null)?.GetString(Encoding.UTF8)
             });
             await _messageQueue.Publish<IVideoUploadedForCatalogEvent>(new VideoUploadedForCatalogEvent
             {
-                FileId = file.Id,
+                FileId = guid,
                 Name = metadata.GetValueOrDefault("filename", null)?.GetString(Encoding.UTF8),
                 Type = metadata.GetValueOrDefault("filetype", null)?.GetString(Encoding.UTF8)
             });

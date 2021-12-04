@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CatalogService.Controllers
@@ -30,14 +31,22 @@ namespace CatalogService.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Video>>> GetVideos()
+        public async Task<ActionResult<List<VideoInfo>>> GetVideos()
         {
             var videos = await _catalogService.GetVideos();
-            return videos;
+            return videos.Select(v => new VideoInfo
+            {
+                Id = v.Id,
+                Name = v.Name,
+                Description = v.Description,
+                Status = v.Status,
+                ImageFileName = v.ImageFileName,
+                UploadedAt = v.UploadedAt
+            }).ToList();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GetVideoResult>> GetVideo(string id)
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<GetVideoResult>> GetVideo(Guid id)
         {
             var video = await _catalogService.GetVideo(id);
             if (video == null)
@@ -47,7 +56,6 @@ namespace CatalogService.Controllers
             return new GetVideoResult
             {
                 Id = video.Id,
-                FileId = video.FileId,
                 Name = video.Name,
                 Description = video.Description,
                 Status = video.Status,
@@ -56,8 +64,8 @@ namespace CatalogService.Controllers
             };
         }
 
-        [HttpGet("{id}/image")]
-        public async Task<FileStreamResult> GetImage(string id)
+        [HttpGet("{id:guid}/image")]
+        public async Task<FileStreamResult> GetImage(Guid id)
         {
             var imageHolder = await _catalogService.GetImage(id);
             return File(imageHolder?.Data, "image/jpeg", "image.jpg");
@@ -69,17 +77,17 @@ namespace CatalogService.Controllers
             return await _catalogService.Search(param);
         }
 
-        [HttpGet("{fileId}/{fileName}")]
-        public async Task<IActionResult> GetHlsFiles(string fileId, string fileName)
+        [HttpGet("{id:guid}/{fileName}")]
+        public async Task<IActionResult> GetHlsFiles(Guid id, string fileName)
         {
-            _logger.LogInformation($"Get file {fileId}/{fileName}");
-            var video = await _catalogService.GetVideo(fileId);
+            _logger.LogInformation($"Get file {id}/{fileName}");
+            var video = await _catalogService.GetVideo(id);
             if (video == null)
             {
-                _logger.LogInformation($"Video with id: {fileId} not found");
+                _logger.LogInformation($"Video with id: {id} not found");
                 return NotFound();
             }
-            var pathToFile = Path.Combine(_fileStorageSettings.Path, "hls", fileId, fileName);
+            var pathToFile = Path.Combine(_fileStorageSettings.Path, "hls", id.ToString("N"), fileName);
             _logger.LogInformation($"Path to file: {pathToFile}");
 
             var supportedExtensions = new List<string>

@@ -30,7 +30,7 @@ namespace CatalogService.Services
         {
             await _catalogDb.Videos.AddAsync(new Video
             {
-                FileId = param.FileId,
+                Id = param.Id,
                 Name = param.Name,
                 Status = param.Status,
                 UploadedAt = DateTime.Now
@@ -39,9 +39,9 @@ namespace CatalogService.Services
             return param;
         }
 
-        public async Task DeleteVideo(string id)
+        public async Task DeleteVideo(Guid id)
         {
-            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
+            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.Id == id);
             if (video != null)
             {
                 if (video.Status != Status.Converted)
@@ -50,11 +50,11 @@ namespace CatalogService.Services
                 }
                 var dir = new DirectoryInfo(_fileStorageSettings.Path);
 
-                foreach (var file in dir.EnumerateFiles(id + ".*"))
+                foreach (var file in dir.EnumerateFiles(id.ToString("N") + ".*"))
                 {
                     file.Delete();
                 }
-                var hlsDir = new DirectoryInfo(Path.Combine(_fileStorageSettings.Path, "hls", id));
+                var hlsDir = new DirectoryInfo(Path.Combine(_fileStorageSettings.Path, "hls", id.ToString("N")));
                 if (hlsDir.Exists)
                 {
                     hlsDir.Delete(true);
@@ -67,7 +67,7 @@ namespace CatalogService.Services
                     {
                         imgDirectory.Create();
                     }
-                    foreach (var oldFile in imgDirectory.EnumerateFiles(id + ".*"))
+                    foreach (var oldFile in imgDirectory.EnumerateFiles(id.ToString("N") + ".*"))
                     {
                         oldFile.Delete();
                     }
@@ -81,10 +81,10 @@ namespace CatalogService.Services
             }
         }
 
-        public async Task<ImageHolder> GetImage(string id)
+        public async Task<ImageHolder> GetImage(Guid id)
         {
             _logger.LogInformation($"GetImage for video with id: {id}");
-            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
+            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.Id == id);
             if (video != null && video.ImageFileName != null)
             {
                 _logger.LogInformation($"Video found with id: {id}");
@@ -113,20 +113,19 @@ namespace CatalogService.Services
             return null;
         }
 
-        public async Task<Video> GetVideo(string id)
+        public async Task<Video> GetVideo(Guid id)
         {
             return await _catalogDb.Videos
-                .FirstOrDefaultAsync(v => v.FileId == id);
+                .FirstOrDefaultAsync(v => v.Id == id);
         }
 
-        public async Task<GetVideoResult> GetVideoWithProgress(string id, int userId)
+        public async Task<GetVideoResult> GetVideoWithProgress(Guid id, int userId)
         {
             var videoWithProgress = await _catalogDb.UserVideoProgresses
-                .Where(uvp => uvp.UserId == userId && uvp.Video.FileId == id)
+                .Where(uvp => uvp.UserId == userId && uvp.Video.Id == id)
                 .Select(uvp => new GetVideoResult
                 {
                     Id = uvp.Video.Id,
-                    FileId = uvp.Video.FileId,
                     Name = uvp.Video.Name,
                     Description = uvp.Video.Description,
                     Status = uvp.Video.Status,
@@ -145,7 +144,7 @@ namespace CatalogService.Services
                 return videoWithProgress;
             }
             var video = await _catalogDb.Videos
-                .FirstOrDefaultAsync(v => v.FileId == id);
+                .FirstOrDefaultAsync(v => v.Id == id);
             if (video != null)
             {
                 var videoIds = await _catalogDb.UserVideoLists
@@ -155,7 +154,6 @@ namespace CatalogService.Services
                 return new GetVideoResult
                 {
                     Id = video.Id,
-                    FileId = video.FileId,
                     Name = video.Name,
                     Description = video.Description,
                     Status = video.Status,
@@ -190,9 +188,9 @@ namespace CatalogService.Services
             return videos;
         }
 
-        public async Task UpdateVideo(string id, UpdateVideoParam param, IFormFile file)
+        public async Task UpdateVideo(Guid id, UpdateVideoParam param, IFormFile file)
         {
-            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.FileId == id);
+            var video = await _catalogDb.Videos.FirstOrDefaultAsync(v => v.Id == id);
             if (file != null)
             {
                 var imgDirectoryPath = Path.Combine(_fileStorageSettings.Path, "images");
@@ -219,10 +217,10 @@ namespace CatalogService.Services
             await _catalogDb.SaveChangesAsync();
         }
 
-        public async Task UpdateProgress(string id, UpdateProgressParam param, int userId)
+        public async Task UpdateProgress(Guid id, UpdateProgressParam param, int userId)
         {
             var progress = await _catalogDb.UserVideoProgresses
-                .FirstOrDefaultAsync(uvp => uvp.UserId == userId && uvp.Video.FileId == id);
+                .FirstOrDefaultAsync(uvp => uvp.UserId == userId && uvp.Video.Id == id);
             if (param.Finished)
             {
                 if (progress != null)
@@ -234,7 +232,7 @@ namespace CatalogService.Services
                 if (progress == null)
                 {
                     var video = await _catalogDb.Videos
-                        .FirstOrDefaultAsync(v => v.FileId == id);
+                        .FirstOrDefaultAsync(v => v.Id == id);
                     progress = new UserVideoProgress
                     {
                         Video = video,
@@ -274,7 +272,7 @@ namespace CatalogService.Services
             }
         }
 
-        public async Task<List<int>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, int userId)
+        public async Task<List<Guid>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param, int userId)
         {
             _logger.LogInformation("userId:" + userId);
             var videoIds = await _catalogDb.UserVideoLists
@@ -284,10 +282,10 @@ namespace CatalogService.Services
             return videoIds;
         }
 
-        public async Task UpdateVideoStatus(string id, Status newStatus)
+        public async Task UpdateVideoStatus(Guid id, Status newStatus)
         {
             var video = await _catalogDb.Videos
-                .FirstOrDefaultAsync(v => v.FileId == id);
+                .FirstOrDefaultAsync(v => v.Id == id);
             video.Status = newStatus;
             await _catalogDb.SaveChangesAsync();
         }

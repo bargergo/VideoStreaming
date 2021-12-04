@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CatalogService.Database.Entities
 {
@@ -7,7 +8,7 @@ namespace CatalogService.Database.Entities
         [Required]
         public int UserId { get; set; }
         [Required]
-        public int VideoId { get; set; }
+        public Guid VideoId { get; set; }
         [Required]
         public Video Video { get; set; }
     }

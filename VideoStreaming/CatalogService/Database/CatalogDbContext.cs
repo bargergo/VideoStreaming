@@ -15,11 +15,6 @@ namespace CatalogService.Database
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Video>(entity =>
-            {
-                entity.HasIndex(e => e.FileId).IsUnique();
-            });
-
             modelBuilder.Entity<UserVideoList>(entity =>
             {
                 entity.HasOne(uvl => uvl.Video)

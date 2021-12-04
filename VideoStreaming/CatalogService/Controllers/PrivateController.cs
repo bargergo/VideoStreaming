@@ -8,7 +8,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CatalogService.Controllers
@@ -29,17 +31,25 @@ namespace CatalogService.Controllers
         }
 
         [HttpPost("list/check")]
-        public async Task<ActionResult<List<int>>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param)
+        public async Task<ActionResult<List<Guid>>> CheckVideoIdsForUserList(CheckVideoIdsForUserListParam param)
         {
             var videos = await _catalogService.CheckVideoIdsForUserList(param, User.UserId());
             return videos;
         }
 
         [HttpGet("list")]
-        public async Task<ActionResult<List<Video>>> GetVideosForUser()
+        public async Task<ActionResult<List<VideoInfo>>> GetVideosForUser()
         {
             var videos = await _catalogService.GetVideosForUser(User.UserId());
-            return videos;
+            return videos.Select(v => new VideoInfo
+            {
+                Id = v.Id,
+                Name = v.Name,
+                Description = v.Description,
+                Status = v.Status,
+                ImageFileName = v.ImageFileName,
+                UploadedAt = v.UploadedAt
+            }).ToList();
         }
 
         [HttpPut("list")]
@@ -49,8 +59,8 @@ namespace CatalogService.Controllers
             return Ok();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<GetVideoResult>> GetVideo(string id)
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<GetVideoResult>> GetVideo(Guid id)
         {
             var video = await _catalogService.GetVideoWithProgress(id, User.UserId());
             if (video == null)
@@ -60,8 +70,8 @@ namespace CatalogService.Controllers
             return video;
         }
 
-        [HttpPut("{id}/progress")]
-        public async Task<IActionResult> UpdateProgress(string id, UpdateProgressParam param)
+        [HttpPut("{id:guid}/progress")]
+        public async Task<IActionResult> UpdateProgress(Guid id, UpdateProgressParam param)
         {
             var userId = User.UserId();
             var video = await _catalogService.GetVideoWithProgress(id, userId);
@@ -73,8 +83,8 @@ namespace CatalogService.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateVideo(string id, [FromForm] IFormFile file, [FromForm] string jsonString)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateVideo(Guid id, [FromForm] IFormFile file, [FromForm] string jsonString)
         {
             if (!User.IsAdmin())
             {
@@ -98,11 +108,11 @@ namespace CatalogService.Controllers
                 return NotFound();
             }
             await _catalogService.UpdateVideo(id, param, file);
-            return Ok();
+            return Ok(new { });
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteVideo(string id)
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteVideo(Guid id)
         {
             if (!User.IsAdmin())
             {

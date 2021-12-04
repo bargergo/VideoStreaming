@@ -24,8 +24,8 @@ namespace CatalogService.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VideoId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("UserId", "VideoId");
 
@@ -41,8 +41,8 @@ namespace CatalogService.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("VideoId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<float>("Progress")
                         .HasColumnType("real");
@@ -58,17 +58,12 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Database.Entities.Video", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ImageFileName")
                         .HasColumnType("nvarchar(max)");
@@ -85,9 +80,6 @@ namespace CatalogService.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FileId")
-                        .IsUnique();
 
                     b.ToTable("Videos");
                 });

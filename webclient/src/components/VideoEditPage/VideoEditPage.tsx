@@ -44,6 +44,8 @@ const VideoEditPage = () => {
     } catch(e: any) {
       if (e instanceof HttpStatusError) {
         setErrors([`Unexpected error: ${e.statusCode} ${e.message}`]);
+      } else {
+        console.log(e);
       }
     } finally {
       setSubmitting(false);
@@ -63,7 +65,7 @@ const VideoEditPage = () => {
     fetchVideoInfo(id)
       .then((result: GetVideoResult) => {
         setInitialValue({title: result.name, description: result.description || ''});
-        setImageUrl(result.imageFileName != null ? `/api/catalog/public/${result.fileId}/image` : null);
+        setImageUrl(result.imageFileName != null ? `/api/catalog/public/${result.id}/image` : null);
       })
       .catch(err => {
         console.log(err);

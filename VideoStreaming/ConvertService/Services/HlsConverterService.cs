@@ -1,5 +1,6 @@
 ﻿using ConvertService.Models;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,9 +18,10 @@ namespace ConvertService.Services
             _logger = logger;
         }
 
-        public async Task ConvertToHls(string fileId)
+        public async Task ConvertToHls(Guid fileId)
         {
-            var filePath = Path.Combine($"{_fileStorageSettings.Path}", fileId);
+            var fileIdString = fileId.ToString("N");
+            var filePath = Path.Combine($"{_fileStorageSettings.Path}", fileIdString);
             _logger.LogInformation($"Trying to find file: {filePath}");
             if (File.Exists(filePath))
             {
@@ -29,7 +31,7 @@ namespace ConvertService.Services
             {
                 _logger.LogWarning($"File not found: {filePath}");
             }
-            var directoryPath = Path.Combine(_fileStorageSettings.Path, "hls", fileId);
+            var directoryPath = Path.Combine(_fileStorageSettings.Path, "hls", fileIdString);
             Directory.CreateDirectory(directoryPath);
             var arguments = $@"-hide_banner -y -i {filePath}
                 -vf scale=w=640:h=360:force_original_aspect_ratio=decrease -c:a aac -ar 48000 -c:v h264 -profile:v main -crf 20 -sc_threshold 0 -g 48 -keyint_min 48 -hls_time 4 -hls_playlist_type vod  -b:v 800k -maxrate 856k -bufsize 1200k -b:a 96k -hls_segment_filename {directoryPath}/360p_%03d.ts {directoryPath}/360p.m3u8

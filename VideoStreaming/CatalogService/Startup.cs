@@ -1,3 +1,4 @@
+using CatalogService.Converters;
 using CatalogService.Database;
 using CatalogService.Exceptions;
 using CatalogService.MessageQueue;
@@ -90,7 +91,10 @@ namespace CatalogService
 
             services.AddTransient<IVideoCatalogService, VideoCatalogService>();
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new GuidConverter());
+            });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogService", Version = "v1" });

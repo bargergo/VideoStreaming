@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CatalogService.Migrations
 {
     [DbContext(typeof(CatalogDbContext))]
-    [Migration("20211203214553_VideoNotNullableColumns")]
-    partial class VideoNotNullableColumns
+    [Migration("20211204112251_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,18 +23,13 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Database.Entities.UserVideoList", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("VideoId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "VideoId");
 
                     b.HasIndex("UserId");
 
@@ -45,21 +40,16 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Database.Entities.UserVideoProgress", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<float>("Progress")
                         .HasColumnType("real");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VideoId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "VideoId");
 
                     b.HasIndex("UserId");
 
@@ -70,17 +60,12 @@ namespace CatalogService.Migrations
 
             modelBuilder.Entity("CatalogService.Database.Entities.Video", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FileId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("ImageFileName")
                         .HasColumnType("nvarchar(max)");
@@ -98,9 +83,6 @@ namespace CatalogService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileId")
-                        .IsUnique();
-
                     b.ToTable("Videos");
                 });
 
@@ -108,7 +90,9 @@ namespace CatalogService.Migrations
                 {
                     b.HasOne("CatalogService.Database.Entities.Video", "Video")
                         .WithMany()
-                        .HasForeignKey("VideoId");
+                        .HasForeignKey("VideoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Video");
                 });
@@ -117,7 +101,9 @@ namespace CatalogService.Migrations
                 {
                     b.HasOne("CatalogService.Database.Entities.Video", "Video")
                         .WithMany()
-                        .HasForeignKey("VideoId");
+                        .HasForeignKey("VideoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Video");
                 });

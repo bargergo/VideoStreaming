@@ -1,6 +1,5 @@
 export interface VideoDetails {
-  id: number;
-  fileId: string;
+  id: string;
   name: string;
   description: string;
   status: string;

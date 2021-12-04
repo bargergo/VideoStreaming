@@ -49,7 +49,7 @@ export async function getVideoInfosForUser(): Promise<VideoInfo[]> {
   return response;
 }
 
-export async function checkVideoIdsForUserList(data: CheckVideoIdsForUserListParam): Promise<number[]> {
+export async function checkVideoIdsForUserList(data: CheckVideoIdsForUserListParam): Promise<string[]> {
   const response = await fetch("/api/catalog/private/list/check", { 
     method: "POST",
     headers: {
@@ -87,18 +87,16 @@ export async function fetchVideoInfo(id: string): Promise<GetVideoResult> {
   return response;
 }
 
-export async function deleteVideo(id: string): Promise<void> {
+export async function deleteVideo(id: string): Promise<any> {
   await fetch("/api/catalog/private/" + id, { method: "DELETE", headers: { ...authorizationHeader() } })
   .then(r => {
-    if (r.ok) {
-      return r.json();
-    } else {
+    if (!r.ok) {
       throw new HttpStatusError(r.statusText, r.status);
     }
   });;
 }
 
-export async function updateVideo(id: string, data: {title?: string, description?: string}, file: File): Promise<void> {
+export async function updateVideo(id: string, data: {title?: string, description?: string}, file: File): Promise<any> {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('jsonString', JSON.stringify(data));

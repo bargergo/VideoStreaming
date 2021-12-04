@@ -3,56 +3,61 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CatalogService.Migrations
 {
-    public partial class AddVideoListAndVideoProgress : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateTime>(
-                name: "UploadedAt",
-                table: "Videos",
-                type: "datetime2",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+            migrationBuilder.CreateTable(
+                name: "Videos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Status = table.Column<string>(type: "nvarchar(24)", nullable: false),
+                    ImageFileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UploadedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Videos", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "UserVideoLists",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    VideoId = table.Column<int>(type: "int", nullable: true)
+                    VideoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserVideoLists", x => x.Id);
+                    table.PrimaryKey("PK_UserVideoLists", x => new { x.UserId, x.VideoId });
                     table.ForeignKey(
                         name: "FK_UserVideoLists_Videos_VideoId",
                         column: x => x.VideoId,
                         principalTable: "Videos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "UserVideoProgresses",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    VideoId = table.Column<int>(type: "int", nullable: true),
+                    VideoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Progress = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserVideoProgresses", x => x.Id);
+                    table.PrimaryKey("PK_UserVideoProgresses", x => new { x.UserId, x.VideoId });
                     table.ForeignKey(
                         name: "FK_UserVideoProgresses_Videos_VideoId",
                         column: x => x.VideoId,
                         principalTable: "Videos",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -84,9 +89,8 @@ namespace CatalogService.Migrations
             migrationBuilder.DropTable(
                 name: "UserVideoProgresses");
 
-            migrationBuilder.DropColumn(
-                name: "UploadedAt",
-                table: "Videos");
+            migrationBuilder.DropTable(
+                name: "Videos");
         }
     }
 }
