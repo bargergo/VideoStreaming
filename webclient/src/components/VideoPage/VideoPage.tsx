@@ -35,6 +35,7 @@ const VideoPage = () => {
   const [progress, setProgress] = useLocalStorageForNumber('PROGRESS_' + id);
   const progressRef = useRef<number | null>(progress);
   const [status, setStatus] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const goBack = () => {
     history.push(history.location.pathname.substring(0, history.location.pathname.lastIndexOf('/')));
@@ -108,25 +109,39 @@ const VideoPage = () => {
   }, [progress]);
 
   useEffect(() => {
-    fetchVideoInfo(id)
-      .then((result: GetVideoResult) => {
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const result: GetVideoResult = await fetchVideoInfo(id)
         setVideoInfo({...result, status: convertStatus(result.status)});
         setStatus(convertStatus(result.status));
         if (token != null) {
           setProgress(result.progress);
         }
-      })
-      .catch(err => {
-        console.log(err);
-      });
+      } catch (e: any) {
+        if (e instanceof HttpStatusError) {
+          if (e.statusCode === 404) {
+            history.push('/not-found');
+          } else {
+            setErrors([`Unexpected error: ${e.statusCode} ${e.message}`]);
+          }
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+
     return () => {};
-  }, [id, setProgress, token]);
+  }, [id, setProgress, token, history]);
 
   useEffect(() => {
     if (status !== Status.CONVERTED.toString()) {
       return () => {};
     }
 
+    setLoading(true);
     const hls = new Hls({
       xhrSetup: xhr => {
         if (token != null) {
@@ -172,6 +187,7 @@ const VideoPage = () => {
         // we will have one source on the Plyr player.
         hls.on(Hls.Events.MANIFEST_PARSED, function (event, data) {
 
+          setLoading(false);
           // Transform available levels into an array of integers (height values).
           const availableQualities = [0, ...hls.levels.map((l) => l.height)];
     
@@ -238,21 +254,33 @@ const VideoPage = () => {
         </Alert>
       ))}
       <h1 className="video-title mb-4">{videoInfo?.name}</h1>
+      {isLoading ? (
+        <div className="d-flex justify-content-center">
+          <div className="spinner-border m-5" role="status">
+            <span className="sr-only">Loading...</span>
+          </div>
+        </div>
+      ) : null}
       {status === Status.CONVERTED.toString()
-        ? <video className="plyr" ref={video} controls crossOrigin="true" playsInline />
-        : <div>The video is being converted and not ready to be played. Please check again later.</div>}
-      <div className="mt-4">
-        <p><b>Status:</b> {videoInfo?.status}</p>
-        <div className="mb-2"><b>Description:</b> {videoInfo?.description}</div>
-        { token != null
-          ? (        
-            <div className="mb-2">
-              {roles.includes(Roles.admin) ? (<>{editButton}{' '}</>) : null}
-              {addToOrRemoveFromList}
-              {roles.includes(Roles.admin) ? (<>{' '}{deleteButton}</>) : null}
-            </div>)
-          : null}
-      </div>
+        ? <video className="plyr" style={{visibility: isLoading ? 'hidden' : 'visible'}} ref={video} controls crossOrigin="true" playsInline />
+        : isLoading ? null : (<div>The video is being converted and not ready to be played. Please check again later.</div>)}
+      {
+        isLoading ? null : (
+          <div className="mt-4">
+            <p><b>Status:</b> {videoInfo?.status}</p>
+            <div className="mb-2"><b>Description:</b> {videoInfo?.description}</div>
+            { token != null
+              ? (        
+                <div className="mb-2">
+                  {roles.includes(Roles.admin) ? (<>{editButton}{' '}</>) : null}
+                  {addToOrRemoveFromList}
+                  {roles.includes(Roles.admin) ? (<>{' '}{deleteButton}</>) : null}
+                </div>)
+              : null}
+          </div>
+          )
+      }
+
     </div>
   );
 };

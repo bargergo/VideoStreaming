@@ -83,7 +83,13 @@ export async function fetchVideoInfo(id: string): Promise<GetVideoResult> {
   const state = store.getState();
   const baseUrl = state.user.token != null ? "/api/catalog/private/" : "/api/catalog/public/";
   const response = await fetch(baseUrl + id, { headers: { ...authorizationHeader() } })
-    .then(r => r.json());
+    .then(r => {
+      if (r.ok) {
+        return r.json();
+      } else {
+        throw new HttpStatusError(r.statusText, r.status);
+      }
+    });
   return response;
 }
 

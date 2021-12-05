@@ -7,6 +7,7 @@ import Forbidden from "./components/Forbidden/Forbidden";
 import LoginPage from "./components/LoginPage/LoginPage";
 import MyListPage from "./components/MyListPage/MyListPage";
 import Navs from "./components/Navigation/Navs";
+import NotFound from "./components/NotFound/NotFound";
 import RegisterPage from "./components/RegisterPage/RegisterPage";
 import UploadPage from "./components/UploadPage/UploadPage";
 import VideoEditPage from "./components/VideoEditPage/VideoEditPage";
@@ -74,7 +75,7 @@ const App = () => {
           </Route>
 
           <Route>
-            <Forbidden />
+            <NotFound />
           </Route>
         </Switch>
       </Container>
