@@ -256,9 +256,13 @@ namespace CatalogService.Services
             }
             if (param.VideosToAdd.Count != 0)
             {
-                var videosToAdd = await _catalogDb.Videos
-                    .Where(v => param.VideosToAdd.Contains(v.Id))
+                var videosOnList = await _catalogDb.UserVideoLists
+                    .Where(uvl => param.VideosToAdd.Contains(uvl.Video.Id))
                     .ToListAsync();
+                var videosToAdd = (await _catalogDb.Videos
+                    .Where(v => param.VideosToAdd.Contains(v.Id))
+                    .ToListAsync())
+                    .Where(v => !videosOnList.Select(vv => vv.VideoId).Contains(v.Id));
                 var userVideosToAdd = videosToAdd.Select(video => new UserVideoList
                 {
                     Video = video,
