@@ -151,7 +151,12 @@ const VideoPage = () => {
     // For more options see: https://github.com/sampotts/plyr/#options
     // captions.update is required for captions to work with hls.js
     const defaultOptions: Plyr.Options = {
-      invertTime: false
+      invertTime: false,
+      i18n: {
+        qualityLabel: {
+          0: 'AUTO'
+        }
+      }
     };
 
     if (video.current) {
@@ -197,7 +202,7 @@ const VideoPage = () => {
           } else {
             span!!.innerHTML = `AUTO`;
           }
-        })
+        });
         
       }
     }
