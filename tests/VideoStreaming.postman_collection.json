@@ -33,12 +33,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/register",
+					"raw": "http://localhost:{{port}}/api/user-service/register",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -76,12 +76,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/register",
+					"raw": "http://localhost:{{port}}/api/user-service/register",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -119,12 +119,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/register",
+					"raw": "http://localhost:{{port}}/api/user-service/register",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -162,12 +162,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/login",
+					"raw": "http://localhost:{{port}}/api/user-service/login",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -205,12 +205,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/login",
+					"raw": "http://localhost:{{port}}/api/user-service/login",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -248,12 +248,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/login",
+					"raw": "http://localhost:{{port}}/api/user-service/login",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -298,12 +298,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/login",
+					"raw": "http://localhost:{{port}}/api/user-service/login",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -351,12 +351,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/changePassword",
+					"raw": "http://localhost:{{port}}/api/user-service/changePassword",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -404,12 +404,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/changePassword",
+					"raw": "http://localhost:{{port}}/api/user-service/changePassword",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -457,12 +457,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/user-service/changePassword",
+					"raw": "http://localhost:{{port}}/api/user-service/changePassword",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"user-service",
@@ -497,12 +497,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/public",
+					"raw": "http://localhost:{{port}}/api/catalog/public",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -544,12 +544,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/public",
+					"raw": "http://localhost:{{port}}/api/catalog/public",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -578,12 +578,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/public/{{video_id}}",
+					"raw": "http://localhost:{{port}}/api/catalog/public/{{video_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -623,12 +623,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/{{video_id}}",
+					"raw": "http://localhost:{{port}}/api/catalog/private/{{video_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -677,12 +677,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/list",
+					"raw": "http://localhost:{{port}}/api/catalog/private/list",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -731,12 +731,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/list",
+					"raw": "http://localhost:{{port}}/api/catalog/private/list",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -785,12 +785,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/list",
+					"raw": "http://localhost:{{port}}/api/catalog/private/list",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -826,12 +826,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/{{video_id}}/progress",
+					"raw": "http://localhost:{{port}}/api/catalog/private/{{video_id}}/progress",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -877,12 +877,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/{{video_id}}",
+					"raw": "http://localhost:{{port}}/api/catalog/private/{{video_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -932,12 +932,12 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/{{video_id}}",
+					"raw": "http://localhost:{{port}}/api/catalog/private/{{video_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -982,12 +982,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/{{video_id}}",
+					"raw": "http://localhost:{{port}}/api/catalog/private/{{video_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -1027,12 +1027,12 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/{{video_id}}",
+					"raw": "http://localhost:{{port}}/api/catalog/private/{{video_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -1072,12 +1072,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:80/api/catalog/private/{{video_id}}",
+					"raw": "http://localhost:{{port}}/api/catalog/private/{{video_id}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "80",
+					"port": "{{port}}",
 					"path": [
 						"api",
 						"catalog",
@@ -1089,6 +1089,26 @@
 			"response": []
 		}
 	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
 	"variable": [
 		{
 			"key": "admin_token",
@@ -1097,6 +1117,10 @@
 		{
 			"key": "video_id",
 			"value": ""
+		},
+		{
+			"key": "port",
+			"value": "80"
 		}
 	]
 }
