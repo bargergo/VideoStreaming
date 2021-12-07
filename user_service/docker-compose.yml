@@ -29,7 +29,7 @@ services:
 
   upload-service:
     build:
-      context: VideoStreaming
+      context: ../VideoStreaming
       dockerfile: UploadService/Dockerfile
     image: upload-service:dev
     environment:
@@ -51,7 +51,7 @@ services:
       
   convert-service:
     build:
-      context: VideoStreaming
+      context: ../VideoStreaming
       dockerfile: ConvertService/Dockerfile
     image: convert-service:dev
     environment:
@@ -68,7 +68,7 @@ services:
       
   catalog-service:
     build:
-      context: VideoStreaming
+      context: ../VideoStreaming
       dockerfile: CatalogService/Dockerfile
     image: catalog-service:dev
     environment:
@@ -105,7 +105,7 @@ services:
       
   user-service:
     build:
-      context: user_service
+      context: .
       dockerfile: Dockerfile_debug
     image: user-service:dev
     environment:
@@ -140,7 +140,7 @@ services:
       
   webclient:
     build:
-      context: webclient
+      context: ../webclient
       dockerfile: Dockerfile
     image: webclient:dev
     ports:
