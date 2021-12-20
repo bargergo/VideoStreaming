@@ -254,18 +254,17 @@ const VideoPage = () => {
         </Alert>
       ))}
       <h1 className="video-title mb-4">{videoInfo?.name}</h1>
-      {isLoading ? (
-        <div className="d-flex justify-content-center">
-          <div className="spinner-border m-5" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-        </div>
-      ) : null}
       {status === Status.CONVERTED.toString()
         ? <video className="plyr" style={{visibility: isLoading ? 'hidden' : 'visible'}} ref={video} controls crossOrigin="true" playsInline />
         : isLoading ? null : (<div>The video is being converted and not ready to be played. Please check again later.</div>)}
       {
-        isLoading ? null : (
+        isLoading ? (
+          <div className="d-flex justify-content-center">
+            <div className="spinner-border m-5" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        ) : (
           <div className="mt-4">
             <p><b>Status:</b> {videoInfo?.status}</p>
             <div className="mb-2"><b>Description:</b> {videoInfo?.description}</div>
