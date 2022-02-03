@@ -1,5 +1,5 @@
 # VideoStreaming
-Görgess lejjebb a magyar nyelvű útmutatóért!
+[Magyar nyelv](https://github.com/bargergo/VideoStreaming#tulajdons%C3%A1gok)
 ## Features:
 * HLS stream playback with HLS.js and Plyr
 * Resumable fileupload with tus
